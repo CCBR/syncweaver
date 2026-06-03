@@ -293,15 +293,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./cli.html"> 
-<span class="menu-text">CLI Reference</span></a>
+<span class="menu-text">CLI</span></a>
   </li>  
   <li class="nav-item">
-    <span class="nav-link">
-<span class="menu-text">sidebar:docs</span>
-    </span>
+    <a class="nav-link" href="./reference/index.html"> 
+<span class="menu-text">API</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./CHANGELOG.md"> 
+    <a class="nav-link" href="./CHANGELOG.html"> 
 <span class="menu-text">Changelog</span></a>
   </li>  
 </ul>
@@ -324,10 +323,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a></li>
   <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a></li>
   <li><a href="#help-and-contributing" id="toc-help-and-contributing" class="nav-link" data-scroll-target="#help-and-contributing">Help and Contributing</a></li>
-  <li><a href="#citation" id="toc-citation" class="nav-link" data-scroll-target="#citation">Citation</a>
-  <ul class="collapse">
-  <li><a href="#bibtex-entry" id="toc-bibtex-entry" class="nav-link" data-scroll-target="#bibtex-entry">Bibtex entry</a></li>
-  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -364,39 +359,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
 <p>Install syncweaver with pip:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/CCBR/syncweaver.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For development, follow setup instructions in <a href=".github/CONTRIBUTING.md">.github/CONTRIBUTING.md</a>.</p>
 </section>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--help</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Print citation metadata:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--citation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>See the full CLI reference at <a href="https://ccbr.github.io/syncweaver/cli" class="uri">https://ccbr.github.io/syncweaver/cli</a>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--help</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="38bbd4e6" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-stdout">
+<pre><code>Usage: syncweaver [OPTIONS] COMMAND [ARGS]...
+
+  syncweaver: synchronize code and weave patches seamlessly.
+
+Options:
+  -v, --version   Show the version and exit.
+  -c, --citation  Print the citation in BibTeX format and exit.
+  -h, --help      Show this message and exit.
+
+Commands:
+  add        Add an external repository to the current host repository.
+  patch      Create, annotate, and list source patch artifacts.
+  templates  List and add workflow templates to a repo.
+</code></pre>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="3eb8e8f4" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-stdout">
+<pre><code>syncweaver, version 0.0.1-dev
+</code></pre>
+</div>
+</div>
 </section>
 <section id="help-and-contributing" class="level2">
 <h2 class="anchored" data-anchor-id="help-and-contributing">Help and Contributing</h2>
 <p>Come across a bug? Open an <a href="https://github.com/CCBR/syncweaver/issues">issue</a> and include a minimal reproducible example.</p>
 <p>Have a question or idea? Start a <a href="https://github.com/CCBR/syncweaver/discussions">discussion</a>.</p>
 <p>Want to contribute? Read the <a href=".github/CONTRIBUTING.md">contributing guide</a>.</p>
-</section>
-<section id="citation" class="level2">
-<h2 class="anchored" data-anchor-id="citation">Citation</h2>
-<p>You can view the updated syncweaver citation with:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--citation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Please cite this software if you use it in a publication:</p>
-<p>Usage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.</p>
-<p>Error: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.</p>
-<section id="bibtex-entry" class="level3">
-<h3 class="anchored" data-anchor-id="bibtex-entry">Bibtex entry</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bibtex code-with-copy"><code class="sourceCode bibtex"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">Usage: ccbr_tools cite [OPTIONS] CITATION_FILE</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">Try 'ccbr_tools cite --help' for help.</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">Error: Invalid value for 'CITATION_FILE': Path 'CITATION.cff' does not exist.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Full citation metadata is available in <a href="CITATION.cff">CITATION.cff</a>.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
