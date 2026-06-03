@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ccbr.github.io/syncweaver/help.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/index.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/CHANGELOG.html</loc>
-    <lastmod>2026-06-03T22:11:25.278Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/install.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
-  </url>
-  <url>
     <loc>https://ccbr.github.io/syncweaver/reference/cli.templates.html</loc>
-    <lastmod>2026-06-03T22:12:21.009Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/git.html</loc>
-    <lastmod>2026-06-03T22:12:20.941Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/index.html</loc>
-    <lastmod>2026-06-03T22:12:20.916Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/cli.main.html</loc>
-    <lastmod>2026-06-03T22:12:20.982Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/lockfile.html</loc>
-    <lastmod>2026-06-03T22:12:20.950Z</lastmod>
+    <lastmod>2026-06-03T21:41:07.247Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/syncweaver/reference/patch.html</loc>
-    <lastmod>2026-06-03T22:12:20.960Z</lastmod>
+    <lastmod>2026-06-03T21:41:07.265Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/git.html</loc>
+    <lastmod>2026-06-03T21:41:07.250Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/index.html</loc>
+    <lastmod>2026-06-03T21:52:30.382Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/syncweaver/reference/cli.add.html</loc>
-    <lastmod>2026-06-03T22:12:20.990Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/cli.patch.html</loc>
-    <lastmod>2026-06-03T22:12:21.001Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/templates.html</loc>
-    <lastmod>2026-06-03T22:12:21.028Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/reference/util.html</loc>
-    <lastmod>2026-06-03T22:12:20.978Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ccbr.github.io/syncweaver/cite.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
+    <lastmod>2026-06-03T21:41:07.216Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/syncweaver/usage.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
+    <lastmod>2026-06-03T21:43:28.388Z</lastmod>
   </url>
   <url>
-    <loc>https://ccbr.github.io/syncweaver/badges.html</loc>
-    <lastmod>2026-06-03T22:11:25.284Z</lastmod>
+    <loc>https://ccbr.github.io/syncweaver/cite.html</loc>
+    <lastmod>2026-06-03T21:46:03.464Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/install.html</loc>
+    <lastmod>2026-06-03T21:56:09.593Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/CHANGELOG.html</loc>
+    <lastmod>2026-06-03T18:17:28.651Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/syncweaver/cli.html</loc>
-    <lastmod>2026-06-03T22:11:25.285Z</lastmod>
+    <lastmod>2026-06-03T22:12:17.577Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/index.html</loc>
+    <lastmod>2026-06-03T21:46:23.641Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/badges.html</loc>
+    <lastmod>2026-06-03T18:35:36.179Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/help.html</loc>
+    <lastmod>2026-06-03T18:35:57.243Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/cli.main.html</loc>
+    <lastmod>2026-06-03T21:41:07.205Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/cli.patch.html</loc>
+    <lastmod>2026-06-03T21:41:07.228Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/templates.html</loc>
+    <lastmod>2026-06-03T21:41:07.296Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/util.html</loc>
+    <lastmod>2026-06-03T21:41:07.283Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ccbr.github.io/syncweaver/reference/lockfile.html</loc>
+    <lastmod>2026-06-03T21:41:07.256Z</lastmod>
   </url>
 </urlset>
