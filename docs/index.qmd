@@ -24,7 +24,3 @@ View the documentation website at <https://ccbr.github.io/syncweaver>.
 ## Help and Contributing
 
 {{< include help.qmd >}}
-
-## Citation
-
-{{< include cite.qmd >}}

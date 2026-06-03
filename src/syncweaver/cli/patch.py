@@ -47,7 +47,10 @@ def create_cmd(
     lockfile: pathlib.Path,
     patch_dir: pathlib.Path | None,
 ) -> None:
-    """Create or update a canonical patch file for a tracked source path."""
+    """
+    Create or update a canonical patch file for a
+    tracked source path.
+    """
     try:
         patch_path = create_patch(source_path, repo_url, lockfile, patch_dir)
     except (

@@ -9,7 +9,7 @@ $white: #ffffff;
 $lime: #7cc349;
 $teal: #296b7f;
 
-// secondary colors
+//secondary colors
 $teal-light: #4e9db5;
 $teal-dark: #19424e;
 $almost-black: #03191f;
@@ -37,5 +37,10 @@ $callout-color-caution: $orange;
 $callout-color-warning: $orange;
 
 // font
-$font-family-sans-serif: "Roboto", sans-serif;
-$font-family-monospace: "Roboto Mono", monospace;
+$font-family-sans-serif: "Roboto", Helvetica, "Source Sans Pro", sans-serif;
+$font-family-monospace:
+  "Roboto Mono",
+  "Andale Mono" "Source Code Pro",
+  monospace;
+
+/*-- scss:rules --*/

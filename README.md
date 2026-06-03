@@ -23,23 +23,31 @@ Install syncweaver with pip:
 pip install git+https://github.com/CCBR/syncweaver.git
 ```
 
-For development, follow setup instructions in
-[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
-
 ## Usage
 
 ```sh
 syncweaver --help
+```
+
+    Usage: syncweaver [OPTIONS] COMMAND [ARGS]...
+
+      syncweaver: synchronize code and weave patches seamlessly.
+
+    Options:
+      -v, --version   Show the version and exit.
+      -c, --citation  Print the citation in BibTeX format and exit.
+      -h, --help      Show this message and exit.
+
+    Commands:
+      add        Add an external repository to the current host repository.
+      patch      Create, annotate, and list source patch artifacts.
+      templates  List and add workflow templates to a repo.
+
+```sh
 syncweaver --version
 ```
 
-Print citation metadata:
-
-```sh
-syncweaver --citation
-```
-
-See the full CLI reference at <https://ccbr.github.io/syncweaver/cli>.
+    syncweaver, version 0.0.1-dev
 
 ## Actions
 
@@ -56,23 +64,3 @@ Have a question or idea? Start a
 
 Want to contribute? Read the [contributing
 guide](.github/CONTRIBUTING.md).
-
-## Citation
-
-You can view the updated syncweaver citation with:
-
-```sh
-syncweaver --citation
-```
-
-Please cite this software if you use it in a publication:
-
-zsh:1: command not found: ccbr_tools
-
-### Bibtex entry
-
-```bibtex
-zsh:1: command not found: ccbr_tools
-```
-
-Full citation metadata is available in [CITATION.cff](CITATION.cff).

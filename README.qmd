@@ -44,7 +44,3 @@ for action_yml in sorted(pathlib.Path().glob("actions/*/action.yml")):
 ## Help and Contributing
 
 {{< include docs/help.qmd >}}
-
-## Citation
-
-{{< include docs/cite.qmd >}}

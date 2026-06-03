@@ -15,9 +15,10 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - text: CLI Reference
+      - text: CLI
         href: cli.qmd
-      - sidebar:docs
+      - text: API
+        href: reference/index.qmd
       - text: Changelog
         href: CHANGELOG.md
 
@@ -32,11 +33,21 @@ quartodoc:
   style: pkgdown
   package: syncweaver
   sidebar: _sidebar.yml
+  parser: google
   sections:
-    - title: CLI
+    - title: Modules
+      contents:
+        - git
+        - lockfile
+        - patch
+        - util
+    - title: CLI commands
       desc: Command-line interface
       contents:
-        - main
+        - cli.main
+        - cli.add
+        - cli.patch
+        - cli.templates
     - title: Templates
       desc: Template files
       contents:
