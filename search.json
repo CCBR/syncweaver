@@ -67,6 +67,6 @@
     "href": "cli.html",
     "title": "CLI Reference",
     "section": "",
-    "text": "Usage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  templates  List and add workflow templates to a repo."
+    "text": "Usage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo."
   }
 ]
