@@ -68,7 +68,15 @@ def add_external_repository(
         selected_ref = ref
         if selected_ref:
             _run_git(
-                ["-C", str(temp_repo), "fetch", "--depth", "1", "origin", selected_ref]
+                [
+                    "-C",
+                    str(temp_repo),
+                    "fetch",
+                    "--depth",
+                    "1",
+                    "origin",
+                    selected_ref,
+                ]
             )
             _run_git(["-C", str(temp_repo), "checkout", "--quiet", "FETCH_HEAD"])
         else:
@@ -96,7 +104,6 @@ def add_external_repository(
         "branch": selected_ref,
         "git_sha": git_sha,
         "installed_by": ["syncweaver"],
-        "patches": [],
     }
     write_lockfile(lockfile, lock_data)
 

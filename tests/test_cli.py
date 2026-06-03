@@ -3,6 +3,7 @@
 from click.testing import CliRunner
 
 from syncweaver.cli import cli
+from syncweaver.templates import list_templates
 
 
 def test_cli_help():
@@ -20,23 +21,25 @@ def test_templates_list():
 
 
 def test_templates_add(tmp_path):
+    template_name = list_templates()[0].removesuffix(".yml")
     runner = CliRunner()
     result = runner.invoke(
         cli,
-        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", template_name, "--output", str(tmp_path)],
     )
     assert result.exit_code == 0
-    assert (tmp_path / "host-repo-pattern1-outbound.yml").exists()
+    assert (tmp_path / f"{template_name}.yml").exists()
 
 
 def test_templates_add_no_overwrite(tmp_path):
+    template_name = list_templates()[0].removesuffix(".yml")
     runner = CliRunner()
     runner.invoke(
         cli,
-        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", template_name, "--output", str(tmp_path)],
     )
     result = runner.invoke(
         cli,
-        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", template_name, "--output", str(tmp_path)],
     )
     assert result.exit_code != 0

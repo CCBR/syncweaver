@@ -73,7 +73,8 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     assert source_entry["branch"] == "main"
     assert source_entry["git_sha"] == source_sha
     assert source_entry["installed_by"] == ["syncweaver"]
-    assert source_entry["patches"] == []
+    assert "patch" not in source_entry
+    assert "patches" not in source_entry
 
 
 def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):

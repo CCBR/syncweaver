@@ -9,16 +9,18 @@ syncweaver templates list
 syncweaver templates add host-repo-pattern1-outbound --output .github/workflows/
 ```
 
-### Available templates
-
-- `host-repo-pattern1-outbound.yml` — Push vendored code changes as an upstream PR
-- `host-repo-dependencies-refresh.yml` — Regenerate DEPENDENCIES.yml on entrypoint changes
-- `host-repo-mark-rejected.yml` — Manually mark a patch as rejected (workflow_dispatch)
-- `package-release-notify.yml` — Dispatch release notifications to relevant host repositories
+Use `available_templates_markdown()` to render the current template inventory.
 """
 
 import importlib.resources
 import pathlib
+
+_TEMPLATE_DESCRIPTIONS = {
+    "host-repo-pattern1-outbound.yml": "Push vendored code changes as an upstream PR",
+    "host-repo-dependencies-refresh.yml": "Regenerate DEPENDENCIES.yml on entrypoint changes",
+    "host-repo-mark-rejected.yml": "Manually mark a patch as rejected (workflow_dispatch)",
+    "package-release-notify.yml": "Dispatch release notifications to relevant host repositories",
+}
 
 
 def list_templates() -> list[str]:
@@ -33,6 +35,26 @@ def list_templates() -> list[str]:
     """
     pkg = importlib.resources.files(__package__)
     return sorted(p.name for p in pkg.iterdir() if p.name.endswith(".yml"))
+
+
+def available_templates_markdown() -> str:
+    """
+    Build a markdown bullet list of currently available template files.
+
+    Returns:
+        str: Markdown-formatted bullet list.
+
+    Examples:
+        >>> available_templates_markdown()
+    """
+    lines = []
+    for name in list_templates():
+        description = _TEMPLATE_DESCRIPTIONS.get(name)
+        if description:
+            lines.append(f"- `{name}` - {description}")
+        else:
+            lines.append(f"- `{name}`")
+    return "\n".join(lines)
 
 
 def read_template(template_name: str) -> str:

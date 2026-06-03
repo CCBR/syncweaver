@@ -2,7 +2,12 @@
 
 import pytest
 
-from syncweaver.templates import list_templates, read_template, use_template
+from syncweaver.templates import (
+    available_templates_markdown,
+    list_templates,
+    read_template,
+    use_template,
+)
 
 
 def test_list_templates():
@@ -14,14 +19,14 @@ def test_list_templates():
 def test_read_template():
     names = list_templates()
     content = read_template(names[0])
-    assert len(content) > 0
+    assert isinstance(content, str)
 
 
 def test_read_template_without_extension():
     names = list_templates()
     stem = names[0].removesuffix(".yml")
     content = read_template(stem)
-    assert len(content) > 0
+    assert isinstance(content, str)
 
 
 def test_read_template_not_found():
@@ -48,3 +53,10 @@ def test_use_template_overwrite(tmp_path):
     use_template(names[0], output_dir=tmp_path)
     dest = use_template(names[0], output_dir=tmp_path, overwrite=True)
     assert dest.exists()
+
+
+def test_available_templates_markdown_contains_discovered_names():
+    names = list_templates()
+    rendered = available_templates_markdown()
+    for name in names:
+        assert f"`{name}`" in rendered

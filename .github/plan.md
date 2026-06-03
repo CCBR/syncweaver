@@ -15,7 +15,7 @@ tagline:
 scope alignment from pattern 1:
 
 - implement outbound flow first: analyst edits vendored source code in host repository, patch is generated, and pr is opened upstream
-- preserve independent patch decisions (accept or reject per patch)
+- preserve independent patch decisions (accept or reject per patch) as an optional patch-series extension
 - do not use git subtree or git submodule
 
 ## core design principles
@@ -60,8 +60,9 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 - syncweaver update --path code/package1 --repo-url ccbr/package1 --ref [tag] --lockfile .syncweaver-lock.json
 - syncweaver remove --path code/package1 --lockfile .syncweaver-lock.json
 - syncweaver patch create --path code/package1 --repo-url ccbr/package1 --lockfile .syncweaver-lock.json --patch-dir [optional-override]
-- syncweaver patch annotate-rejected --patch code/package1/.syncweaver/syncweaver.0002-normalization.patch --pr-url [url] --reason [text]
+- syncweaver patch annotate-rejected --patch code/package1/.syncweaver/package1.diff --pr-url [url] --reason [text]
 - syncweaver patch list --path code/package1 --lockfile .syncweaver-lock.json
+- syncweaver validate --lockfile .syncweaver-lock.json
 
 ### secondary syncweaver commands
 
@@ -76,7 +77,7 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 
 create one action per directory under actions/.
 
-host-repo-generate-patches/
+generate-patches/
 
 - trigger intent: called by host repository workflow on changes under code/package1/\*\*
 - inputs:
@@ -89,11 +90,11 @@ host-repo-generate-patches/
 - steps:
   - checkout with full history
   - read baseline sha and branch from .syncweaver-lock.json
-  - generate or update patch files via cli
-  - update patch path field in .syncweaver-lock.json for each changed source entry
-  - commit patch artifacts if changed
+  - generate or update one canonical patch file via cli
+  - update source-level `patch` field in .syncweaver-lock.json for each changed source entry
+  - commit patch artifact if changed
 
-host-repo-open-upstream-pr/
+open-upstream-pr/
 
 - inputs:
   - source-repo
@@ -103,21 +104,21 @@ host-repo-open-upstream-pr/
   - github-token
 - steps:
   - clone source repo
-  - apply patches in deterministic order (numeric prefix)
+  - apply canonical patch file referenced in .syncweaver-lock.json
   - push branch
   - open pr with standard body text
 
-host-repo-mark-patch-rejected/
+mark-patch-rejected/
 
 - inputs:
   - patch-file
   - pr-url
   - reason
 - steps:
-  - prepend rejection metadata header
+  - write rejection status metadata to lockfile extension fields or workflow records
   - commit and push
 
-host-repo-regenerate-dependencies/
+scan-dependencies/
 
 - inputs:
   - source-name
@@ -130,43 +131,31 @@ host-repo-regenerate-dependencies/
   - generate dependencies.yml
   - commit and push if changed
 
-source-notify-relevant-host repositories/
+## github actions workflow templates in src/syncweaver/templates
 
-- inputs:
-  - source-name
-  - host-repositories-file
-  - changed-files
-  - github-token
-- steps:
-  - for each host repository, fetch dependencies.yml
-  - dispatch only if overlap with files list
+- generate-patches.yml
 
-## workflow templates under examples/
+  - on push to main paths [source-path]/\*\*
+  - call generate-patches action
 
-host-repo-pattern1-outbound.yml
+- contribute-upstream.yml
 
-- on push to main paths [source-path]/\*\*
-- calls host-repo-generate-patches then host-repo-open-upstream-pr
+  - on workflow dispatch
+  - call generate-patches action then open-upstream-pr action
 
-host-repo-dependencies-refresh.yml
+- scan-dependencies.yml
 
-- on push to entrypoint files (run.R, scripts/\*\*)
-- calls host-repo-regenerate-dependencies
+  - on push to entrypoint files (main.R)
+  - calls scan-dependencies action
 
-host-repo-mark-rejected.yml
-
-- workflow_dispatch inputs: patch_file, pr_url, reason
-- calls host-repo-mark-patch-rejected
-
-source-release-notify.yml
-
-- on release published
-- computes changed files for release
-- calls source-notify-relevant-host repositories
+- mark-rejected.yml
+  - workflow_dispatch inputs: patch_file, pr_url, reason
+  - called when a PR created by contribute-upstream or open-upstream-pr gets rejected
+  - calls mark-patch-rejected
 
 ## data and metadata contracts
 
-.syncweaver-lock.json
+### .syncweaver-lock.json
 
 - file is only edited by the syncweaver cli; it is not intended to be edited manually
 - format modeled after nf-core modules.json top-level patterns:
@@ -177,8 +166,8 @@ source-release-notify.yml
   - repos[[repo_url]].sources[[source_path]].branch
   - repos[[repo_url]].sources[[source_path]].git_sha
   - repos[[repo_url]].sources[[source_path]].installed_by (list)
-  - repos[[repo_url]].sources[[source_path]].patches (optional, ordered list of relative paths)
-  - repos[[repo_url]].sources[[source_path]].patch (optional, single-file compatibility key)
+  - repos[[repo_url]].sources[[source_path]].patch (optional, relative path to a single patch file)
+  - repos[[repo_url]].sources[[source_path]].patches (optional extension for future patch-series support)
 - single source for baseline pull sha and branch per tracked source path
 - example:
 
@@ -193,10 +182,7 @@ source-release-notify.yml
           "branch": "main",
           "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
           "installed_by": ["syncweaver"],
-          "patches": [
-            "code/package1/.syncweaver/syncweaver.0001-qc-thresholds.patch",
-            "code/package1/.syncweaver/syncweaver.0002-normalization.patch"
-          ]
+          "patch": "code/package1/.syncweaver/package1.diff"
         }
       }
     }
@@ -204,7 +190,7 @@ source-release-notify.yml
 }
 ```
 
-dependencies.yml
+### dependencies.yml
 
 - required fields per source:
   - direct_functions
@@ -212,18 +198,18 @@ dependencies.yml
   - files
 - files is authoritative for release relevance
 
-[source-path]/.syncweaver/syncweaver.[nnnn]-[slug].patch
+### patch files
 
-- unified diff format
-- each patch file may include hunks for multiple files; split into multiple patch files when independent acceptance decisions are desired
-- patch files are applied in lexical order using zero-padded numeric prefixes (0001, 0002, ...)
-- paths are referenced from .syncweaver-lock.json via source-level patches list (nf-core-style linkage, extended to patch series)
-- for backward compatibility, a single patch may be tracked in patch when only one patch file exists
-- optional metadata headers (kept in patch body preamble or tracked in lockfile json extension fields):
-  - status: rejected-upstream
-  - rejected-date
-  - reason
-  - upstream-pr
+[source-path]/.syncweaver/[source-name].diff
+
+- default format follows nf-core modules patch behavior: one patch file per tracked source path
+- patch filename should be deterministic from source identifier (nf-core-style `component.replace('/', '-') + ".diff"`)
+- patch content must be standard unified diff with `---`, `+++`, and `@@` hunks
+- one patch file may contain changes for multiple files under the same source path
+- patch references are stored in `.syncweaver-lock.json` under source-level `patch`
+- reverse-apply checks should be used to validate that patch content is consistent with vendored files
+- patch-body metadata headers are not part of the canonical format; status or audit metadata should be stored in lockfile extension fields or workflow records
+- optional future extension: support `patches` as an ordered patch series only when independent accept/reject decisions are required
 
 ## testing strategy
 
@@ -231,8 +217,9 @@ unit tests (pytest):
 
 - .syncweaver-lock.json parse, validate, read, and write
 - patch generation and deterministic ordering
-- patch series generation for multi-file changes
-- patch metadata annotation
+- patch validation (structure checks for `---`, `+++`, `@@`)
+- reverse-apply validation against vendored source files
+- rejection/audit metadata annotation in lockfile extension fields or workflow records
 - dependency relevance matching
 - changed-files parsing between tags and commits
 
@@ -304,6 +291,6 @@ phase 3: hardening
 
 - a host repo can install and run template workflows with only repository-specific input edits
 - editing code/package1/\*\* in host repository generates patch files and opens an upstream pr automatically
-- rejection workflow marks patch metadata without altering baseline git_sha in .syncweaver-lock.json
+- rejection workflow records status metadata without altering baseline git_sha in .syncweaver-lock.json
 - source release workflow dispatches only to host repositories whose dependencies.yml files overlap changed files
 - all tests pass in ci and release automation can draft a versioned release
