@@ -1,5 +1,47 @@
 [
   {
+    "objectID": "help.html",
+    "href": "help.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "syncweaver synchronizes code between package repositories and host repositories, and manages the full lifecycle of patch artifacts from generation through upstream pull request submission, rejection status tracking, and dependency-aware release dispatch.\nView the documentation website at https://ccbr.github.io/syncweaver."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "syncweaver",
+    "section": "Installation",
+    "text": "Installation\nInstall syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "syncweaver",
+    "section": "Usage",
+    "text": "Usage\nsyncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
+  },
+  {
+    "objectID": "index.html#help-and-contributing",
+    "href": "index.html#help-and-contributing",
+    "title": "syncweaver",
+    "section": "Help and Contributing",
+    "text": "Help and Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
+  },
+  {
     "objectID": "reference/cli.templates.html",
     "href": "reference/cli.templates.html",
     "title": "cli.templates",
@@ -21,30 +63,6 @@
       "API",
       "CLI commands",
       "cli.templates"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html",
-    "href": "reference/patch.html",
-    "title": "patch",
-    "section": "",
-    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html#functions",
-    "href": "reference/patch.html#functions",
-    "title": "patch",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
     ]
   },
   {
@@ -116,93 +134,6 @@
     ]
   },
   {
-    "objectID": "reference/cli.add.html",
-    "href": "reference/cli.add.html",
-    "title": "cli.add",
-    "section": "",
-    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo_url, ref, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
-    "objectID": "reference/cli.add.html#functions",
-    "href": "reference/cli.add.html#functions",
-    "title": "cli.add",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo_url, ref, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
-    "objectID": "usage.html",
-    "href": "usage.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
-  },
-  {
-    "objectID": "cite.html",
-    "href": "cite.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\nFull citation metadata is available in CITATION.cff."
-  },
-  {
-    "objectID": "install.html",
-    "href": "install.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "cli.html",
-    "href": "cli.html",
-    "title": "Command-line interface",
-    "section": "",
-    "text": "syncweaver --help\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\nadd\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH      Destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --repo-url TEXT  External repository URL or local path to clone.  [required]\n  --ref TEXT       Git ref to vendor (branch, tag, or commit). Defaults to\n                   remote HEAD.\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --overwrite      Overwrite destination path if it already exists.\n  -h, --help       Show this message and exit.\n\n\n\npatch\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, annotate, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  annotate-rejected  Record rejected patch metadata in lockfile extension...\n  create             Create or update a canonical patch file for a...\n  list               List tracked patch file records for a source path.\n\n\npatch annotate-rejected\nUsage: syncweaver patch annotate-rejected [OPTIONS]\n\n  Record rejected patch metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH     Relative patch path, e.g.\n                   code/package1/.syncweaver/package1.diff.  [required]\n  --pr-url TEXT    URL of the upstream pull request associated with this\n                   patch.  [required]\n  --reason TEXT    Free-text reason for rejection.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\npatch create\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH       Tracked source path in the host repository, e.g.\n                    code/package1.  [required]\n  --repo-url TEXT   Repository URL as it appears in .syncweaver-lock.json.\n                    [required]\n  --lockfile PATH   Path to .syncweaver-lock.json in the host repository.\n                    [default: .syncweaver-lock.json]\n  --patch-dir PATH  Optional directory for the generated patch file.\n  -h, --help        Show this message and exit.\n\n\n\npatch list\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\n\ntemplates\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.\n\n\ntemplates add\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.\n\n\n\ntemplates list\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "syncweaver synchronizes code between package repositories and host repositories, and manages the full lifecycle of patch artifacts from generation through upstream pull request submission, rejection status tracking, and dependency-aware release dispatch.\nView the documentation website at https://ccbr.github.io/syncweaver."
-  },
-  {
-    "objectID": "index.html#installation",
-    "href": "index.html#installation",
-    "title": "syncweaver",
-    "section": "Installation",
-    "text": "Installation\nInstall syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "index.html#usage",
-    "href": "index.html#usage",
-    "title": "syncweaver",
-    "section": "Usage",
-    "text": "Usage\nsyncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
-  },
-  {
-    "objectID": "index.html#help-and-contributing",
-    "href": "index.html#help-and-contributing",
-    "title": "syncweaver",
-    "section": "Help and Contributing",
-    "text": "Help and Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
-  },
-  {
-    "objectID": "help.html",
-    "href": "help.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
-  },
-  {
     "objectID": "reference/cli.main.html",
     "href": "reference/cli.main.html",
     "title": "cli.main",
@@ -227,11 +158,83 @@
     ]
   },
   {
+    "objectID": "reference/lockfile.html",
+    "href": "reference/lockfile.html",
+    "title": "lockfile",
+    "section": "",
+    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/lockfile.html#functions",
+    "href": "reference/lockfile.html#functions",
+    "title": "lockfile",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html",
+    "href": "reference/patch.html",
+    "title": "patch",
+    "section": "",
+    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "patch"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html#functions",
+    "href": "reference/patch.html#functions",
+    "title": "patch",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "patch"
+    ]
+  },
+  {
+    "objectID": "reference/cli.add.html",
+    "href": "reference/cli.add.html",
+    "title": "cli.add",
+    "section": "",
+    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo_url, ref, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
+    "objectID": "reference/cli.add.html#functions",
+    "href": "reference/cli.add.html#functions",
+    "title": "cli.add",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo_url, ref, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
     "objectID": "reference/cli.patch.html",
     "href": "reference/cli.patch.html",
     "title": "cli.patch",
     "section": "",
-    "text": "cli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_cmd\nRecord rejected patch metadata in lockfile extension fields.\n\n\ncreate_cmd\nCreate or update a canonical patch file for a tracked source path.\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\npatch_group\nCreate, annotate, and list source patch artifacts.\n\n\n\n\n\ncli.patch.annotate_rejected_cmd(patch_path, pr_url, reason, lockfile)\nRecord rejected patch metadata in lockfile extension fields.\n\n\n\ncli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.patch_group()\nCreate, annotate, and list source patch artifacts.",
+    "text": "cli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_cmd\nRecord rejected patch metadata in lockfile extension fields.\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\npatch_group\nCreate, annotate, and list source patch artifacts.\n\n\n\n\n\ncli.patch.annotate_rejected_cmd(patch_path, pr_url, reason, lockfile)\nRecord rejected patch metadata in lockfile extension fields.\n\n\n\ncli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.patch_group()\nCreate, annotate, and list source patch artifacts.",
     "crumbs": [
       "API",
       "CLI commands",
@@ -243,7 +246,7 @@
     "href": "reference/cli.patch.html#functions",
     "title": "cli.patch",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_cmd\nRecord rejected patch metadata in lockfile extension fields.\n\n\ncreate_cmd\nCreate or update a canonical patch file for a tracked source path.\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\npatch_group\nCreate, annotate, and list source patch artifacts.\n\n\n\n\n\ncli.patch.annotate_rejected_cmd(patch_path, pr_url, reason, lockfile)\nRecord rejected patch metadata in lockfile extension fields.\n\n\n\ncli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.patch_group()\nCreate, annotate, and list source patch artifacts.",
+    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_cmd\nRecord rejected patch metadata in lockfile extension fields.\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\npatch_group\nCreate, annotate, and list source patch artifacts.\n\n\n\n\n\ncli.patch.annotate_rejected_cmd(patch_path, pr_url, reason, lockfile)\nRecord rejected patch metadata in lockfile extension fields.\n\n\n\ncli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.patch_group()\nCreate, annotate, and list source patch artifacts.",
     "crumbs": [
       "API",
       "CLI commands",
@@ -299,27 +302,24 @@
     ]
   },
   {
-    "objectID": "reference/lockfile.html",
-    "href": "reference/lockfile.html",
-    "title": "lockfile",
+    "objectID": "cite.html",
+    "href": "cite.html",
+    "title": "syncweaver",
     "section": "",
-    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
+    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\nFull citation metadata is available in CITATION.cff."
   },
   {
-    "objectID": "reference/lockfile.html#functions",
-    "href": "reference/lockfile.html#functions",
-    "title": "lockfile",
+    "objectID": "usage.html",
+    "href": "usage.html",
+    "title": "syncweaver",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
+    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "Command-line interface",
+    "section": "",
+    "text": "syncweaver --help\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  templates  List and add workflow templates to a repo.\n\n\nadd\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH      Destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --repo-url TEXT  External repository URL or local path to clone.  [required]\n  --ref TEXT       Git ref to vendor (branch, tag, or commit). Defaults to\n                   remote HEAD.\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --overwrite      Overwrite destination path if it already exists.\n  -h, --help       Show this message and exit.\n\n\n\npatch\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, annotate, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  annotate-rejected  Record rejected patch metadata in lockfile extension...\n  create             Create or update a canonical patch file for a...\n  list               List tracked patch file records for a source path.\n\n\npatch annotate-rejected\nUsage: syncweaver patch annotate-rejected [OPTIONS]\n\n  Record rejected patch metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH     Relative patch path, e.g.\n                   code/package1/.syncweaver/package1.diff.  [required]\n  --pr-url TEXT    URL of the upstream pull request associated with this\n                   patch.  [required]\n  --reason TEXT    Free-text reason for rejection.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\npatch create\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH       Tracked source path in the host repository, e.g.\n                    code/package1.  [required]\n  --repo-url TEXT   Repository URL as it appears in .syncweaver-lock.json.\n                    [required]\n  --lockfile PATH   Path to .syncweaver-lock.json in the host repository.\n                    [default: .syncweaver-lock.json]\n  --patch-dir PATH  Optional directory for the generated patch file.\n  -h, --help        Show this message and exit.\n\n\n\npatch list\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\n\ntemplates\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.\n\n\ntemplates add\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.\n\n\n\ntemplates list\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit."
   }
 ]
