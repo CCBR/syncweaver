@@ -1,0 +1,37 @@
+name: capsule-open-upstream-pr
+description: >
+  Apply patch files from the capsule onto a clone of the upstream package repo,
+  push a branch, and open a pull request.
+
+inputs:
+  package-repo:
+    description: GitHub repository (owner/repo) of the upstream package
+    required: true
+  branch-name:
+    description: Branch name to create in the upstream package repo
+    required: true
+  patch-dir:
+    description: Directory containing the patch files to apply
+    required: false
+    default: code/syncweaver/patches
+  capsule-name:
+    description: Identifier for the capsule (used in PR body)
+    required: true
+  github-token:
+    description: GitHub token with permission to push and open PRs in the package repo
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Apply patches and open PR
+      shell: bash
+      run: |
+        echo "::notice::capsule-open-upstream-pr is a stub — implement with syncweaver CLI"
+        syncweaver promote branch-and-pr \
+          --package-repo "${{ inputs.package-repo }}" \
+          --capsule-name "${{ inputs.capsule-name }}" \
+          --patch-dir "${{ inputs.patch-dir }}" \
+          --branch "${{ inputs.branch-name }}"
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}

@@ -1,0 +1,12 @@
+```sh
+syncweaver --help
+syncweaver --version
+```
+
+Print citation metadata:
+
+```sh
+syncweaver --citation
+```
+
+See the full CLI reference at <https://ccbr.github.io/syncweaver/cli>.

@@ -1,0 +1,49 @@
+---
+format: gfm
+title: "syncweaver"
+---
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
+{{< include docs/badges.qmd >}}
+
+> synchronize code and weave patches seamlessly
+
+syncweaver synchronizes code between package repositories and capsule
+repositories, and manages the full lifecycle of patch files from generation
+through upstream pull request submission, rejection annotation, and
+dependency-aware release dispatch.
+
+View the documentation website at <https://ccbr.github.io/syncweaver>.
+
+## Installation
+
+{{< include docs/install.qmd >}}
+
+## Usage
+
+{{< include docs/usage.qmd >}}
+
+## Actions
+
+Custom github actions used in our github workflows.
+
+```{python}
+#| output: asis
+#| echo: false
+import yaml
+for action_yml in sorted(pathlib.Path().glob("actions/*/action.yml")):
+    with action_yml.open('r') as infile:
+        action_meta = yaml.load(infile, Loader = yaml.FullLoader)
+    name = action_meta['name']
+    desc = action_meta['description'].strip()
+    print(f"- [{name}]({action_yml.parent}) - {desc}")
+```
+
+## Help and Contributing
+
+{{< include docs/help.qmd >}}
+
+## Citation
+
+{{< include docs/cite.qmd >}}

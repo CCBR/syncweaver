@@ -1,0 +1,30 @@
+---
+title: "syncweaver"
+---
+
+{{< include badges.qmd >}}
+
+> synchronize code and weave patches seamlessly
+
+syncweaver synchronizes code between package repositories and capsule
+repositories, and manages the full lifecycle of patch files from generation
+through upstream pull request submission, rejection annotation, and
+dependency-aware release dispatch.
+
+View the documentation website at <https://ccbr.github.io/syncweaver>.
+
+## Installation
+
+{{< include install.qmd >}}
+
+## Usage
+
+{{< include usage.qmd >}}
+
+## Help and Contributing
+
+{{< include help.qmd >}}
+
+## Citation
+
+{{< include cite.qmd >}}

@@ -1,0 +1,10 @@
+---
+title: "CLI Reference"
+---
+
+```{python}
+#| echo: false
+import subprocess
+result = subprocess.run(["syncweaver", "--help"], capture_output=True, text=True)
+print(result.stdout)
+```

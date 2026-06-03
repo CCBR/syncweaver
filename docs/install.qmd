@@ -1,0 +1,8 @@
+Install syncweaver with pip:
+
+```sh
+pip install git+https://github.com/CCBR/syncweaver.git
+```
+
+For development, follow setup instructions in
+[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).

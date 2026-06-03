@@ -1,0 +1,33 @@
+name: package-notify-relevant-capsules
+description: >
+  Dispatch release notifications only to capsules whose DEPENDENCIES.yml
+  overlaps with the changed files in a package release.
+
+inputs:
+  package-name:
+    description: Name of the package being released
+    required: true
+  capsules-file:
+    description: Path to capsules.yml listing downstream capsule repos
+    required: false
+    default: capsules.yml
+  changed-files:
+    description: Comma-separated list of files changed in the release
+    required: true
+  github-token:
+    description: GitHub token with permission to dispatch workflow events
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Notify relevant capsules
+      shell: bash
+      run: |
+        echo "::notice::package-notify-relevant-capsules is a stub — implement with syncweaver CLI"
+        syncweaver release notify-capsules \
+          --capsules-file "${{ inputs.capsules-file }}" \
+          --package-name "${{ inputs.package-name }}" \
+          --changed-files "${{ inputs.changed-files }}"
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}

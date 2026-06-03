@@ -1,0 +1,50 @@
+name: capsule-pattern1-outbound
+
+# Template workflow for capsule repos.
+# Triggers when vendored package code changes, generates patch files,
+# and opens an upstream PR.
+#
+# Usage: copy this file to your capsule repo's .github/workflows/ and
+# fill in the required inputs below.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "code/package1/**" # TODO: update to match your vendor-dir
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-patches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install syncweaver
+        run: pip install git+https://github.com/CCBR/syncweaver.git@main
+
+      - uses: CCBR/syncweaver/actions/capsule-generate-patches@main
+        with:
+          package-name: Package1 # TODO: replace with your package name
+          package-repo: https://github.com/CCBR/Package1 # TODO: replace
+          vendor-dir: code/package1 # TODO: replace with your vendor-dir
+          refs-file: .syncweaver-lock.json
+          patches-dir: code/syncweaver/patches
+
+      - uses: CCBR/syncweaver/actions/capsule-open-upstream-pr@main
+        with:
+          package-repo: CCBR/Package1 # TODO: replace with owner/repo
+          branch-name: from-${{ github.repository_id }}-${{ github.run_id }}
+          patch-dir: code/syncweaver/patches
+          capsule-name: ${{ github.repository }}
+          github-token: ${{ secrets.CCBR_BOT_TOKEN }}

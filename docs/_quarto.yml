@@ -1,0 +1,63 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "syncweaver"
+  site-url: https://ccbr.github.io/syncweaver
+  repo-url: https://github.com/CCBR/syncweaver
+  repo-actions: [edit, issue]
+  search:
+    location: navbar
+    type: textbox
+  page-navigation: true
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: CLI Reference
+        href: cli.qmd
+      - sidebar:docs
+      - text: Changelog
+        href: CHANGELOG.md
+
+  page-footer:
+    background: black
+    foreground: white
+    left: |
+      Created by the
+      [CCR Collaborative Bioinformatics Resource](https://github.com/CCBR)
+
+quartodoc:
+  style: pkgdown
+  package: syncweaver
+  sidebar: _sidebar.yml
+  sections:
+    - title: CLI
+      desc: Command-line interface
+      contents:
+        - main
+    - title: Templates
+      desc: Template files
+      contents:
+        - templates
+
+metadata-files:
+  - _sidebar.yml
+
+filters:
+  - interlinks
+
+interlinks:
+  sources:
+    python:
+      url: https://docs.python.org/3/
+
+execute:
+  freeze: auto
+  eval: true
+  echo: true
+
+format:
+  fnl-html:
+    code-fold: show

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: Please cite syncweaver as below
+authors:
+  - family-names: Sovacool
+    given-names: Kelly
+    orcid: https://orcid.org/0000-0003-3283-829X
+    affiliation: >-
+      Advanced Biomedical Computational Science, Frederick National Laboratory
+      for Cancer Research, Frederick, MD 21702, USA
+title: "syncweaver: synchronize code and weave patches seamlessly"
+url: https://ccbr.github.io/syncweaver/
+repository-code: https://github.com/CCBR/syncweaver
+license: MIT
+type: software
+version: v0.0.1
+date-released: "2026-06-03"

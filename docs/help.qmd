@@ -1,0 +1,9 @@
+Come across a bug? Open an
+[issue](https://github.com/CCBR/syncweaver/issues) and include a minimal
+reproducible example.
+
+Have a question or idea? Start a
+[discussion](https://github.com/CCBR/syncweaver/discussions).
+
+Want to contribute? Read the
+[contributing guide](.github/CONTRIBUTING.md).

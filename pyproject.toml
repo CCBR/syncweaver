@@ -1,0 +1,73 @@
+[build-system]
+requires = [
+    "setuptools >= 62.3.0",
+    "setuptools-scm",
+    "wheel >= 0.29.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "syncweaver"
+dynamic = ["version", "readme"]
+description = "Synchronize code and weave patches seamlessly"
+authors = [
+    { name = "Kelly Sovacool", email = "kelly.sovacool@nih.gov" },
+]
+maintainers = [
+    { name = "CCR Collaborative Bioinformatics Resource", email = "CCBR_Pipeliner@mail.nih.gov" },
+]
+license = { file = "LICENSE.md" }
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Version Control",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+requires-python = ">= 3.11"
+dependencies = [
+    "cffconvert >= 2.0.0",
+    "click >= 8.1.3",
+    "pyyaml",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pre-commit",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+docs = [
+    "quartodoc >= 0.7.6",
+    "jupyter",
+    "ccbr_tools@git+https://github.com/CCBR/Tools@v0.5",
+]
+
+[project.scripts]
+syncweaver = "syncweaver.cli.main:cli"
+
+[project.urls]
+Repository = "https://github.com/CCBR/syncweaver"
+Documentation = "https://ccbr.github.io/syncweaver"
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+readme = { file = "README.md", content-type = "text/markdown" }
+
+[tool.setuptools.package-data]
+"syncweaver" = ["CITATION.cff", "VERSION"]
+"syncweaver.templates" = ["*.yml"]
+
+[tool.coverage.run]
+source = ["syncweaver"]
+
+[tool.coverage.report]
+show_missing = true

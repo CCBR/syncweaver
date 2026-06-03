@@ -1,0 +1,27 @@
+You can view the updated syncweaver citation with:
+
+```sh
+syncweaver --citation
+```
+
+Please cite this software if you use it in a publication:
+
+```{python}
+#| echo: false
+#| output: asis
+!ccbr_tools cite CITATION.cff -f apalike | sed -E 's|^|> |g'
+```
+
+
+### Bibtex entry
+
+
+```{python}
+#| echo: false
+#| output: asis
+print('```bibtex')
+!ccbr_tools cite CITATION.cff -f bibtex
+print('```')
+```
+
+Full citation metadata is available in [CITATION.cff](CITATION.cff).

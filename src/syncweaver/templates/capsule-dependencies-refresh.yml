@@ -1,0 +1,45 @@
+name: capsule-dependencies-refresh
+
+# Template workflow for capsule repos.
+# Regenerates DEPENDENCIES.yml when entrypoint files change.
+#
+# Usage: copy this file to your capsule repo's .github/workflows/ and
+# fill in the required inputs below.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "run.R" # TODO: add your entrypoint files
+      - "scripts/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install syncweaver
+        run: pip install git+https://github.com/CCBR/syncweaver.git@main
+
+      - uses: CCBR/syncweaver/actions/capsule-regenerate-dependencies@main
+        with:
+          package-name: Package1 # TODO: replace
+          entrypoints: run.R # TODO: comma-separated list of entrypoints
+          vendor-dir: code/package1 # TODO: replace
+          refs-file: .syncweaver-lock.json
+          output-file: DEPENDENCIES.yml
+
+      - name: Commit updated DEPENDENCIES.yml
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: regenerate DEPENDENCIES.yml"
+          file_pattern: DEPENDENCIES.yml
