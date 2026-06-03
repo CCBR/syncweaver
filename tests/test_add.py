@@ -30,6 +30,15 @@ def _init_git_repo(path: pathlib.Path, remote_url: str | None = None) -> None:
 
 
 def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
+    """Verify `add` vendors source files and records lockfile metadata.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo = tmp_path / "source"
     source_repo.mkdir()
     _init_git_repo(source_repo)
@@ -78,6 +87,15 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
 
 
 def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):
+    """Verify `add` refuses to replace an existing destination by default.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo = tmp_path / "source"
     source_repo.mkdir()
     _init_git_repo(source_repo)

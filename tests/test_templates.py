@@ -11,18 +11,33 @@ from syncweaver.templates import (
 
 
 def test_list_templates():
+    """Verify template discovery returns YAML template names.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     assert len(names) > 0
     assert all(n.endswith(".yml") for n in names)
 
 
 def test_read_template():
+    """Verify reading an existing template returns string content.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     content = read_template(names[0])
     assert isinstance(content, str)
 
 
 def test_read_template_without_extension():
+    """Verify template reads succeed when `.yml` extension is omitted.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     stem = names[0].removesuffix(".yml")
     content = read_template(stem)
@@ -30,11 +45,24 @@ def test_read_template_without_extension():
 
 
 def test_read_template_not_found():
+    """Verify missing template requests raise `FileNotFoundError`.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     with pytest.raises(FileNotFoundError):
         read_template("does-not-exist.yml")
 
 
 def test_use_template(tmp_path):
+    """Verify writing a template to disk returns the destination path.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     dest = use_template(names[0], output_dir=tmp_path)
     assert dest.exists()
@@ -42,6 +70,14 @@ def test_use_template(tmp_path):
 
 
 def test_use_template_no_overwrite(tmp_path):
+    """Verify write attempts fail when overwrite is disabled.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     use_template(names[0], output_dir=tmp_path)
     with pytest.raises(FileExistsError):
@@ -49,6 +85,14 @@ def test_use_template_no_overwrite(tmp_path):
 
 
 def test_use_template_overwrite(tmp_path):
+    """Verify writing with overwrite enabled replaces destination content.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     use_template(names[0], output_dir=tmp_path)
     dest = use_template(names[0], output_dir=tmp_path, overwrite=True)
@@ -56,6 +100,11 @@ def test_use_template_overwrite(tmp_path):
 
 
 def test_available_templates_markdown_contains_discovered_names():
+    """Verify markdown listing includes all discovered template names.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     names = list_templates()
     rendered = available_templates_markdown()
     for name in names:

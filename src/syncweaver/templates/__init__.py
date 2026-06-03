@@ -81,9 +81,11 @@ def read_template(template_name: str) -> str:
             f"Template '{template_name}' not found. "
             f"Available templates: {', '.join(available)}"
         )
+    template_content = ""
     template_path = importlib.resources.files(__package__) / template_name
     with importlib.resources.as_file(template_path) as p:
-        return p.read_text()
+        template_content = p.read_text()
+    return template_content
 
 
 def use_template(

@@ -35,19 +35,20 @@ def _iter_relative_files(
     """Collect relative file paths under root while excluding excluded_dir."""
     files: set[pathlib.Path] = set()
     for candidate in root.rglob("*"):
-        if not candidate.is_file():
-            continue
-        if excluded_dir in candidate.parents or candidate == excluded_dir:
-            continue
-        files.add(candidate.relative_to(root))
+        is_excluded = excluded_dir in candidate.parents or candidate == excluded_dir
+        if candidate.is_file() and not is_excluded:
+            files.add(candidate.relative_to(root))
     return files
 
 
 def _read_text_lines(path: pathlib.Path) -> list[str]:
     """Read file text as lines, preserving line terminators when present."""
+    lines: list[str] = []
     if not path.exists():
-        return []
-    return path.read_text(errors="surrogateescape").splitlines(keepends=True)
+        lines = []
+    else:
+        lines = path.read_text(errors="surrogateescape").splitlines(keepends=True)
+    return lines
 
 
 def _unified_diff(
@@ -58,16 +59,16 @@ def _unified_diff(
     """Generate a deterministic unified diff chunk for one file."""
     before_lines = _read_text_lines(before_path)
     after_lines = _read_text_lines(after_path)
-    if before_lines == after_lines:
-        return ""
-
-    diff_lines = difflib.unified_diff(
-        before_lines,
-        after_lines,
-        fromfile=f"a/{relative_path.as_posix()}",
-        tofile=f"b/{relative_path.as_posix()}",
-    )
-    return "".join(diff_lines)
+    diff_text = ""
+    if before_lines != after_lines:
+        diff_lines = difflib.unified_diff(
+            before_lines,
+            after_lines,
+            fromfile=f"a/{relative_path.as_posix()}",
+            tofile=f"b/{relative_path.as_posix()}",
+        )
+        diff_text = "".join(diff_lines)
+    return diff_text
 
 
 def _default_patch_filename(repo_url: str, source_path: pathlib.Path) -> str:
@@ -200,6 +201,7 @@ def create_patch(
             if chunk:
                 chunks.append(chunk)
 
+    patch_output: pathlib.Path | None = None
     patch_text = "".join(chunks)
     if patch_text:
         _validate_patch_structure(patch_text)
@@ -209,17 +211,16 @@ def create_patch(
         patch_output.write_text(patch_text)
         source_entry["patch"] = patch_file.as_posix()
         write_lockfile(lockfile, lock_data)
-        return patch_output
+    else:
+        existing_patch = source_entry.get("patch")
+        if existing_patch:
+            patch_path = cwd / pathlib.Path(existing_patch)
+            if patch_path.exists():
+                patch_path.unlink()
+            source_entry.pop("patch", None)
+            write_lockfile(lockfile, lock_data)
 
-    existing_patch = source_entry.get("patch")
-    if existing_patch:
-        patch_path = cwd / pathlib.Path(existing_patch)
-        if patch_path.exists():
-            patch_path.unlink()
-        source_entry.pop("patch", None)
-        write_lockfile(lockfile, lock_data)
-
-    return None
+    return patch_output
 
 
 def annotate_rejected_patch(
@@ -234,21 +235,23 @@ def annotate_rejected_patch(
     lock_data = load_existing_lockfile(lockfile)
     patch_key = patch_path.as_posix()
 
+    found_patch = False
     for repo_entry in lock_data.get("repos", {}).values():
         for source_entry in repo_entry.get("sources", {}).values():
-            if source_entry.get("patch") != patch_key:
-                continue
-            patch_audit = source_entry.setdefault("patch_audit", {})
-            patch_audit[patch_key] = {
-                "status": "rejected",
-                "pr_url": pr_url,
-                "reason": reason,
-                "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
-            }
-            write_lockfile(lockfile, lock_data)
-            return patch_key, str(lockfile)
+            if source_entry.get("patch") == patch_key:
+                patch_audit = source_entry.setdefault("patch_audit", {})
+                patch_audit[patch_key] = {
+                    "status": "rejected",
+                    "pr_url": pr_url,
+                    "reason": reason,
+                    "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
+                }
+                write_lockfile(lockfile, lock_data)
+                found_patch = True
 
-    raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
+    if not found_patch:
+        raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
+    return patch_key, str(lockfile)
 
 
 def list_patches(
@@ -263,10 +266,9 @@ def list_patches(
     records: list[tuple[str, str, str]] = []
     for repo_url, repo_entry in lock_data.get("repos", {}).items():
         source_entry = repo_entry.get("sources", {}).get(source_key)
-        if not source_entry:
-            continue
-        patch_path = source_entry.get("patch")
-        if patch_path:
-            records.append((repo_url, source_key, patch_path))
+        if source_entry:
+            patch_path = source_entry.get("patch")
+            if patch_path:
+                records.append((repo_url, source_key, patch_path))
 
     return records

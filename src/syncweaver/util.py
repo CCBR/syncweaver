@@ -34,28 +34,35 @@ def get_version() -> str:
     Examples:
         >>> get_version()
     """
+    version = ""
     version_file = repo_base("VERSION")
     if version_file.is_file():
-        return version_file.read_text().strip()
-    import importlib.metadata
+        version = version_file.read_text().strip()
+    else:
+        import importlib.metadata
 
-    return importlib.metadata.version("syncweaver")
+        version = importlib.metadata.version("syncweaver")
+    return version
 
 
 def print_citation(context, param, value) -> None:
-    """Click eager callback that prints the citation in BibTeX format and exits.
+    """Print the project citation and exit when the citation flag is enabled.
 
     Args:
         context: Click context.
-        param: Click parameter.
-        value: Flag value.
+        param: Click option parameter (unused callback argument).
+        value: Citation flag value.
+
+    Returns:
+        None: Always returns ``None``.
 
     Examples:
-        >>> # used as a click callback; not called directly
+        >>> # Used as a Click callback and not called directly.
     """
-    if not value or context.resilient_parsing:
-        return
-    citation_file = repo_base("CITATION.cff")
-    citation = create_citation(str(citation_file), None)
-    validate_or_write_output(None, "bibtex", False, citation)
-    context.exit()
+    del param
+    if value and not context.resilient_parsing:
+        citation_file = repo_base("CITATION.cff")
+        citation = create_citation(str(citation_file), None)
+        validate_or_write_output(None, "bibtex", False, citation)
+        context.exit()
+    return None

@@ -63,6 +63,15 @@ def _setup_source_and_host(tmp_path, monkeypatch):
 
 
 def test_patch_create_generates_file_and_updates_lockfile(tmp_path, monkeypatch):
+    """Verify patch creation writes diff content and lockfile patch metadata.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo, host_repo = _setup_source_and_host(tmp_path, monkeypatch)
     vendored_file = host_repo / "code/package1/pkg.py"
     vendored_file.write_text("VALUE = 2\n")
@@ -94,6 +103,15 @@ def test_patch_create_generates_file_and_updates_lockfile(tmp_path, monkeypatch)
 
 
 def test_patch_list_shows_tracked_patch_for_source_path(tmp_path, monkeypatch):
+    """Verify patch listing prints tracked patch rows for a source path.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo, host_repo = _setup_source_and_host(tmp_path, monkeypatch)
     (host_repo / "code/package1/pkg.py").write_text("VALUE = 2\n")
 
@@ -127,6 +145,15 @@ def test_patch_list_shows_tracked_patch_for_source_path(tmp_path, monkeypatch):
 
 
 def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
+    """Verify rejected patch annotation is persisted in lockfile audit metadata.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo, host_repo = _setup_source_and_host(tmp_path, monkeypatch)
     (host_repo / "code/package1/pkg.py").write_text("VALUE = 2\n")
 
@@ -169,18 +196,37 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
 
 
 def test_patch_structure_validation_rejects_missing_plus_header():
+    """Verify patch validation rejects file sections missing `+++` headers.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     bad_patch = "--- a/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
     with pytest.raises(RuntimeError, match=r"missing matching '\+\+\+ '"):
         _validate_patch_structure(bad_patch)
 
 
 def test_patch_structure_validation_rejects_missing_hunk():
+    """Verify patch validation rejects file sections without hunks.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
     bad_patch = "--- a/pkg.py\n+++ b/pkg.py\n"
     with pytest.raises(RuntimeError, match="missing '@@' hunks"):
         _validate_patch_structure(bad_patch)
 
 
 def test_patch_create_reports_validation_failure(tmp_path, monkeypatch):
+    """Verify CLI surfaces structural validation failures during patch creation.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo, host_repo = _setup_source_and_host(tmp_path, monkeypatch)
     (host_repo / "code/package1/pkg.py").write_text("VALUE = 2\n")
 

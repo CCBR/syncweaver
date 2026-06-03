@@ -134,7 +134,6 @@ def list_cmd(source_path: pathlib.Path, lockfile: pathlib.Path) -> None:
 
     if not records:
         click.echo(f"No patches tracked for {source_path.as_posix()}")
-        return
-
-    for repo_url, path_key, patch_path in records:
-        click.echo(f"{repo_url}\t{path_key}\t{patch_path}")
+    else:
+        for repo_url, path_key, patch_path in records:
+            click.echo(f"{repo_url}\t{path_key}\t{patch_path}")

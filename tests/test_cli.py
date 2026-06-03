@@ -7,6 +7,11 @@ from syncweaver.templates import list_templates
 
 
 def test_cli_help():
+    """Validate top-level CLI help output.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
@@ -14,6 +19,11 @@ def test_cli_help():
 
 
 def test_templates_list():
+    """Verify template listing command prints YAML template names.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     runner = CliRunner()
     result = runner.invoke(cli, ["templates", "list"])
     assert result.exit_code == 0
@@ -21,6 +31,14 @@ def test_templates_list():
 
 
 def test_templates_add(tmp_path):
+    """Verify templates add writes the selected template file.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     template_name = list_templates()[0].removesuffix(".yml")
     runner = CliRunner()
     result = runner.invoke(
@@ -32,6 +50,14 @@ def test_templates_add(tmp_path):
 
 
 def test_templates_add_no_overwrite(tmp_path):
+    """Verify templates add fails when destination exists without overwrite.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     template_name = list_templates()[0].removesuffix(".yml")
     runner = CliRunner()
     runner.invoke(
