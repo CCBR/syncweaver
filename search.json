@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "help.html",
+    "href": "help.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "syncweaver synchronizes code between package repositories and host repositories, and manages the full lifecycle of patch artifacts from generation through upstream pull request submission, rejection status tracking, and dependency-aware release dispatch.\nView the documentation website at https://ccbr.github.io/syncweaver."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "syncweaver",
+    "section": "Installation",
+    "text": "Installation\nInstall syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\nFor development, follow setup instructions in .github/CONTRIBUTING.md."
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "syncweaver",
+    "section": "Usage",
+    "text": "Usage\nsyncweaver --help\nsyncweaver --version\nPrint citation metadata:\nsyncweaver --citation\nSee the full CLI reference at https://ccbr.github.io/syncweaver/cli."
+  },
+  {
+    "objectID": "index.html#help-and-contributing",
+    "href": "index.html#help-and-contributing",
+    "title": "syncweaver",
+    "section": "Help and Contributing",
+    "text": "Help and Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "index.html#citation",
+    "href": "index.html#citation",
+    "title": "syncweaver",
+    "section": "Citation",
+    "text": "Citation\nYou can view the updated syncweaver citation with:\nsyncweaver --citation\nPlease cite this software if you use it in a publication:\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\n\nBibtex entry\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE\nTry 'ccbr_tools cite --help' for help.\n\nError: Invalid value for 'CITATION_FILE': Path 'CITATION.cff' does not exist.\nFull citation metadata is available in CITATION.cff."
+  },
+  {
+    "objectID": "usage.html",
+    "href": "usage.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "syncweaver --help\nsyncweaver --version\nPrint citation metadata:\nsyncweaver --citation\nSee the full CLI reference at https://ccbr.github.io/syncweaver/cli."
+  },
+  {
+    "objectID": "cite.html",
+    "href": "cite.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nPlease cite this software if you use it in a publication:\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\n\nBibtex entry\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE\nTry 'ccbr_tools cite --help' for help.\n\nError: Invalid value for 'CITATION_FILE': Path 'CITATION.cff' does not exist.\nFull citation metadata is available in CITATION.cff."
+  },
+  {
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\nFor development, follow setup instructions in .github/CONTRIBUTING.md."
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "CLI Reference",
+    "section": "",
+    "text": "Usage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  templates  List and add workflow templates to a repo."
+  }
+]
