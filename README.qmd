@@ -31,6 +31,7 @@ Custom github actions used in our github workflows.
 ```{python}
 #| output: asis
 #| echo: false
+import pathlib
 import yaml
 for action_yml in sorted(pathlib.Path().glob("actions/*/action.yml")):
     with action_yml.open('r') as infile:
