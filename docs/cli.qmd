@@ -66,11 +66,11 @@ print_help_block("", help_msg)
 commands = extract_commands(help_msg)
 for cmd in commands:
     cmd_help = shell_run(f"syncweaver {cmd} --help")
-    print_help_block(f"### {cmd}", cmd_help)
+    print_help_block(f"### `{cmd}`", cmd_help)
 
     subcommands = extract_commands(cmd_help)
     for subcmd in subcommands:
         sub_help = shell_run(f"syncweaver {cmd} {subcmd} --help")
-        print_help_block(f"#### {cmd} {subcmd}", sub_help)
+        print_help_block(f"#### `{cmd} {subcmd}`", sub_help)
 
 ```
