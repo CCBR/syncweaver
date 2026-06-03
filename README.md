@@ -3,8 +3,8 @@
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
 [![build](https://github.com/CCBR/syncweaver/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/syncweaver/actions/workflows/build-python.yml)
-[![docs](https://img.shields.io/badge/docs-website-0A7D6C.png)](https://ccbr.github.io/syncweaver)
-[![license](https://img.shields.io/badge/license-MIT-1F6FEB.png)](LICENSE.md)
+[![docs](https://github.com/CCBR/syncweaver/actions/workflows/docs-quartodoc.yml/badge.svg)](https://ccbr.github.io/syncweaver)
+[![codecov](https://codecov.io/gh/CCBR/syncweaver/graph/badge.svg?token=V4BSDLIEyi)](https://codecov.io/gh/CCBR/syncweaver)
 
 > synchronize code and weave patches seamlessly
 
