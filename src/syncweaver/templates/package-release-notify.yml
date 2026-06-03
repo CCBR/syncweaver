@@ -2,11 +2,11 @@ name: package-release-notify
 
 # Template workflow for package repos.
 # On a published release, computes changed files and dispatches notifications
-# to relevant downstream capsule repos.
+# to relevant downstream host repos.
 #
 # Usage: copy this file to your package repo's .github/workflows/ and
-# fill in the required inputs below. Add a capsules.yml file listing
-# downstream capsule repos.
+# fill in the required inputs below. Add a host-repositories.yml file listing
+# downstream host repos.
 
 on:
   release:
@@ -18,7 +18,7 @@ permissions:
   actions: write
 
 jobs:
-  notify-capsules:
+  notify-host-repositories:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,9 +39,9 @@ jobs:
           fi
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
 
-      - uses: CCBR/syncweaver/actions/package-notify-relevant-capsules@main
+      - uses: CCBR/syncweaver/actions/package-notify-relevant-host-repositories@main
         with:
           package-name: Package1 # TODO: replace with your package name
-          capsules-file: capsules.yml
+          host-repositories-file: host-repositories.yml
           changed-files: ${{ steps.changed.outputs.files }}
           github-token: ${{ secrets.CCBR_BOT_TOKEN }}

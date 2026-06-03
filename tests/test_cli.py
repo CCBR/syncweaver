@@ -23,20 +23,20 @@ def test_templates_add(tmp_path):
     runner = CliRunner()
     result = runner.invoke(
         cli,
-        ["templates", "add", "capsule-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
     )
     assert result.exit_code == 0
-    assert (tmp_path / "capsule-pattern1-outbound.yml").exists()
+    assert (tmp_path / "host-repo-pattern1-outbound.yml").exists()
 
 
 def test_templates_add_no_overwrite(tmp_path):
     runner = CliRunner()
     runner.invoke(
         cli,
-        ["templates", "add", "capsule-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
     )
     result = runner.invoke(
         cli,
-        ["templates", "add", "capsule-pattern1-outbound", "--output", str(tmp_path)],
+        ["templates", "add", "host-repo-pattern1-outbound", "--output", str(tmp_path)],
     )
     assert result.exit_code != 0

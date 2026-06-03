@@ -1,4 +1,4 @@
-name: capsule-regenerate-dependencies
+name: host-repo-regenerate-dependencies
 description: >
   Regenerate DEPENDENCIES.yml for a vendored package by scanning entrypoints
   and committing the result.
@@ -11,7 +11,7 @@ inputs:
     description: Comma-separated list of entrypoint files to scan (e.g. run.R)
     required: true
   vendor-dir:
-    description: Path to vendored package code in the capsule (e.g. code/Package1)
+    description: Path to vendored package code in the host repository (e.g. code/Package1)
     required: true
   refs-file:
     description: Path to .syncweaver-lock.json
@@ -28,7 +28,7 @@ runs:
     - name: Regenerate dependencies
       shell: bash
       run: |
-        echo "::notice::capsule-regenerate-dependencies is a stub — implement with syncweaver CLI"
+        echo "::notice::host-repo-regenerate-dependencies is a stub — implement with syncweaver CLI"
         syncweaver deps scan \
           --entrypoints "${{ inputs.entrypoints }}" \
           --vendor-dir "${{ inputs.vendor-dir }}" \

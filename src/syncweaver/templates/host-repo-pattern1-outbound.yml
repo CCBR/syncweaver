@@ -1,10 +1,10 @@
-name: capsule-pattern1-outbound
+name: host-repo-pattern1-outbound
 
-# Template workflow for capsule repos.
+# Template workflow for host repos.
 # Triggers when vendored package code changes, generates patch files,
 # and opens an upstream PR.
 #
-# Usage: copy this file to your capsule repo's .github/workflows/ and
+# Usage: copy this file to your host repo's .github/workflows/ and
 # fill in the required inputs below.
 
 on:
@@ -33,7 +33,7 @@ jobs:
       - name: Install syncweaver
         run: pip install git+https://github.com/CCBR/syncweaver.git@main
 
-      - uses: CCBR/syncweaver/actions/capsule-generate-patches@main
+      - uses: CCBR/syncweaver/actions/host-repo-generate-patches@main
         with:
           package-name: Package1 # TODO: replace with your package name
           package-repo: https://github.com/CCBR/Package1 # TODO: replace
@@ -41,10 +41,10 @@ jobs:
           refs-file: .syncweaver-lock.json
           patches-dir: code/syncweaver/patches
 
-      - uses: CCBR/syncweaver/actions/capsule-open-upstream-pr@main
+      - uses: CCBR/syncweaver/actions/host-repo-open-upstream-pr@main
         with:
           package-repo: CCBR/Package1 # TODO: replace with owner/repo
           branch-name: from-${{ github.repository_id }}-${{ github.run_id }}
           patch-dir: code/syncweaver/patches
-          capsule-name: ${{ github.repository }}
+          host-repo-name: ${{ github.repository }}
           github-token: ${{ secrets.CCBR_BOT_TOKEN }}

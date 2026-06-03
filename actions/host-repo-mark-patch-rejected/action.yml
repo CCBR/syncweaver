@@ -1,4 +1,4 @@
-name: capsule-mark-patch-rejected
+name: host-repo-mark-patch-rejected
 description: >
   Prepend rejection metadata to a patch file and commit the change.
 
@@ -19,7 +19,7 @@ runs:
     - name: Annotate rejected patch
       shell: bash
       run: |
-        echo "::notice::capsule-mark-patch-rejected is a stub — implement with syncweaver CLI"
+        echo "::notice::host-repo-mark-patch-rejected is a stub — implement with syncweaver CLI"
         syncweaver patches annotate-rejected \
           --patch "${{ inputs.patch-file }}" \
           --pr-url "${{ inputs.pr-url }}" \

@@ -9,7 +9,7 @@ title: "syncweaver"
 
 > synchronize code and weave patches seamlessly
 
-syncweaver synchronizes code between package repositories and capsule
+syncweaver synchronizes code between package repositories and host repository
 repositories, and manages the full lifecycle of patch files from generation
 through upstream pull request submission, rejection annotation, and
 dependency-aware release dispatch.

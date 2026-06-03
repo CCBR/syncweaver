@@ -2168,7 +2168,7 @@ readers do not read off random characters that represent icons */
   content: "\e169";
 }
 
-.fa-capsules::before {
+.fa-host-repositories::before {
   content: "\f46b";
 }
 

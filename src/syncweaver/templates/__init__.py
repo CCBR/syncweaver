@@ -1,20 +1,20 @@
 """
 Workflow template files for syncweaver.
 
-Templates can be listed and copied into downstream capsule or package repos
+Templates can be listed and copied into downstream host repository or package repos
 using the helper functions below or via the CLI:
 
 ```sh
 syncweaver templates list
-syncweaver templates add capsule-pattern1-outbound --output .github/workflows/
+syncweaver templates add host-repo-pattern1-outbound --output .github/workflows/
 ```
 
 ### Available templates
 
-- `capsule-pattern1-outbound.yml` — Push vendored code changes as an upstream PR
-- `capsule-dependencies-refresh.yml` — Regenerate DEPENDENCIES.yml on entrypoint changes
-- `capsule-mark-rejected.yml` — Manually mark a patch as rejected (workflow_dispatch)
-- `package-release-notify.yml` — Dispatch release notifications to relevant capsules
+- `host-repo-pattern1-outbound.yml` — Push vendored code changes as an upstream PR
+- `host-repo-dependencies-refresh.yml` — Regenerate DEPENDENCIES.yml on entrypoint changes
+- `host-repo-mark-rejected.yml` — Manually mark a patch as rejected (workflow_dispatch)
+- `package-release-notify.yml` — Dispatch release notifications to relevant host repositories
 """
 
 import importlib.resources
@@ -49,7 +49,7 @@ def read_template(template_name: str) -> str:
         FileNotFoundError: If the template file does not exist.
 
     Examples:
-        >>> read_template("capsule-pattern1-outbound.yml")
+        >>> read_template("host-repo-pattern1-outbound.yml")
     """
     if not template_name.endswith(".yml"):
         template_name = f"{template_name}.yml"
@@ -86,7 +86,7 @@ def use_template(
         FileExistsError: If the destination file already exists and ``overwrite`` is ``False``.
 
     Examples:
-        >>> use_template("capsule-pattern1-outbound.yml")
+        >>> use_template("host-repo-pattern1-outbound.yml")
     """
     if not template_name.endswith(".yml"):
         template_name = f"{template_name}.yml"

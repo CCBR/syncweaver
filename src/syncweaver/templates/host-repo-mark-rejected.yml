@@ -1,9 +1,9 @@
-name: capsule-mark-rejected
+name: host-repo-mark-rejected
 
-# Template workflow for capsule repos.
+# Template workflow for host repos.
 # Manually marks a patch file as rejected by prepending rejection metadata.
 #
-# Usage: copy this file to your capsule repo's .github/workflows/ and trigger
+# Usage: copy this file to your host repo's .github/workflows/ and trigger
 # it from the Actions UI.
 
 on:
@@ -34,7 +34,7 @@ jobs:
       - name: Install syncweaver
         run: pip install git+https://github.com/CCBR/syncweaver.git@main
 
-      - uses: CCBR/syncweaver/actions/capsule-mark-patch-rejected@main
+      - uses: CCBR/syncweaver/actions/host-repo-mark-patch-rejected@main
         with:
           patch-file: ${{ github.event.inputs.patch_file }}
           pr-url: ${{ github.event.inputs.pr_url }}

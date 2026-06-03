@@ -2,6 +2,7 @@
 
 import click
 
+from syncweaver.cli.add import add_cmd
 from syncweaver.cli.templates import templates_group
 from syncweaver.util import get_version, print_citation
 
@@ -22,3 +23,4 @@ def cli():
 
 
 cli.add_command(templates_group)
+cli.add_command(add_cmd)

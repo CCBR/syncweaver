@@ -1,6 +1,6 @@
-name: capsule-generate-patches
+name: host-repo-generate-patches
 description: >
-  Generate or update patch files in a capsule repo by diffing vendored package
+  Generate or update patch files in a host repo by diffing vendored package
   code against the baseline SHA recorded in .syncweaver-lock.json.
 
 inputs:
@@ -15,7 +15,7 @@ inputs:
     required: false
     default: ""
   vendor-dir:
-    description: Path to vendored package code in the capsule (e.g. code/Package1)
+    description: Path to vendored package code in the host repository (e.g. code/Package1)
     required: true
   refs-file:
     description: Path to .syncweaver-lock.json
@@ -32,7 +32,7 @@ runs:
     - name: Generate patches
       shell: bash
       run: |
-        echo "::notice::capsule-generate-patches is a stub — implement with syncweaver CLI"
+        echo "::notice::host-repo-generate-patches is a stub — implement with syncweaver CLI"
         syncweaver patches generate \
           --package "${{ inputs.package-name }}" \
           --repo-url "${{ inputs.package-repo }}" \

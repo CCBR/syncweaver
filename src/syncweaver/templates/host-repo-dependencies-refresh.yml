@@ -1,9 +1,9 @@
-name: capsule-dependencies-refresh
+name: host-repo-dependencies-refresh
 
-# Template workflow for capsule repos.
+# Template workflow for host repos.
 # Regenerates DEPENDENCIES.yml when entrypoint files change.
 #
-# Usage: copy this file to your capsule repo's .github/workflows/ and
+# Usage: copy this file to your host repo's .github/workflows/ and
 # fill in the required inputs below.
 
 on:
@@ -30,7 +30,7 @@ jobs:
       - name: Install syncweaver
         run: pip install git+https://github.com/CCBR/syncweaver.git@main
 
-      - uses: CCBR/syncweaver/actions/capsule-regenerate-dependencies@main
+      - uses: CCBR/syncweaver/actions/host-repo-regenerate-dependencies@main
         with:
           package-name: Package1 # TODO: replace
           entrypoints: run.R # TODO: comma-separated list of entrypoints

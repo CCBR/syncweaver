@@ -1,16 +1,16 @@
-name: package-notify-relevant-capsules
+name: package-notify-relevant-host-repositories
 description: >
-  Dispatch release notifications only to capsules whose DEPENDENCIES.yml
+  Dispatch release notifications only to host repositories whose DEPENDENCIES.yml
   overlaps with the changed files in a package release.
 
 inputs:
   package-name:
     description: Name of the package being released
     required: true
-  capsules-file:
-    description: Path to capsules.yml listing downstream capsule repos
+  host-repositories-file:
+    description: Path to host-repositories.yml listing downstream host repos
     required: false
-    default: capsules.yml
+    default: host-repositories.yml
   changed-files:
     description: Comma-separated list of files changed in the release
     required: true
@@ -21,12 +21,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Notify relevant capsules
+    - name: Notify relevant host repositories
       shell: bash
       run: |
-        echo "::notice::package-notify-relevant-capsules is a stub — implement with syncweaver CLI"
-        syncweaver release notify-capsules \
-          --capsules-file "${{ inputs.capsules-file }}" \
+        echo "::notice::package-notify-relevant-host-repositories is a stub — implement with syncweaver CLI"
+        syncweaver release notify-host-repositories \
+          --host-repositories-file "${{ inputs.host-repositories-file }}" \
           --package-name "${{ inputs.package-name }}" \
           --changed-files "${{ inputs.changed-files }}"
       env:
