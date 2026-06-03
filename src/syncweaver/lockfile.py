@@ -50,6 +50,13 @@ def read_lockfile(lockfile: pathlib.Path, cwd: pathlib.Path, run_git) -> dict:
     }
 
 
+def load_existing_lockfile(lockfile: pathlib.Path) -> dict:
+    """Read lockfile JSON from disk and fail when it does not exist."""
+    if not lockfile.exists():
+        raise FileNotFoundError(f"Lockfile does not exist: {lockfile}")
+    return json.loads(lockfile.read_text())
+
+
 def write_lockfile(lockfile: pathlib.Path, data: dict) -> None:
     """Write lockfile JSON with a stable format."""
     lockfile.parent.mkdir(parents=True, exist_ok=True)

@@ -5,29 +5,12 @@ from __future__ import annotations
 import json
 import pathlib
 import shutil
-import subprocess
 import tempfile
 
 import click
 
+from syncweaver.git import run_git
 from syncweaver.lockfile import read_lockfile, write_lockfile
-
-
-def _run_git(args: list[str], cwd: pathlib.Path | None = None) -> str:
-    """Run a git command and return stdout, raising RuntimeError on failure."""
-    command = ["git", *args]
-    result = subprocess.run(
-        command,
-        cwd=cwd,
-        capture_output=True,
-        check=False,
-        text=True,
-    )
-    if result.returncode != 0:
-        stderr = result.stderr.strip()
-        cmd = " ".join(command)
-        raise RuntimeError(f"Git command failed: {cmd}\n{stderr}")
-    return result.stdout.strip()
 
 
 def _copy_checked_out_repo(source: pathlib.Path, destination: pathlib.Path) -> None:
@@ -63,11 +46,11 @@ def add_external_repository(
 
     with tempfile.TemporaryDirectory(prefix="syncweaver-add-") as temp_dir:
         temp_repo = pathlib.Path(temp_dir) / "repo"
-        _run_git(["clone", "--quiet", "--no-checkout", repo_url, str(temp_repo)])
+        run_git(["clone", "--quiet", "--no-checkout", repo_url, str(temp_repo)])
 
         selected_ref = ref
         if selected_ref:
-            _run_git(
+            run_git(
                 [
                     "-C",
                     str(temp_repo),
@@ -78,10 +61,10 @@ def add_external_repository(
                     selected_ref,
                 ]
             )
-            _run_git(["-C", str(temp_repo), "checkout", "--quiet", "FETCH_HEAD"])
+            run_git(["-C", str(temp_repo), "checkout", "--quiet", "FETCH_HEAD"])
         else:
-            _run_git(["-C", str(temp_repo), "checkout", "--quiet", "HEAD"])
-            selected_ref = _run_git(
+            run_git(["-C", str(temp_repo), "checkout", "--quiet", "HEAD"])
+            selected_ref = run_git(
                 [
                     "-C",
                     str(temp_repo),
@@ -92,10 +75,10 @@ def add_external_repository(
             )
             selected_ref = selected_ref.removeprefix("origin/")
 
-        git_sha = _run_git(["-C", str(temp_repo), "rev-parse", "HEAD"])
+        git_sha = run_git(["-C", str(temp_repo), "rev-parse", "HEAD"])
         _copy_checked_out_repo(temp_repo, destination)
 
-    lock_data = read_lockfile(lockfile, cwd, _run_git)
+    lock_data = read_lockfile(lockfile, cwd, run_git)
     repos = lock_data.setdefault("repos", {})
     repo_entry = repos.setdefault(repo_url, {})
     sources = repo_entry.setdefault("sources", {})
