@@ -32,6 +32,7 @@ requires-python = ">= 3.11"
 dependencies = [
     "cffconvert >= 2.0.0",
     "click >= 8.1.3",
+    "jsonschema >= 4.0.0",
     "pyyaml",
     "requests",
 ]
@@ -64,6 +65,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 
 [tool.setuptools.package-data]
 "syncweaver" = ["CITATION.cff", "VERSION"]
+"syncweaver.schemas" = ["*.json"]
 "syncweaver.templates" = ["*.yml"]
 
 [tool.coverage.run]

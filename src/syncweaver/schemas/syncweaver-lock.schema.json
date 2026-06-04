@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ccbr.github.io/syncweaver/schemas/syncweaver-lock.schema.json",
+  "title": "syncweaver lockfile",
+  "type": "object",
+  "required": ["name", "homePage", "sources"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "homePage": {
+      "type": "string"
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/sourceEntry"
+      }
+    }
+  },
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sourceEntry": {
+      "type": "object",
+      "required": ["repo_url", "ref", "git_sha"],
+      "properties": {
+        "repo_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "git_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "installed_by": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "patch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "patches": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "patch_audit": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/patchAudit"
+          }
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    },
+    "patchAudit": {
+      "type": "object",
+      "required": ["status", "pr_url", "reason", "annotated_at"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["rejected"]
+        },
+        "pr_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "annotated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "patternProperties": {
+        "^x-": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

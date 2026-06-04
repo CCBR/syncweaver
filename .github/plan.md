@@ -173,18 +173,14 @@ scan-dependencies/
 
 ```json
 {
-  "name": "ccbr/host repository1",
-  "homePage": "https://github.com/ccbr/host repository1",
-  "repos": {
-    "https://github.com/ccbr/package1": {
-      "sources": {
-        "code/package1": {
-          "branch": "main",
-          "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
-          "installed_by": ["syncweaver"],
-          "patch": "code/package1/.syncweaver/package1.diff"
-        }
-      }
+  "name": "org1/host repository1",
+  "homePage": "https://github.com/org1/host repository1",
+  "sources": {
+    "code/package1": {
+      "repo_url": "https://github.com/org2/package1",
+      "ref": "main",
+      "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+      "patch": "code/package1/.syncweaver/package1.diff"
     }
   }
 }

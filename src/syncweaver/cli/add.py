@@ -79,12 +79,11 @@ def add_external_repository(
         _copy_checked_out_repo(temp_repo, destination)
 
     lock_data = read_lockfile(lockfile, cwd, run_git)
-    repos = lock_data.setdefault("repos", {})
-    repo_entry = repos.setdefault(repo_url, {})
-    sources = repo_entry.setdefault("sources", {})
+    sources = lock_data.setdefault("sources", {})
     source_key = destination_path.as_posix()
     sources[source_key] = {
-        "branch": selected_ref,
+        "repo_url": repo_url,
+        "ref": selected_ref,
         "git_sha": git_sha,
         "installed_by": ["syncweaver"],
     }

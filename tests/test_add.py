@@ -78,8 +78,9 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     assert lockfile["name"] == "CCBR/host-repo1"
     assert lockfile["homePage"] == "https://github.com/CCBR/host-repo1"
-    source_entry = lockfile["repos"][str(source_repo)]["sources"]["code/package1"]
-    assert source_entry["branch"] == "main"
+    source_entry = lockfile["sources"]["code/package1"]
+    assert source_entry["repo_url"] == str(source_repo)
+    assert source_entry["ref"] == "main"
     assert source_entry["git_sha"] == source_sha
     assert source_entry["installed_by"] == ["syncweaver"]
     assert "patch" not in source_entry

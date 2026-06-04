@@ -98,7 +98,8 @@ def test_patch_create_generates_file_and_updates_lockfile(tmp_path, monkeypatch)
     assert "+VALUE = 2" in patch_text
 
     lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
-    source_entry = lock_data["repos"][str(source_repo)]["sources"]["code/package1"]
+    source_entry = lock_data["sources"]["code/package1"]
+    assert source_entry["repo_url"] == str(source_repo)
     assert source_entry["patch"] == "code/package1/.syncweaver/code-package1.diff"
 
 
@@ -187,7 +188,7 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
 
     assert annotate_result.exit_code == 0
     lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
-    source_entry = lock_data["repos"][str(source_repo)]["sources"]["code/package1"]
+    source_entry = lock_data["sources"]["code/package1"]
     audit = source_entry["patch_audit"]["code/package1/.syncweaver/code-package1.diff"]
     assert audit["status"] == "rejected"
     assert audit["pr_url"] == "https://github.com/ccbr/source/pull/42"

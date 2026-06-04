@@ -15,16 +15,16 @@ from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 
 def _source_entry(lock_data: dict, repo_url: str, source_path: str) -> dict:
     """Return the lockfile source entry for a given repository URL and path."""
-    repos = lock_data.get("repos", {})
-    repo_entry = repos.get(repo_url)
-    if not repo_entry:
-        raise KeyError(f"Repository is not tracked in lockfile: {repo_url}")
-
-    sources = repo_entry.get("sources", {})
+    sources = lock_data.get("sources", {})
     source_entry = sources.get(source_path)
     if not source_entry:
+        raise KeyError(f"Source path is not tracked in lockfile: {source_path}")
+
+    tracked_repo_url = source_entry.get("repo_url")
+    if tracked_repo_url != repo_url:
         raise KeyError(
-            f"Source path is not tracked for repository {repo_url}: {source_path}"
+            "Tracked source path maps to a different repository URL: "
+            f"{source_path} -> {tracked_repo_url}"
         )
     return source_entry
 
@@ -236,18 +236,17 @@ def annotate_rejected_patch(
     patch_key = patch_path.as_posix()
 
     found_patch = False
-    for repo_entry in lock_data.get("repos", {}).values():
-        for source_entry in repo_entry.get("sources", {}).values():
-            if source_entry.get("patch") == patch_key:
-                patch_audit = source_entry.setdefault("patch_audit", {})
-                patch_audit[patch_key] = {
-                    "status": "rejected",
-                    "pr_url": pr_url,
-                    "reason": reason,
-                    "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
-                }
-                write_lockfile(lockfile, lock_data)
-                found_patch = True
+    for source_entry in lock_data.get("sources", {}).values():
+        if source_entry.get("patch") == patch_key:
+            patch_audit = source_entry.setdefault("patch_audit", {})
+            patch_audit[patch_key] = {
+                "status": "rejected",
+                "pr_url": pr_url,
+                "reason": reason,
+                "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
+            }
+            write_lockfile(lockfile, lock_data)
+            found_patch = True
 
     if not found_patch:
         raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
@@ -264,11 +263,11 @@ def list_patches(
 
     source_key = path.as_posix()
     records: list[tuple[str, str, str]] = []
-    for repo_url, repo_entry in lock_data.get("repos", {}).items():
-        source_entry = repo_entry.get("sources", {}).get(source_key)
-        if source_entry:
-            patch_path = source_entry.get("patch")
-            if patch_path:
-                records.append((repo_url, source_key, patch_path))
+    source_entry = lock_data.get("sources", {}).get(source_key)
+    if source_entry:
+        patch_path = source_entry.get("patch")
+        if patch_path:
+            repo_url = source_entry.get("repo_url", "")
+            records.append((repo_url, source_key, patch_path))
 
     return records
