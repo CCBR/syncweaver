@@ -323,6 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#add" id="toc-add" class="nav-link active" data-scroll-target="#add"><code>add</code></a></li>
   <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch"><code>patch</code></a></li>
   <li><a href="#templates" id="toc-templates" class="nav-link" data-scroll-target="#templates"><code>templates</code></a></li>
+  <li><a href="#update" id="toc-update" class="nav-link" data-scroll-target="#update"><code>update</code></a></li>
   <li><a href="#validate" id="toc-validate" class="nav-link" data-scroll-target="#validate"><code>validate</code></a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/cli.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -364,6 +365,7 @@ Commands:
   add        Add an external repository to the current host repository.
   patch      Create, annotate, and list source patch artifacts.
   templates  List and add workflow templates to a repo.
+  update     Update a tracked external repository in the current host...
   validate   Validate a lockfile against the syncweaver lockfile JSON...
 </code></pre>
 <section id="add" class="level3">
@@ -373,15 +375,18 @@ Commands:
   Add an external repository to the current host repository.
 
 Options:
-  --path PATH      Destination path in the host repository, e.g.
-                   code/package1.  [required]
-  --repo-url TEXT  External repository URL or local path to clone.  [required]
-  --ref TEXT       Git ref to vendor (branch, tag, or commit). Defaults to
-                   remote HEAD.
-  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.
-                   [default: .syncweaver-lock.json]
-  --overwrite      Overwrite destination path if it already exists.
-  -h, --help       Show this message and exit.
+  --path PATH           Destination path in the host repository, e.g.
+                        code/package1.  [required]
+  --repo-url TEXT       External repository URL or local path to clone.
+                        [required]
+  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults
+                        to remote HEAD.
+  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.
+                        src/package1. When omitted, vendors repository root.
+  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.
+                        [default: .syncweaver-lock.json]
+  --overwrite           Overwrite destination path if it already exists.
+  -h, --help            Show this message and exit.
 </code></pre>
 </section>
 <section id="patch" class="level3">
@@ -485,6 +490,25 @@ Options:
   -h, --help  Show this message and exit.
 </code></pre>
 </section>
+</section>
+<section id="update" class="level3">
+<h3 class="anchored" data-anchor-id="update"><code>update</code></h3>
+<pre><code>Usage: syncweaver update [OPTIONS]
+
+  Update a tracked external repository in the current host repository.
+
+Options:
+  --path PATH           Tracked destination path in the host repository, e.g.
+                        code/package1.  [required]
+  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults
+                        to lockfile ref.
+  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.
+                        src/package1. Defaults to lockfile remote_subdir when
+                        present.
+  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.
+                        [default: .syncweaver-lock.json]
+  -h, --help            Show this message and exit.
+</code></pre>
 </section>
 <section id="validate" class="level3">
 <h3 class="anchored" data-anchor-id="validate"><code>validate</code></h3>
