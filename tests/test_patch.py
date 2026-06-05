@@ -253,3 +253,65 @@ def test_patch_create_reports_validation_failure(tmp_path, monkeypatch):
 
     assert result.exit_code != 0
     assert "Generated patch has invalid structure" in result.output
+
+
+def test_patch_create_uses_remote_subdir_baseline(tmp_path, monkeypatch):
+    """Verify patch creation compares vendored files to tracked remote_subdir.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+    package_root = source_repo / "subprojects/package1"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    _run(["git", "add", "subprojects/package1/pkg.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+    assert add_result.exit_code == 0
+
+    (host_repo / "code/package1/pkg.py").write_text("VALUE = 2\n")
+    create_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "create",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+        ],
+    )
+
+    assert create_result.exit_code == 0
+    patch_file = host_repo / "code/package1/.syncweaver/code-package1.diff"
+    patch_text = patch_file.read_text()
+    assert "--- a/pkg.py" in patch_text
+    assert "+++ b/pkg.py" in patch_text
+    assert "+VALUE = 2" in patch_text

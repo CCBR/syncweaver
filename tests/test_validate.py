@@ -27,6 +27,7 @@ def test_validate_accepts_new_lockfile_shape(tmp_path, monkeypatch):
                 "repo_url": "https://github.com/CCBR/package1",
                 "ref": "main",
                 "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "remote_subdir": "modules/package1",
                 "installed_by": ["syncweaver"],
                 "patch": "code/package1/.syncweaver/code-package1.diff",
             }

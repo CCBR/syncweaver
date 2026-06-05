@@ -22,10 +22,30 @@ def _copy_checked_out_repo(source: pathlib.Path, destination: pathlib.Path) -> N
     )
 
 
+def _resolve_remote_source_path(
+    checkout_root: pathlib.Path, remote_subdir: str | None
+) -> pathlib.Path:
+    """Resolve and validate the source path inside a checked-out repository."""
+    source_root = checkout_root
+    if remote_subdir:
+        normalized = pathlib.PurePosixPath(remote_subdir.strip("/"))
+        if str(normalized) in {"", "."}:
+            raise ValueError("--remote-subdir cannot be empty or '.'")
+
+        source_root = checkout_root / pathlib.Path(*normalized.parts)
+        if not source_root.exists() or not source_root.is_dir():
+            raise FileNotFoundError(
+                "Remote subdirectory does not exist in checked out repository: "
+                f"{remote_subdir}"
+            )
+    return source_root
+
+
 def add_external_repository(
     destination_path: pathlib.Path,
     repo_url: str,
     ref: str | None,
+    remote_subdir: str | None,
     lockfile_path: pathlib.Path,
     overwrite: bool,
 ) -> tuple[pathlib.Path, pathlib.Path, str, str]:
@@ -76,7 +96,8 @@ def add_external_repository(
             selected_ref = selected_ref.removeprefix("origin/")
 
         git_sha = run_git(["-C", str(temp_repo), "rev-parse", "HEAD"])
-        _copy_checked_out_repo(temp_repo, destination)
+        source_root = _resolve_remote_source_path(temp_repo, remote_subdir)
+        _copy_checked_out_repo(source_root, destination)
 
     lock_data = read_lockfile(lockfile, cwd, run_git)
     sources = lock_data.setdefault("sources", {})
@@ -87,6 +108,9 @@ def add_external_repository(
         "git_sha": git_sha,
         "installed_by": ["syncweaver"],
     }
+    if remote_subdir:
+        normalized_subdir = pathlib.PurePosixPath(remote_subdir.strip("/")).as_posix()
+        sources[source_key]["remote_subdir"] = normalized_subdir
     write_lockfile(lockfile, lock_data)
 
     return destination, lockfile, selected_ref, git_sha
@@ -111,6 +135,14 @@ def add_external_repository(
     help="Git ref to vendor (branch, tag, or commit). Defaults to remote HEAD.",
 )
 @click.option(
+    "--remote-subdir",
+    default=None,
+    help=(
+        "Optional repository subdirectory to vendor, e.g. src/package1. "
+        "When omitted, vendors repository root."
+    ),
+)
+@click.option(
     "--lockfile",
     default=".syncweaver-lock.json",
     show_default=True,
@@ -127,6 +159,7 @@ def add_cmd(
     destination_path: pathlib.Path,
     repo_url: str,
     ref: str | None,
+    remote_subdir: str | None,
     lockfile: pathlib.Path,
     overwrite: bool,
 ) -> None:
@@ -136,10 +169,17 @@ def add_cmd(
             destination_path=destination_path,
             repo_url=repo_url,
             ref=ref,
+            remote_subdir=remote_subdir,
             lockfile_path=lockfile,
             overwrite=overwrite,
         )
-    except (FileExistsError, RuntimeError, json.JSONDecodeError, OSError) as exc:
+    except (
+        FileExistsError,
+        RuntimeError,
+        ValueError,
+        json.JSONDecodeError,
+        OSError,
+    ) as exc:
         raise click.ClickException(str(exc)) from exc
 
     click.echo(f"Vendored repository into {dest}")

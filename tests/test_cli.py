@@ -16,6 +16,19 @@ def test_cli_help():
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
     assert "syncweaver" in result.output
+    assert "update" in result.output
+
+
+def test_update_help_includes_remote_subdir_option():
+    """Verify `update --help` documents the remote subdirectory option.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    runner = CliRunner()
+    result = runner.invoke(cli, ["update", "--help"])
+    assert result.exit_code == 0
+    assert "--remote-subdir" in result.output
 
 
 def test_templates_list():

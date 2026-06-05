@@ -78,6 +78,24 @@ def _default_patch_filename(repo_url: str, source_path: pathlib.Path) -> str:
     return f"{source_identifier.replace('/', '-')}.diff"
 
 
+def _resolve_baseline_root(temp_repo: pathlib.Path, source_entry: dict) -> pathlib.Path:
+    """Resolve baseline source root from optional remote_subdir lock metadata."""
+    baseline_root = temp_repo
+    remote_subdir = source_entry.get("remote_subdir")
+    if remote_subdir:
+        normalized = pathlib.PurePosixPath(str(remote_subdir).strip("/"))
+        if str(normalized) in {"", "."}:
+            raise RuntimeError("Lockfile remote_subdir cannot be empty or '.'")
+
+        baseline_root = temp_repo / pathlib.Path(*normalized.parts)
+        if not baseline_root.exists() or not baseline_root.is_dir():
+            raise RuntimeError(
+                "Tracked remote_subdir is missing in baseline repository: "
+                f"{remote_subdir}"
+            )
+    return baseline_root
+
+
 def _validate_patch_structure(patch_text: str) -> None:
     """Validate basic unified diff structure before writing a patch file."""
     lines = patch_text.splitlines()
@@ -185,17 +203,18 @@ def create_patch(
         temp_repo = pathlib.Path(temp_dir) / "repo"
         run_git(["clone", "--quiet", "--no-checkout", repo_url, str(temp_repo)])
         run_git(["-C", str(temp_repo), "checkout", "--quiet", git_sha])
+        baseline_root = _resolve_baseline_root(temp_repo, source_entry)
 
         excluded_dir = destination / ".syncweaver"
         baseline_files = _iter_relative_files(
-            temp_repo, excluded_dir=temp_repo / ".git"
+            baseline_root, excluded_dir=baseline_root / ".git"
         )
         current_files = _iter_relative_files(destination, excluded_dir=excluded_dir)
         all_files = sorted(baseline_files | current_files, key=lambda p: p.as_posix())
 
         chunks: list[str] = []
         for relative_path in all_files:
-            before_file = temp_repo / relative_path
+            before_file = baseline_root / relative_path
             after_file = destination / relative_path
             chunk = _unified_diff(before_file, after_file, relative_path)
             if chunk:

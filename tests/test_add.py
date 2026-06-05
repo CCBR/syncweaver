@@ -123,3 +123,58 @@ def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):
 
     assert result.exit_code != 0
     assert "Destination already exists" in result.output
+
+
+def test_add_with_remote_subdir_vendors_only_subdir_and_tracks_metadata(
+    tmp_path, monkeypatch
+):
+    """Verify `add` vendors only a remote subdirectory and stores remote_subdir.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    package_root = source_repo / "subprojects/package1"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    (source_repo / "root-only.txt").write_text("do not vendor\n")
+    _run(
+        ["git", "add", "subprojects/package1/pkg.py", "root-only.txt"], cwd=source_repo
+    )
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert (host_repo / "code/package1/pkg.py").exists()
+    assert not (host_repo / "code/package1/root-only.txt").exists()
+
+    lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
+    source_entry = lockfile["sources"]["code/package1"]
+    assert source_entry["remote_subdir"] == "subprojects/package1"

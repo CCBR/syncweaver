@@ -2454,6 +2454,7 @@ source = { editable = "." }
 dependencies = [
     { name = "cffconvert" },
     { name = "click" },
+    { name = "jsonschema" },
     { name = "pyyaml" },
     { name = "requests" },
 ]
@@ -2476,8 +2477,9 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "ccbr-tools", marker = "extra == 'docs'", git = "https://github.com/CCBR/Tools?rev=v0.5" },
-    { name = "cffconvert", specifier = ">=2.0.0" },
+    { name = "cffconvert", git = "https://github.com/citation-file-format/cffconvert?rev=b6045d78aac9e02b039703b030588d54d53262ac" },
     { name = "click", specifier = ">=8.1.3" },
+    { name = "jsonschema", specifier = ">=4.0.0" },
     { name = "jupyter", marker = "extra == 'docs'" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },

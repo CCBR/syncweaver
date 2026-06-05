@@ -80,3 +80,5 @@ docs/objects.json
 
 # macOS
 .DS_Store
+
+.vscode/
