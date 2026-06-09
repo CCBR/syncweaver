@@ -1,4 +1,4 @@
-name: update-sources
+name: update-source
 description: Run syncweaver update for a tracked source path
 
 outputs:
@@ -93,15 +93,15 @@ runs:
         raw_url = source_url.strip()
         path = ""
         if raw_url:
-          if "://" in raw_url:
-            parsed = urlparse(raw_url)
-            path = parsed.path
-          elif raw_url.startswith("git@") and ":" in raw_url:
-            path = raw_url.split(":", 1)[1]
-          else:
-            # Handles local paths or already-normalized owner/repo values.
-            path = raw_url
-          source_repo = path.strip("/").removesuffix(".git")
+            if "://" in raw_url:
+                parsed = urlparse(raw_url)
+                path = parsed.path
+            elif raw_url.startswith("git@") and ":" in raw_url:
+                path = raw_url.split(":", 1)[1]
+            else:
+                # Handles local paths or already-normalized owner/repo values.
+                path = raw_url
+            source_repo = path.strip("/").removesuffix(".git")
 
         with output_path.open("a", encoding="utf-8") as fh:
             fh.write(f"source_repo={source_repo}\n")

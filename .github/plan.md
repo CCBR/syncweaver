@@ -77,7 +77,7 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 
 create one action per directory under actions/.
 
-update-sources/
+update-source/
 
 - run `syncweaver update` and pass along inputs to CLI args
 
@@ -137,10 +137,10 @@ scan-dependencies/
 
 ## github actions workflow templates in src/syncweaver/templates
 
-- update-sources.yml
+- update-source.yml
 
   - on repository dispatch or workflow dispatch
-  - call `update-sources` composite action
+  - call `update-source` composite action
 
 - generate-patches.yml
 

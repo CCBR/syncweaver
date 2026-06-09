@@ -1,4 +1,4 @@
-name: update-sources
+name: update-source
 
 on:
   repository_dispatch:
@@ -27,12 +27,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  update-sources:
+  update-source:
     runs-on: ubuntu-latest
     outputs:
-      source_url: ${{ steps.update_sources.outputs.source_url }}
-      ref: ${{ steps.update_sources.outputs.ref }}
-      remote_subdir: ${{ steps.update_sources.outputs.remote_subdir }}
+      source_url: ${{ steps.update_source.outputs.source_url }}
+      ref: ${{ steps.update_source.outputs.ref }}
+      remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
     env:
       SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || github.event.client_payload.source_path || '' }}
       LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || github.event.client_payload.lockfile || '.syncweaver-lock.json' }}
@@ -62,9 +62,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
 
-      - name: Run update-sources composite action
-        id: update_sources
-        uses: CCBR/syncweaver/actions/update-sources@latest
+      - name: Run update-source composite action
+        id: update_source
+        uses: CCBR/syncweaver/actions/update-source@latest
         with:
           source_path: ${{ env.SOURCE_PATH }}
           lockfile: ${{ env.LOCKFILE }}
@@ -75,12 +75,12 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.ccbr_bot.outputs.token }}
-          branch: syncweaver/update-sources/${{ env.SOURCE_PATH }}
+          branch: syncweaver/update-source/${{ env.SOURCE_PATH }}
           delete-branch: true
-          commit-message: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_sources.outputs.source_repo }}@${{ steps.update_sources.outputs.ref }}"
-          title: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_sources.outputs.source_repo }}@${{ steps.update_sources.outputs.ref }}"
+          commit-message: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          title: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
           body: |
-            Automated source update from the update-sources workflow.
+            Automated source update from the update-source workflow.
 
             Inputs used:
             - source_path: ${{ env.SOURCE_PATH }}
@@ -89,6 +89,6 @@ jobs:
             - remote_subdir: ${{ env.REMOTE_SUBDIR }}
 
             Resolved from lockfile after update:
-            - source_url: ${{ steps.update_sources.outputs.source_url }}
-            - ref: ${{ steps.update_sources.outputs.ref }}
-            - remote_subdir: ${{ steps.update_sources.outputs.remote_subdir }}
+            - source_url: ${{ steps.update_source.outputs.source_url }}
+            - ref: ${{ steps.update_source.outputs.ref }}
+            - remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
