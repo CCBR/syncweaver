@@ -1,0 +1,92 @@
+name: notify-host-update-source
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      host_repository:
+        description: Host repository to notify in OWNER/REPO format.
+        required: true
+        type: string
+      source_path:
+        description: Source path in the host repository lockfile to update.
+        required: true
+        type: string
+      lockfile:
+        description: Host repository lockfile path.
+        required: false
+        default: .syncweaver-lock.json
+        type: string
+      remote_subdir:
+        description: Optional remote subdirectory to vendor in the host repo.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  notify-host-update-source:
+    runs-on: ubuntu-latest
+    env:
+      HOST_REPOSITORY: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.host_repository || vars.SYNCWEAVER_HOST_REPOSITORY || '' }}
+      SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || vars.SYNCWEAVER_SOURCE_PATH || '' }}
+      LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || vars.SYNCWEAVER_HOST_LOCKFILE || '.syncweaver-lock.json' }}
+      REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || vars.SYNCWEAVER_REMOTE_SUBDIR || '' }}
+      SOURCE_REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref_name }}
+    steps:
+      - name: Validate required configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${HOST_REPOSITORY//[[:space:]]/}" ]]; then
+            echo "Error: host repository is required. Set workflow_dispatch input host_repository or repository variable SYNCWEAVER_HOST_REPOSITORY." >&2
+            exit 1
+          fi
+
+          if [[ -z "${SOURCE_PATH//[[:space:]]/}" ]]; then
+            echo "Error: source path is required. Set workflow_dispatch input source_path or repository variable SYNCWEAVER_SOURCE_PATH." >&2
+            exit 1
+          fi
+
+      - name: Generate CCBR-bot token
+        id: ccbr_bot
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Dispatch host repository update event
+        env:
+          GH_TOKEN: ${{ steps.ccbr_bot.outputs.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          payload=$(jq -n \
+            --arg event_type "syncweaver-update-source" \
+            --arg source_path "$SOURCE_PATH" \
+            --arg lockfile "$LOCKFILE" \
+            --arg ref "$SOURCE_REF" \
+            --arg remote_subdir "$REMOTE_SUBDIR" \
+            '{event_type: $event_type, client_payload: {source_path: $source_path, lockfile: $lockfile, ref: $ref, remote_subdir: $remote_subdir}}')
+
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${HOST_REPOSITORY}/dispatches" \
+            --input - <<< "$payload"
+
+      - name: Print dispatch summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Dispatched syncweaver-update-source to ${HOST_REPOSITORY}"
+          echo "source_path=${SOURCE_PATH}"
+          echo "lockfile=${LOCKFILE}"
+          echo "ref=${SOURCE_REF}"
+          echo "remote_subdir=${REMOTE_SUBDIR}"

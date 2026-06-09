@@ -142,6 +142,11 @@ scan-dependencies/
   - on repository dispatch or workflow dispatch
   - call `update-source` composite action
 
+- syncweaver-notify-host-update-source.yml
+
+  - on release published in a source repo
+  - dispatch host repository workflows that run `syncweaver-update-source`
+
 - syncweaver-generate-patches.yml
 
   - on push to main paths [source-path]/\*\*
