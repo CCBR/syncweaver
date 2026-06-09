@@ -322,6 +322,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#add" id="toc-add" class="nav-link active" data-scroll-target="#add"><code>add</code></a></li>
   <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch"><code>patch</code></a></li>
+  <li><a href="#remove" id="toc-remove" class="nav-link" data-scroll-target="#remove"><code>remove</code></a></li>
   <li><a href="#templates" id="toc-templates" class="nav-link" data-scroll-target="#templates"><code>templates</code></a></li>
   <li><a href="#update" id="toc-update" class="nav-link" data-scroll-target="#update"><code>update</code></a></li>
   <li><a href="#validate" id="toc-validate" class="nav-link" data-scroll-target="#validate"><code>validate</code></a></li>
@@ -364,6 +365,7 @@ Options:
 Commands:
   add        Add an external repository to the current host repository.
   patch      Create, annotate, and list source patch artifacts.
+  remove     Remove a tracked external repository from the current host...
   templates  List and add workflow templates to a repo.
   update     Update a tracked external repository in the current host...
   validate   Validate a lockfile against the syncweaver lockfile JSON...
@@ -451,6 +453,20 @@ Options:
   -h, --help       Show this message and exit.
 </code></pre>
 </section>
+</section>
+<section id="remove" class="level3">
+<h3 class="anchored" data-anchor-id="remove"><code>remove</code></h3>
+<pre><code>Usage: syncweaver remove [OPTIONS]
+
+  Remove a tracked external repository from the current host repository.
+
+Options:
+  --path PATH      Tracked destination path in the host repository, e.g.
+                   code/package1.  [required]
+  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.
+                   [default: .syncweaver-lock.json]
+  -h, --help       Show this message and exit.
+</code></pre>
 </section>
 <section id="templates" class="level3">
 <h3 class="anchored" data-anchor-id="templates"><code>templates</code></h3>
