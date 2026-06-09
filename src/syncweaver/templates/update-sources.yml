@@ -1,0 +1,44 @@
+name: update-sources
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      source_path:
+        description: Tracked source path in the host repository.
+        required: false
+        default: code/package1
+        type: string
+      lockfile:
+        description: Path to the syncweaver lockfile.
+        required: false
+        default: .syncweaver-lock.json
+        type: string
+      ref:
+        description: Optional git ref to sync to.
+        required: false
+        type: string
+      remote_subdir:
+        description: Optional remote subdirectory to vendor.
+        required: false
+        type: string
+
+jobs:
+  update-sources:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || github.event.client_payload.source_path || 'code/package1' }}
+      LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || github.event.client_payload.lockfile || '.syncweaver-lock.json' }}
+      REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.client_payload.ref || '' }}
+      REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || github.event.client_payload.remote_subdir || '' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run update-sources composite action
+        uses: ./actions/update-sources
+        with:
+          source_path: ${{ env.SOURCE_PATH }}
+          lockfile: ${{ env.LOCKFILE }}
+          ref: ${{ env.REF }}
+          remote_subdir: ${{ env.REMOTE_SUBDIR }}

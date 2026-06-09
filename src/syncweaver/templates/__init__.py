@@ -16,6 +16,7 @@ import importlib.resources
 import pathlib
 
 _TEMPLATE_DESCRIPTIONS = {
+    "update-sources.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
     "host-repo-pattern1-outbound.yml": "Push vendored code changes as an upstream PR",
     "host-repo-dependencies-refresh.yml": "Regenerate DEPENDENCIES.yml on entrypoint changes",
     "host-repo-mark-rejected.yml": "Manually mark a patch as rejected (workflow_dispatch)",

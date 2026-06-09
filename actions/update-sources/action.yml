@@ -1,0 +1,38 @@
+name: update-sources
+description: Run syncweaver update for a tracked source path
+
+inputs:
+  source_path:
+    description: Tracked source path in the host repository.
+    required: false
+    default: code/package1
+  lockfile:
+    description: Path to the syncweaver lockfile.
+    required: false
+    default: .syncweaver-lock.json
+  ref:
+    description: Optional git ref to sync to.
+    required: false
+  remote_subdir:
+    description: Optional remote subdirectory to vendor.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Update tracked source
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        command=(syncweaver update --path "${{ inputs.source_path }}" --lockfile "${{ inputs.lockfile }}")
+
+        if [[ -n "${{ inputs.ref }}" ]]; then
+          command+=(--ref "${{ inputs.ref }}")
+        fi
+
+        if [[ -n "${{ inputs.remote_subdir }}" ]]; then
+          command+=(--remote-subdir "${{ inputs.remote_subdir }}")
+        fi
+
+        "${command[@]}"

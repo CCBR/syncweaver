@@ -77,6 +77,10 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 
 create one action per directory under actions/.
 
+update-sources/
+
+- run `syncweaver update` and pass along inputs to CLI args
+
 generate-patches/
 
 - trigger intent: called by host repository workflow on changes under code/package1/\*\*
@@ -132,6 +136,11 @@ scan-dependencies/
   - commit and push if changed
 
 ## github actions workflow templates in src/syncweaver/templates
+
+- update-sources.yml
+
+  - on repository dispatch or workflow dispatch
+  - call `update-sources` composite action
 
 - generate-patches.yml
 
