@@ -6,7 +6,7 @@ using the helper functions below or via the CLI:
 
 ```sh
 syncweaver templates list
-syncweaver templates add update-source --output .github/workflows/
+syncweaver templates add syncweaver-update-source --output .github/workflows/
 ```
 
 Use `available_templates_markdown()` to render the current template inventory.
@@ -16,7 +16,7 @@ import importlib.resources
 import pathlib
 
 _TEMPLATE_DESCRIPTIONS = {
-    "update-source.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
+    "syncweaver-update-source.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
 }
 
 

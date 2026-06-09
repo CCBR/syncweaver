@@ -137,27 +137,27 @@ scan-dependencies/
 
 ## github actions workflow templates in src/syncweaver/templates
 
-- update-source.yml
+- syncweaver-update-source.yml
 
   - on repository dispatch or workflow dispatch
   - call `update-source` composite action
 
-- generate-patches.yml
+- syncweaver-generate-patches.yml
 
   - on push to main paths [source-path]/\*\*
   - call generate-patches action
 
-- contribute-upstream.yml
+- syncweaver-contribute-upstream.yml
 
   - on workflow dispatch
   - call generate-patches action then open-upstream-pr action
 
-- scan-dependencies.yml
+- syncweaver-scan-dependencies.yml
 
   - on push to entrypoint files (main.R)
   - calls scan-dependencies action
 
-- mark-rejected.yml
+- syncweaver-mark-rejected.yml
   - workflow_dispatch inputs: patch_file, pr_url, reason
   - called when a PR created by contribute-upstream or open-upstream-pr gets rejected
   - calls mark-patch-rejected
