@@ -17,6 +17,7 @@ def test_cli_help():
     assert result.exit_code == 0
     assert "syncweaver" in result.output
     assert "update" in result.output
+    assert "remove" in result.output
 
 
 def test_update_help_includes_remote_subdir_option():

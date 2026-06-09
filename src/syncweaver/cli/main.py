@@ -4,6 +4,7 @@ import click
 
 from syncweaver.cli.add import add_cmd
 from syncweaver.cli.patch import patch_group
+from syncweaver.cli.remove import remove_cmd
 from syncweaver.cli.templates import templates_group
 from syncweaver.cli.update import update_cmd
 from syncweaver.cli.validate import validate_cmd
@@ -28,5 +29,6 @@ def cli():
 cli.add_command(templates_group)
 cli.add_command(add_cmd)
 cli.add_command(update_cmd)
+cli.add_command(remove_cmd)
 cli.add_command(patch_group)
 cli.add_command(validate_cmd)
