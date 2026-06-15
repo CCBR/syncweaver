@@ -1,12 +1,5 @@
 [
   {
-    "objectID": "help.html",
-    "href": "help.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "syncweaver",
@@ -33,61 +26,6 @@
     "title": "syncweaver",
     "section": "Help and Contributing",
     "text": "Help and Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
-  },
-  {
-    "objectID": "install.html",
-    "href": "install.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "reference/cli.templates.html",
-    "href": "reference/cli.templates.html",
-    "title": "cli.templates",
-    "section": "",
-    "text": "cli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.templates"
-    ]
-  },
-  {
-    "objectID": "reference/cli.templates.html#functions",
-    "href": "reference/cli.templates.html#functions",
-    "title": "cli.templates",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.templates"
-    ]
-  },
-  {
-    "objectID": "reference/git.html",
-    "href": "reference/git.html",
-    "title": "git",
-    "section": "",
-    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\n\n\n\nName\nDescription\n\n\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.run_git(args, cwd=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "git"
-    ]
-  },
-  {
-    "objectID": "reference/git.html#functions",
-    "href": "reference/git.html#functions",
-    "title": "git",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.run_git(args, cwd=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "git"
-    ]
   },
   {
     "objectID": "reference/index.html",
@@ -134,102 +72,6 @@
     ]
   },
   {
-    "objectID": "reference/cli.main.html",
-    "href": "reference/cli.main.html",
-    "title": "cli.main",
-    "section": "",
-    "text": "cli.main\nTop-level Click CLI for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.main"
-    ]
-  },
-  {
-    "objectID": "reference/cli.main.html#functions",
-    "href": "reference/cli.main.html#functions",
-    "title": "cli.main",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.main"
-    ]
-  },
-  {
-    "objectID": "reference/lockfile.html",
-    "href": "reference/lockfile.html",
-    "title": "lockfile",
-    "section": "",
-    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
-  },
-  {
-    "objectID": "reference/lockfile.html#functions",
-    "href": "reference/lockfile.html#functions",
-    "title": "lockfile",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html",
-    "href": "reference/patch.html",
-    "title": "patch",
-    "section": "",
-    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html#functions",
-    "href": "reference/patch.html#functions",
-    "title": "patch",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
-    ]
-  },
-  {
-    "objectID": "reference/cli.add.html",
-    "href": "reference/cli.add.html",
-    "title": "cli.add",
-    "section": "",
-    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile,\n    overwrite,\n)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
-    "objectID": "reference/cli.add.html#functions",
-    "href": "reference/cli.add.html#functions",
-    "title": "cli.add",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile,\n    overwrite,\n)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
     "objectID": "reference/cli.patch.html",
     "href": "reference/cli.patch.html",
     "title": "cli.patch",
@@ -251,30 +93,6 @@
       "API",
       "CLI commands",
       "cli.patch"
-    ]
-  },
-  {
-    "objectID": "reference/templates.html",
-    "href": "reference/templates.html",
-    "title": "templates",
-    "section": "",
-    "text": "templates\nWorkflow template files for syncweaver.\nTemplates can be listed and copied into downstream host repository or package repos using the helper functions below or via the CLI:\nsyncweaver templates list\nsyncweaver templates add host-repo-pattern1-outbound --output .github/workflows/\nUse available_templates_markdown() to render the current template inventory.\n\n\n\n\n\nName\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
-    "crumbs": [
-      "API",
-      "Templates",
-      "templates"
-    ]
-  },
-  {
-    "objectID": "reference/templates.html#functions",
-    "href": "reference/templates.html#functions",
-    "title": "templates",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
-    "crumbs": [
-      "API",
-      "Templates",
-      "templates"
     ]
   },
   {
@@ -302,11 +120,66 @@
     ]
   },
   {
+    "objectID": "reference/templates.html",
+    "href": "reference/templates.html",
+    "title": "templates",
+    "section": "",
+    "text": "templates\nWorkflow template files for syncweaver.\nTemplates can be listed and copied into downstream host repository or package repos using the helper functions below or via the CLI:\nsyncweaver templates list\nsyncweaver templates add syncweaver-update-source --output .github/workflows/\nsyncweaver templates add syncweaver-notify-host-update-source --output .github/workflows/\nUse available_templates_markdown() to render the current template inventory.\n\n\n\n\n\nName\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "crumbs": [
+      "API",
+      "Templates",
+      "templates"
+    ]
+  },
+  {
+    "objectID": "reference/templates.html#functions",
+    "href": "reference/templates.html#functions",
+    "title": "templates",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "crumbs": [
+      "API",
+      "Templates",
+      "templates"
+    ]
+  },
+  {
+    "objectID": "reference/git.html",
+    "href": "reference/git.html",
+    "title": "git",
+    "section": "",
+    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\n\n\n\nName\nDescription\n\n\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.run_git(args, cwd=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "git"
+    ]
+  },
+  {
+    "objectID": "reference/git.html#functions",
+    "href": "reference/git.html#functions",
+    "title": "git",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.run_git(args, cwd=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "git"
+    ]
+  },
+  {
     "objectID": "cite.html",
     "href": "cite.html",
     "title": "syncweaver",
     "section": "",
     "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\nFull citation metadata is available in CITATION.cff."
+  },
+  {
+    "objectID": "cli.html",
+    "href": "cli.html",
+    "title": "Command-line interface",
+    "section": "",
+    "text": "syncweaver --help\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  remove     Remove a tracked external repository from the current host...\n  templates  List and add workflow templates to a repo.\n  update     Update a tracked external repository in the current host...\n  validate   Validate a lockfile against the syncweaver lockfile JSON...\n\n\nadd\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH           Destination path in the host repository, e.g.\n                        code/package1.  [required]\n  --repo-url TEXT       External repository URL or local path to clone.\n                        [required]\n  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults\n                        to remote HEAD.\n  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.\n                        src/package1. When omitted, vendors repository root.\n  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.\n                        [default: .syncweaver-lock.json]\n  --overwrite           Overwrite destination path if it already exists.\n  -h, --help            Show this message and exit.\n\n\n\npatch\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, annotate, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  annotate-rejected  Record rejected patch metadata in lockfile extension...\n  create             Create or update a canonical patch file for a...\n  list               List tracked patch file records for a source path.\n\n\npatch annotate-rejected\nUsage: syncweaver patch annotate-rejected [OPTIONS]\n\n  Record rejected patch metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH     Relative patch path, e.g.\n                   code/package1/.syncweaver/package1.diff.  [required]\n  --pr-url TEXT    URL of the upstream pull request associated with this\n                   patch.  [required]\n  --reason TEXT    Free-text reason for rejection.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\npatch create\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH       Tracked source path in the host repository, e.g.\n                    code/package1.  [required]\n  --repo-url TEXT   Repository URL as it appears in .syncweaver-lock.json.\n                    [required]\n  --lockfile PATH   Path to .syncweaver-lock.json in the host repository.\n                    [default: .syncweaver-lock.json]\n  --patch-dir PATH  Optional directory for the generated patch file.\n  -h, --help        Show this message and exit.\n\n\n\npatch list\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\n\nremove\nUsage: syncweaver remove [OPTIONS]\n\n  Remove a tracked external repository from the current host repository.\n\nOptions:\n  --path PATH      Tracked destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\ntemplates\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.\n\n\ntemplates add\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.\n\n\n\ntemplates list\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit.\n\n\n\n\nupdate\nUsage: syncweaver update [OPTIONS]\n\n  Update a tracked external repository in the current host repository.\n\nOptions:\n  --path PATH           Tracked destination path in the host repository, e.g.\n                        code/package1.  [required]\n  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults\n                        to lockfile ref.\n  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.\n                        src/package1. Defaults to lockfile remote_subdir when\n                        present.\n  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.\n                        [default: .syncweaver-lock.json]\n  -h, --help            Show this message and exit.\n\n\n\nvalidate\nUsage: syncweaver validate [OPTIONS]\n\n  Validate a lockfile against the syncweaver lockfile JSON schema.\n\nOptions:\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --schema PATH    Optional path to a JSON schema file. Defaults to bundled\n                   schema.\n  -h, --help       Show this message and exit."
   },
   {
     "objectID": "usage.html",
@@ -316,10 +189,137 @@
     "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  remove     Remove a tracked external repository from the current host...\n  templates  List and add workflow templates to a repo.\n  update     Update a tracked external repository in the current host...\n  validate   Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
   },
   {
-    "objectID": "cli.html",
-    "href": "cli.html",
-    "title": "Command-line interface",
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "syncweaver",
     "section": "",
-    "text": "syncweaver --help\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add        Add an external repository to the current host repository.\n  patch      Create, annotate, and list source patch artifacts.\n  remove     Remove a tracked external repository from the current host...\n  templates  List and add workflow templates to a repo.\n  update     Update a tracked external repository in the current host...\n  validate   Validate a lockfile against the syncweaver lockfile JSON...\n\n\nadd\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH           Destination path in the host repository, e.g.\n                        code/package1.  [required]\n  --repo-url TEXT       External repository URL or local path to clone.\n                        [required]\n  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults\n                        to remote HEAD.\n  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.\n                        src/package1. When omitted, vendors repository root.\n  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.\n                        [default: .syncweaver-lock.json]\n  --overwrite           Overwrite destination path if it already exists.\n  -h, --help            Show this message and exit.\n\n\n\npatch\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, annotate, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  annotate-rejected  Record rejected patch metadata in lockfile extension...\n  create             Create or update a canonical patch file for a...\n  list               List tracked patch file records for a source path.\n\n\npatch annotate-rejected\nUsage: syncweaver patch annotate-rejected [OPTIONS]\n\n  Record rejected patch metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH     Relative patch path, e.g.\n                   code/package1/.syncweaver/package1.diff.  [required]\n  --pr-url TEXT    URL of the upstream pull request associated with this\n                   patch.  [required]\n  --reason TEXT    Free-text reason for rejection.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\npatch create\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH       Tracked source path in the host repository, e.g.\n                    code/package1.  [required]\n  --repo-url TEXT   Repository URL as it appears in .syncweaver-lock.json.\n                    [required]\n  --lockfile PATH   Path to .syncweaver-lock.json in the host repository.\n                    [default: .syncweaver-lock.json]\n  --patch-dir PATH  Optional directory for the generated patch file.\n  -h, --help        Show this message and exit.\n\n\n\npatch list\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\n\nremove\nUsage: syncweaver remove [OPTIONS]\n\n  Remove a tracked external repository from the current host repository.\n\nOptions:\n  --path PATH      Tracked destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\ntemplates\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.\n\n\ntemplates add\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.\n\n\n\ntemplates list\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit.\n\n\n\n\nupdate\nUsage: syncweaver update [OPTIONS]\n\n  Update a tracked external repository in the current host repository.\n\nOptions:\n  --path PATH           Tracked destination path in the host repository, e.g.\n                        code/package1.  [required]\n  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults\n                        to lockfile ref.\n  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.\n                        src/package1. Defaults to lockfile remote_subdir when\n                        present.\n  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.\n                        [default: .syncweaver-lock.json]\n  -h, --help            Show this message and exit.\n\n\n\nvalidate\nUsage: syncweaver validate [OPTIONS]\n\n  Validate a lockfile against the syncweaver lockfile JSON schema.\n\nOptions:\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --schema PATH    Optional path to a JSON schema file. Defaults to bundled\n                   schema.\n  -h, --help       Show this message and exit."
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
+  },
+  {
+    "objectID": "help.html",
+    "href": "help.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "reference/cli.add.html",
+    "href": "reference/cli.add.html",
+    "title": "cli.add",
+    "section": "",
+    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile,\n    overwrite,\n)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
+    "objectID": "reference/cli.add.html#functions",
+    "href": "reference/cli.add.html#functions",
+    "title": "cli.add",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile,\n    overwrite,\n)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
+    "objectID": "reference/lockfile.html",
+    "href": "reference/lockfile.html",
+    "title": "lockfile",
+    "section": "",
+    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/lockfile.html#functions",
+    "href": "reference/lockfile.html#functions",
+    "title": "lockfile",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/cli.main.html",
+    "href": "reference/cli.main.html",
+    "title": "cli.main",
+    "section": "",
+    "text": "cli.main\nTop-level Click CLI for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.main"
+    ]
+  },
+  {
+    "objectID": "reference/cli.main.html#functions",
+    "href": "reference/cli.main.html#functions",
+    "title": "cli.main",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.main"
+    ]
+  },
+  {
+    "objectID": "reference/cli.templates.html",
+    "href": "reference/cli.templates.html",
+    "title": "cli.templates",
+    "section": "",
+    "text": "cli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.templates"
+    ]
+  },
+  {
+    "objectID": "reference/cli.templates.html#functions",
+    "href": "reference/cli.templates.html#functions",
+    "title": "cli.templates",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
+    "crumbs": [
+      "API",
+      "CLI commands",
+      "cli.templates"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html",
+    "href": "reference/patch.html",
+    "title": "patch",
+    "section": "",
+    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "patch"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html#functions",
+    "href": "reference/patch.html#functions",
+    "title": "patch",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.",
+    "crumbs": [
+      "API",
+      "Modules",
+      "patch"
+    ]
   }
 ]
