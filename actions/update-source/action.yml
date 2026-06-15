@@ -1,0 +1,110 @@
+name: update-source
+description: Run syncweaver update for a tracked source path
+
+outputs:
+  source_repo:
+    description: Repository path for the tracked source (for example OWNER/REPO).
+    value: ${{ steps.read_lockfile.outputs.source_repo }}
+  source_url:
+    description: Repository URL for the tracked source path after update.
+    value: ${{ steps.read_lockfile.outputs.source_url }}
+  ref:
+    description: Tracked git ref for the source path after update.
+    value: ${{ steps.read_lockfile.outputs.ref }}
+  remote_subdir:
+    description: Tracked remote subdirectory for the source path after update.
+    value: ${{ steps.read_lockfile.outputs.remote_subdir }}
+
+inputs:
+  source_path:
+    description: Tracked source path in the host repository.
+    required: true
+    default: ""
+  lockfile:
+    description: Path to the syncweaver lockfile.
+    required: false
+    default: .syncweaver-lock.json
+  ref:
+    description: Optional git ref to sync from.
+    required: false
+  remote_subdir:
+    description: Optional remote subdirectory to vendor.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Update tracked source
+      id: update_source
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        source_path="${{ inputs.source_path }}"
+        if [[ -z "${source_path//[[:space:]]/}" ]]; then
+          echo "Error: source_path is a required input and cannot be empty." >&2
+          exit 1
+        fi
+
+        command=(syncweaver update --path "${source_path}" --lockfile "${{ inputs.lockfile }}")
+
+        if [[ -n "${{ inputs.ref }}" ]]; then
+          command+=(--ref "${{ inputs.ref }}")
+        fi
+
+        if [[ -n "${{ inputs.remote_subdir }}" ]]; then
+          command+=(--remote-subdir "${{ inputs.remote_subdir }}")
+        fi
+
+        "${command[@]}"
+
+    - name: Read updated lockfile metadata
+      id: read_lockfile
+      shell: python
+      env:
+        SOURCE_PATH: ${{ inputs.source_path }}
+        LOCKFILE_PATH: ${{ inputs.lockfile }}
+      run: |
+        import json
+        import os
+        import pathlib
+        from urllib.parse import urlparse
+
+        source_path = os.environ["SOURCE_PATH"]
+        lockfile_path = pathlib.Path(os.environ["LOCKFILE_PATH"])
+        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+        if not lockfile_path.exists():
+            raise SystemExit(f"Error: lockfile does not exist: {lockfile_path}")
+
+        lock_data = json.loads(lockfile_path.read_text())
+        source_entry = lock_data.get("sources", {}).get(source_path)
+        if source_entry is None:
+            raise SystemExit(
+                "Error: source path is not tracked in lockfile after update: "
+                f"{source_path}"
+            )
+
+        source_url = str(source_entry.get("repo_url", ""))
+        ref = str(source_entry.get("ref", ""))
+        remote_subdir = str(source_entry.get("remote_subdir", ""))
+
+        source_repo = ""
+        raw_url = source_url.strip()
+        path = ""
+        if raw_url:
+            if "://" in raw_url:
+                parsed = urlparse(raw_url)
+                path = parsed.path
+            elif raw_url.startswith("git@") and ":" in raw_url:
+                path = raw_url.split(":", 1)[1]
+            else:
+                # Handles local paths or already-normalized owner/repo values.
+                path = raw_url
+            source_repo = path.strip("/").removesuffix(".git")
+
+        with output_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"source_repo={source_repo}\n")
+            fh.write(f"source_url={source_url}\n")
+            fh.write(f"ref={ref}\n")
+            fh.write(f"remote_subdir={remote_subdir}\n")

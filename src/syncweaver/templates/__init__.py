@@ -6,7 +6,8 @@ using the helper functions below or via the CLI:
 
 ```sh
 syncweaver templates list
-syncweaver templates add host-repo-pattern1-outbound --output .github/workflows/
+syncweaver templates add syncweaver-update-source --output .github/workflows/
+syncweaver templates add syncweaver-notify-host-update-source --output .github/workflows/
 ```
 
 Use `available_templates_markdown()` to render the current template inventory.
@@ -16,10 +17,8 @@ import importlib.resources
 import pathlib
 
 _TEMPLATE_DESCRIPTIONS = {
-    "host-repo-pattern1-outbound.yml": "Push vendored code changes as an upstream PR",
-    "host-repo-dependencies-refresh.yml": "Regenerate DEPENDENCIES.yml on entrypoint changes",
-    "host-repo-mark-rejected.yml": "Manually mark a patch as rejected (workflow_dispatch)",
-    "package-release-notify.yml": "Dispatch release notifications to relevant host repositories",
+    "syncweaver-notify-host-update-source.yml": "On source release, dispatch a host repo to run syncweaver-update-source",
+    "syncweaver-update-source.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
 }
 
 

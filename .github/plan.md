@@ -77,6 +77,10 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 
 create one action per directory under actions/.
 
+update-source/
+
+- run `syncweaver update` and pass along inputs to CLI args
+
 generate-patches/
 
 - trigger intent: called by host repository workflow on changes under code/package1/\*\*
@@ -133,22 +137,32 @@ scan-dependencies/
 
 ## github actions workflow templates in src/syncweaver/templates
 
-- generate-patches.yml
+- syncweaver-update-source.yml
+
+  - on repository dispatch or workflow dispatch
+  - call `update-source` composite action
+
+- syncweaver-notify-host-update-source.yml
+
+  - on release published in a source repo
+  - dispatch host repository workflows that run `syncweaver-update-source`
+
+- syncweaver-generate-patches.yml
 
   - on push to main paths [source-path]/\*\*
   - call generate-patches action
 
-- contribute-upstream.yml
+- syncweaver-contribute-upstream.yml
 
   - on workflow dispatch
   - call generate-patches action then open-upstream-pr action
 
-- scan-dependencies.yml
+- syncweaver-scan-dependencies.yml
 
   - on push to entrypoint files (main.R)
   - calls scan-dependencies action
 
-- mark-rejected.yml
+- syncweaver-mark-rejected.yml
   - workflow_dispatch inputs: patch_file, pr_url, reason
   - called when a PR created by contribute-upstream or open-upstream-pr gets rejected
   - calls mark-patch-rejected

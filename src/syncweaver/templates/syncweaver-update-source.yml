@@ -1,0 +1,94 @@
+name: update-source
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      source_path:
+        description: Tracked source path in the host repository.
+        required: true
+        type: string
+      lockfile:
+        description: Path to the syncweaver lockfile.
+        required: false
+        default: .syncweaver-lock.json
+        type: string
+      ref:
+        description: Optional git ref to sync from.
+        required: false
+        type: string
+      remote_subdir:
+        description: Optional remote subdirectory to vendor.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-source:
+    runs-on: ubuntu-latest
+    outputs:
+      source_url: ${{ steps.update_source.outputs.source_url }}
+      ref: ${{ steps.update_source.outputs.ref }}
+      remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
+    env:
+      SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || github.event.client_payload.source_path || '' }}
+      LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || github.event.client_payload.lockfile || '.syncweaver-lock.json' }}
+      REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.client_payload.ref || '' }}
+      REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || github.event.client_payload.remote_subdir || '' }}
+    steps:
+      - name: Generate CCBR-bot token
+        id: ccbr_bot
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.ccbr_bot.outputs.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install syncweaver
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
+
+      - name: Run update-source composite action
+        id: update_source
+        uses: CCBR/syncweaver/actions/update-source@latest
+        with:
+          source_path: ${{ env.SOURCE_PATH }}
+          lockfile: ${{ env.LOCKFILE }}
+          ref: ${{ env.REF }}
+          remote_subdir: ${{ env.REMOTE_SUBDIR }}
+
+      - name: Commit changes and open PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.ccbr_bot.outputs.token }}
+          branch: syncweaver/update-source/${{ env.SOURCE_PATH }}
+          delete-branch: true
+          commit-message: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          title: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          body: |
+            Automated source update from the update-source workflow.
+
+            Inputs used:
+            - source_path: ${{ env.SOURCE_PATH }}
+            - lockfile: ${{ env.LOCKFILE }}
+            - ref: ${{ env.REF }}
+            - remote_subdir: ${{ env.REMOTE_SUBDIR }}
+
+            Resolved from lockfile after update:
+            - source_url: ${{ steps.update_source.outputs.source_url }}
+            - ref: ${{ steps.update_source.outputs.ref }}
+            - remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
