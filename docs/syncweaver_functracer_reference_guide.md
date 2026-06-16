@@ -8,7 +8,8 @@ These two tools form the automation backbone of Approach B (per-capsule repos). 
 
 ### What it does
 
-Given a capsule's entry script (`main.R`) and a package, `functracer` statically analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).
+- Given a capsule's entry script (`main.R`) and a package, `functracer` analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).
+- Given a new package tag (e.g. a new release version) and the previous tag, `functracer` determines whether the new tag contains changes that would affect the capsule based on the list of functions used by the capsule entry script.
 
 ### Why it exists
 
