@@ -1,0 +1,99 @@
+name: notify-host-update-source
+description: Dispatch syncweaver-update-source to a host repository
+
+inputs:
+  source_repository:
+    description: Source repository with updates in OWNER/REPO format.
+    required: true
+  host_repository:
+    description: Host repository to notify in OWNER/REPO format.
+    required: true
+  source_path:
+    description: Source path in the host repository lockfile to update.
+    required: true
+  lockfile:
+    description: Host repository lockfile path.
+    required: false
+    default: .syncweaver-lock.json
+  remote_subdir:
+    description: Optional remote subdirectory to vendor in the host repo.
+    required: false
+    default: ""
+  source_ref:
+    description: Source ref to sync in the host repository.
+    required: true
+  app_id:
+    description: GitHub App ID used to mint a dispatch token.
+    required: true
+  app_private_key:
+    description: GitHub App private key used to mint a dispatch token.
+    required: true
+  app_owner:
+    description: GitHub owner for GitHub App token generation.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Validate required inputs
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [[ -z "${{ inputs.host_repository }}" ]]; then
+          echo "Error: host_repository is required." >&2
+          exit 1
+        fi
+        if [[ -z "${{ inputs.source_repository }}" ]]; then
+          echo "Error: source_repository is required." >&2
+          exit 1
+        fi
+        if [[ -z "${{ inputs.source_path }}" ]]; then
+          echo "Error: source_path is required." >&2
+          exit 1
+        fi
+        if [[ -z "${{ inputs.source_ref }}" ]]; then
+          echo "Error: source_ref is required." >&2
+          exit 1
+        fi
+
+    - name: Generate CCBR-bot token
+      id: ccbr_bot
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.app_id }}
+        private-key: ${{ inputs.app_private_key }}
+        owner: ${{ inputs.app_owner }}
+
+    - name: Dispatch host repository update event
+      env:
+        GH_TOKEN: ${{ steps.ccbr_bot.outputs.token }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        payload=$(jq -n \
+          --arg event_type "syncweaver-update-source" \
+          --arg source_repository "${{ inputs.source_repository }}" \
+          --arg source_path "${{ inputs.source_path }}" \
+          --arg lockfile "${{ inputs.lockfile }}" \
+          --arg ref "${{ inputs.source_ref }}" \
+          --arg remote_subdir "${{ inputs.remote_subdir }}" \
+          '{event_type: $event_type, client_payload: {source_repository: $source_repository, source_path: $source_path, lockfile: $lockfile, ref: $ref, remote_subdir: $remote_subdir}}')
+
+        gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          "/repos/${{ inputs.host_repository }}/dispatches" \
+          --input - <<< "$payload"
+
+    - name: Print dispatch summary
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "Dispatched syncweaver-update-source to ${{ inputs.host_repository }}"
+        echo "source_repository=${{ inputs.source_repository }}"
+        echo "source_path=${{ inputs.source_path }}"
+        echo "lockfile=${{ inputs.lockfile }}"
+        echo "ref=${{ inputs.source_ref }}"
+        echo "remote_subdir=${{ inputs.remote_subdir }}"

@@ -1,26 +1,19 @@
-name: notify-host-update-source
+name: syncweaver-dispatch-update-source
 
 on:
-  release:
-    types:
-      - published
+  repository_dispatch:
   workflow_dispatch:
     inputs:
-      host_repository:
-        description: Host repository to notify in OWNER/REPO format.
+      source_repo_url:
+        description: URL of the source repository to dispatch to hosts.
+        required: true
+        type: string
+      source_ref:
+        description: Source ref to dispatch to hosts.
         required: true
         type: string
       source_path:
-        description: Source path in the host repository lockfile to update.
-        required: true
-        type: string
-      lockfile:
-        description: Host repository lockfile path.
-        required: false
-        default: .syncweaver-lock.json
-        type: string
-      remote_subdir:
-        description: Optional remote subdirectory to vendor in the host repo.
+        description: Optional source path override for all hosts.
         required: false
         type: string
 
@@ -28,65 +21,155 @@ permissions:
   contents: read
 
 jobs:
+  prepare-host-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      source_repository: ${{ steps.resolve_source_repository.outputs.source_repository }}
+      hosts: ${{ steps.build_matrix.outputs.hosts }}
+      count: ${{ steps.build_matrix.outputs.count }}
+    env:
+      SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo_url || '' }}
+      SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
+      SOURCE_PATH_OVERRIDE: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_path || github.event.inputs.source_path || '' }}
+    steps:
+      - name: Validate source ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${SOURCE_REF//[[:space:]]/}" ]]; then
+            echo "Error: source_ref is required. Provide client_payload.ref for repository_dispatch or source_ref for workflow_dispatch." >&2
+            exit 1
+          fi
+
+      - name: Resolve source repository
+        id: resolve_source_repository
+        shell: python
+        run: |
+          import os
+          import pathlib
+
+          raw_value = os.environ.get("SOURCE_REPOSITORY_RAW", "").strip()
+          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+          if not raw_value:
+            raise SystemExit(
+              "Error: source repository is required. Provide client_payload.source_repository for repository_dispatch "
+              "or source_repo_url for workflow_dispatch."
+            )
+
+          def owner_repo_from_input(value: str) -> str:
+            candidate = value.strip()
+            if candidate.endswith(".git"):
+              candidate = candidate[:-4]
+
+            if "@" in candidate and ":" in candidate and "/" in candidate:
+              # Convert SSH SCP-like form git@host:owner/repo to owner/repo.
+              return candidate.rsplit(":", 1)[-1].strip("/")
+
+            if "://" in candidate:
+              path = candidate.split("://", 1)[1]
+              if "/" in path:
+                path = path.split("/", 1)[1]
+              return path.strip("/")
+
+            return candidate.strip("/")
+
+          source_repository = owner_repo_from_input(raw_value)
+          if not source_repository or "/" not in source_repository:
+            raise SystemExit(
+              "Error: unable to resolve source repository in OWNER/REPO format from input: "
+              f"{raw_value}"
+            )
+
+          with output_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"source_repository={source_repository}\n")
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install syncweaver and YAML parser dependencies
+        run: |
+          python -m pip install --upgrade pyyaml
+          python -m pip install --upgrade "syncweaver @ git+https://github.com/CCBR/syncweaver.git"
+
+      - name: Build host matrix from registry
+        id: build_matrix
+        shell: python
+        env:
+          SOURCE_REPOSITORY: ${{ steps.resolve_source_repository.outputs.source_repository }}
+          HOST_REGISTRY_FILE: .github/host-repositories.yml
+        run: |
+          import json
+          import os
+          import pathlib
+
+          from syncweaver.host_registry import build_host_matrix_from_registry
+
+          source_repository = os.environ["SOURCE_REPOSITORY"].strip()
+          source_path_override = os.environ["SOURCE_PATH_OVERRIDE"].strip()
+          registry_path = pathlib.Path(os.environ["HOST_REGISTRY_FILE"])
+          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+          try:
+            matrix_hosts = build_host_matrix_from_registry(
+              registry_path=registry_path,
+              source_repository=source_repository,
+              source_path_override=source_path_override,
+            )
+          except (FileNotFoundError, ValueError) as exc:
+            raise SystemExit(f"Error: {exc}") from exc
+
+          if not matrix_hosts:
+            source_ref = os.environ.get("SOURCE_REF", "")
+            raise SystemExit(
+              "Error: No host repositories matched .github/host-repositories.yml for this dispatch. "
+              "Actionable guidance: "
+              "1) Verify .github/host-repositories.yml exists and defines a top-level 'hosts' list. "
+              "2) Ensure each host has 'repository' and 'source_path' fields. "
+              "3) If a host defines 'source_repository', it must match SOURCE_REPOSITORY for this dispatch. "
+              "4) If source_path override is used, confirm it is non-empty and valid. "
+              f"Debug context: SOURCE_REPOSITORY={source_repository}; "
+              f"SOURCE_REF={source_ref}; "
+              f"SOURCE_PATH_OVERRIDE={source_path_override}; "
+              f"HOST_REGISTRY_FILE={registry_path}"
+            )
+
+          with output_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"count={len(matrix_hosts)}\n")
+            fh.write(f"hosts={json.dumps(matrix_hosts)}\n")
+
+      - name: Print selected hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "source_repository=${{ steps.resolve_source_repository.outputs.source_repository }}"
+          echo "source_ref=${SOURCE_REF}"
+          echo "selected_hosts=${{ steps.build_matrix.outputs.count }}"
+
   notify-host-update-source:
     runs-on: ubuntu-latest
+    needs: prepare-host-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJson(needs.prepare-host-matrix.outputs.hosts) }}
     env:
-      HOST_REPOSITORY: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.host_repository || vars.SYNCWEAVER_HOST_REPOSITORY || '' }}
-      SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || vars.SYNCWEAVER_SOURCE_PATH || '' }}
-      LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || vars.SYNCWEAVER_HOST_LOCKFILE || '.syncweaver-lock.json' }}
-      REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || vars.SYNCWEAVER_REMOTE_SUBDIR || '' }}
-      SOURCE_REF: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref_name }}
+      SOURCE_REPOSITORY: ${{ needs.prepare-host-matrix.outputs.source_repository }}
+      SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
     steps:
-      - name: Validate required configuration
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ -z "${HOST_REPOSITORY//[[:space:]]/}" ]]; then
-            echo "Error: host repository is required. Set workflow_dispatch input host_repository or repository variable SYNCWEAVER_HOST_REPOSITORY." >&2
-            exit 1
-          fi
-
-          if [[ -z "${SOURCE_PATH//[[:space:]]/}" ]]; then
-            echo "Error: source path is required. Set workflow_dispatch input source_path or repository variable SYNCWEAVER_SOURCE_PATH." >&2
-            exit 1
-          fi
-
-      - name: Generate CCBR-bot token
-        id: ccbr_bot
-        uses: actions/create-github-app-token@v1
+      - name: Dispatch host update
+        uses: CCBR/syncweaver/actions/notify-host-update-source@latest
         with:
-          app-id: ${{ secrets.CCBR_BOT_APP_ID }}
-          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-
-      - name: Dispatch host repository update event
-        env:
-          GH_TOKEN: ${{ steps.ccbr_bot.outputs.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          payload=$(jq -n \
-            --arg event_type "syncweaver-update-source" \
-            --arg source_path "$SOURCE_PATH" \
-            --arg lockfile "$LOCKFILE" \
-            --arg ref "$SOURCE_REF" \
-            --arg remote_subdir "$REMOTE_SUBDIR" \
-            '{event_type: $event_type, client_payload: {source_path: $source_path, lockfile: $lockfile, ref: $ref, remote_subdir: $remote_subdir}}')
-
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/${HOST_REPOSITORY}/dispatches" \
-            --input - <<< "$payload"
-
-      - name: Print dispatch summary
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Dispatched syncweaver-update-source to ${HOST_REPOSITORY}"
-          echo "source_path=${SOURCE_PATH}"
-          echo "lockfile=${LOCKFILE}"
-          echo "ref=${SOURCE_REF}"
-          echo "remote_subdir=${REMOTE_SUBDIR}"
+          source_repository: ${{ env.SOURCE_REPOSITORY }}
+          host_repository: ${{ matrix.host.repository }}
+          source_path: ${{ matrix.host.source_path }}
+          lockfile: ${{ matrix.host.lockfile }}
+          remote_subdir: ${{ matrix.host.remote_subdir }}
+          source_ref: ${{ env.SOURCE_REF }}
+          app_id: ${{ secrets.CCBR_BOT_APP_ID }}
+          app_private_key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          app_owner: ${{ github.repository_owner }}
