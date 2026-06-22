@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       source_path:
-        description: Tracked source path in the host repository.
+        description: Optional tracked source path override for manual runs; if omitted, source_path is resolved from the lockfile.
         required: false
         type: string
       repo_url:
-        description: Optional source repository URL used to resolve source_path from lockfile.
+        description: Optional source repository identifier (URL or OWNER/REPO) used to resolve source_path from lockfile; for repository_dispatch this defaults to client_payload.source_repository.
         required: false
         type: string
       lockfile:
@@ -31,18 +31,158 @@ permissions:
   pull-requests: write
 
 jobs:
-  update-source:
+  resolve-source-paths:
     runs-on: ubuntu-latest
     outputs:
-      source_url: ${{ steps.update_source.outputs.source_url }}
-      ref: ${{ steps.update_source.outputs.ref }}
-      remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
+      source_paths: ${{ steps.resolve_source_paths.outputs.source_paths }}
+      source_count: ${{ steps.resolve_source_paths.outputs.source_count }}
+      lockfile: ${{ env.LOCKFILE }}
+      ref: ${{ env.REF }}
+      remote_subdir: ${{ env.REMOTE_SUBDIR }}
+      repo_url: ${{ env.REPO_URL }}
     env:
+      # workflow_dispatch may provide source_path directly; repository_dispatch usually
+      # omits it so the workflow resolves source_path from lockfile + source_repository.
       SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || github.event.client_payload.source_path || '' }}
+      # Prefer explicit repo_url, then fall back to source_repository from dispatch payload.
       REPO_URL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repo_url || github.event.client_payload.repo_url || github.event.client_payload.source_repository || '' }}
       LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || github.event.client_payload.lockfile || '.syncweaver-lock.json' }}
       REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.client_payload.ref || '' }}
       REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || github.event.client_payload.remote_subdir || '' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Resolve source paths
+        id: resolve_source_paths
+        shell: python
+        env:
+          SOURCE_PATH_INPUT: ${{ env.SOURCE_PATH }}
+          REPO_URL_INPUT: ${{ env.REPO_URL }}
+          LOCKFILE_PATH: ${{ env.LOCKFILE }}
+        run: |
+          import json
+          import os
+          import pathlib
+
+          def normalize_remote_url(url: str) -> str:
+            stripped = url.strip()
+            normalized = stripped
+            if stripped.startswith("git@") and ":" in stripped:
+              host_part, path_part = stripped.split(":", 1)
+              host = host_part.split("@", 1)[1]
+              path = path_part.removesuffix(".git")
+              normalized = f"https://{host}/{path}"
+            elif stripped.startswith("http://") or stripped.startswith("https://"):
+              normalized = stripped.removesuffix(".git")
+            elif "/" in stripped and "@" not in stripped and "://" not in stripped:
+              parts = [part for part in stripped.split("/") if part]
+              if len(parts) == 2:
+                normalized = f"https://github.com/{parts[0]}/{parts[1]}"
+              elif len(parts) >= 3 and "." in parts[0]:
+                normalized = f"https://{'/'.join(parts)}"
+              normalized = normalized.removesuffix(".git")
+            return normalized
+
+          def upgrade_legacy_lockfile_shape(lock_data: dict) -> dict:
+            upgraded = lock_data
+            has_sources = isinstance(upgraded.get("sources"), dict)
+            has_legacy_repos = isinstance(upgraded.get("repos"), dict)
+            if has_legacy_repos and not has_sources:
+              sources: dict[str, dict] = {}
+              legacy_repos = upgraded.get("repos", {})
+              for repo_url, repo_entry in legacy_repos.items():
+                legacy_sources = repo_entry.get("sources", {})
+                for source_path, source_entry in legacy_sources.items():
+                  upgraded_entry = dict(source_entry)
+                  if "branch" in upgraded_entry and "ref" not in upgraded_entry:
+                    upgraded_entry["ref"] = upgraded_entry.pop("branch")
+                  upgraded_entry["repo_url"] = repo_url
+                  existing_entry = sources.get(source_path)
+                  if existing_entry and existing_entry != upgraded_entry:
+                    raise ValueError(
+                      "Legacy lockfile has conflicting tracked entries for "
+                      f"source path: {source_path}"
+                    )
+                  sources[source_path] = upgraded_entry
+              upgraded["sources"] = sources
+              upgraded.pop("repos", None)
+            return upgraded
+
+          source_path_input = os.environ["SOURCE_PATH_INPUT"].strip()
+          repo_url_input = os.environ["REPO_URL_INPUT"].strip()
+          lockfile_path = pathlib.Path(os.environ["LOCKFILE_PATH"])
+          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+          if source_path_input:
+            resolved_source_paths = [source_path_input]
+          else:
+            if not lockfile_path.exists():
+              raise SystemExit(
+                "Error: lockfile does not exist and source_path was not provided: "
+                f"{lockfile_path}"
+              )
+
+            lock_data = json.loads(lockfile_path.read_text())
+            lock_data = upgrade_legacy_lockfile_shape(lock_data)
+            sources = lock_data.get("sources", {})
+            has_sources = isinstance(sources, dict) and bool(sources)
+            if not has_sources:
+              raise SystemExit(
+                "Error: no tracked sources found in lockfile and source_path was not provided"
+              )
+
+            if repo_url_input:
+              normalized_repo_url = normalize_remote_url(repo_url_input)
+              matching_source_paths: list[str] = []
+              for path_key, source_entry in sources.items():
+                entry_repo_url = str(source_entry.get("repo_url", "")).strip()
+                if entry_repo_url:
+                  normalized_entry_url = normalize_remote_url(entry_repo_url)
+                  if normalized_entry_url == normalized_repo_url:
+                    matching_source_paths.append(str(path_key))
+
+              if not matching_source_paths:
+                raise SystemExit(
+                  "Error: source_path was not provided and no tracked sources matched "
+                  f"repo_url: {repo_url_input}"
+                )
+
+              resolved_source_paths = sorted(matching_source_paths)
+            else:
+              source_paths = sorted(str(path) for path in sources.keys())
+              if len(source_paths) != 1:
+                source_paths_csv = ", ".join(source_paths)
+                raise SystemExit(
+                  "Error: source_path was not provided and lockfile tracks multiple sources. "
+                  "Please provide source_path explicitly or set repo_url. "
+                  f"Tracked sources: {source_paths_csv}"
+                )
+              resolved_source_paths = source_paths
+
+          with output_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"source_paths={json.dumps(resolved_source_paths)}\n")
+            fh.write(f"source_count={len(resolved_source_paths)}\n")
+
+      - name: Print resolved source paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "source_count=${{ steps.resolve_source_paths.outputs.source_count }}"
+          echo "source_paths=${{ steps.resolve_source_paths.outputs.source_paths }}"
+
+  update-source:
+    runs-on: ubuntu-latest
+    needs: resolve-source-paths
+    strategy:
+      fail-fast: false
+      matrix:
+        source_path: ${{ fromJson(needs.resolve-source-paths.outputs.source_paths) }}
+    env:
+      LOCKFILE: ${{ needs.resolve-source-paths.outputs.lockfile }}
+      REF: ${{ needs.resolve-source-paths.outputs.ref }}
+      REMOTE_SUBDIR: ${{ needs.resolve-source-paths.outputs.remote_subdir }}
+      REPO_URL: ${{ needs.resolve-source-paths.outputs.repo_url }}
     steps:
       - name: Generate CCBR-bot token
         id: ccbr_bot
@@ -67,41 +207,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
 
-      - name: Resolve source path
-        id: resolve_source_path
-        shell: python
-        env:
-          SOURCE_PATH_INPUT: ${{ env.SOURCE_PATH }}
-          REPO_URL_INPUT: ${{ env.REPO_URL }}
-          LOCKFILE_PATH: ${{ env.LOCKFILE }}
-        run: |
-          import os
-          import pathlib
-
-          from syncweaver.lockfile import resolve_source_path_from_lockfile
-
-          source_path_input = os.environ["SOURCE_PATH_INPUT"].strip()
-          repo_url_input = os.environ["REPO_URL_INPUT"].strip()
-          lockfile_path = pathlib.Path(os.environ["LOCKFILE_PATH"])
-          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
-
-          try:
-            resolved_source_path = resolve_source_path_from_lockfile(
-              lockfile=lockfile_path,
-              source_path=source_path_input,
-              repo_url=repo_url_input,
-            )
-          except ValueError as exc:
-            raise SystemExit(f"Error: {exc}") from exc
-
-          with output_path.open("a", encoding="utf-8") as fh:
-            fh.write(f"source_path={resolved_source_path}\n")
-
       - name: Run update-source composite action
         id: update_source
         uses: CCBR/syncweaver/actions/update-source@latest
         with:
-          source_path: ${{ steps.resolve_source_path.outputs.source_path }}
+          source_path: ${{ matrix.source_path }}
           lockfile: ${{ env.LOCKFILE }}
           ref: ${{ env.REF }}
           remote_subdir: ${{ env.REMOTE_SUBDIR }}
@@ -110,15 +220,15 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.ccbr_bot.outputs.token }}
-          branch: syncweaver/update-source/${{ steps.resolve_source_path.outputs.source_path }}
+          branch: syncweaver/update-source/${{ matrix.source_path }}
           delete-branch: true
-          commit-message: "chore(syncweaver): update ${{ steps.resolve_source_path.outputs.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
-          title: "chore(syncweaver): update ${{ steps.resolve_source_path.outputs.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          commit-message: "chore(syncweaver): update ${{ matrix.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          title: "chore(syncweaver): update ${{ matrix.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
           body: |
             Automated source update from the update-source workflow.
 
             Inputs used:
-            - source_path: ${{ steps.resolve_source_path.outputs.source_path }}
+            - source_path: ${{ matrix.source_path }}
             - repo_url: ${{ env.REPO_URL }}
             - lockfile: ${{ env.LOCKFILE }}
             - ref: ${{ env.REF }}

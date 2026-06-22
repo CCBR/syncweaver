@@ -168,6 +168,43 @@ def test_resolve_source_path_uses_repo_url_match(tmp_path):
     assert resolved == "code/package2"
 
 
+def test_resolve_source_path_uses_owner_repo_match(tmp_path):
+    """Verify OWNER/REPO shorthand resolves against lockfile URL entries.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    lock_data = {
+        "name": "CCBR/host-repo1",
+        "homePage": "https://github.com/CCBR/host-repo1",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+            },
+            "code/package2": {
+                "repo_url": "https://github.com/CCBR/package2",
+                "ref": "main",
+                "git_sha": "4b2f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b11",
+            },
+        },
+    }
+    lockfile_path = tmp_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    resolved = resolve_source_path_from_lockfile(
+        lockfile_path,
+        source_path="",
+        repo_url="CCBR/package2",
+    )
+
+    assert resolved == "code/package2"
+
+
 def test_resolve_source_path_fails_when_repo_url_has_no_matches(tmp_path):
     """Verify repo_url lookup fails with a readable error when no sources match.
 

@@ -18,6 +18,15 @@ def _normalize_remote_url(url: str) -> str:
         normalized = f"https://{host}/{path}"
     elif stripped.startswith("http://") or stripped.startswith("https://"):
         normalized = stripped.removesuffix(".git")
+    elif "/" in stripped and "@" not in stripped and "://" not in stripped:
+        parts = [part for part in stripped.split("/") if part]
+        if len(parts) == 2:
+            # Interpret OWNER/REPO shorthand as a GitHub repository URL.
+            normalized = f"https://github.com/{parts[0]}/{parts[1]}"
+        elif len(parts) >= 3 and "." in parts[0]:
+            # Interpret host/OWNER/REPO shorthand as https://host/OWNER/REPO.
+            normalized = f"https://{'/'.join(parts)}"
+        normalized = normalized.removesuffix(".git")
     return normalized
 
 

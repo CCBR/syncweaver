@@ -8,9 +8,6 @@ inputs:
   host_repository:
     description: Host repository to notify in OWNER/REPO format.
     required: true
-  source_path:
-    description: Source path in the host repository lockfile to update.
-    required: true
   lockfile:
     description: Host repository lockfile path.
     required: false
@@ -48,10 +45,6 @@ runs:
           echo "Error: source_repository is required." >&2
           exit 1
         fi
-        if [[ -z "${{ inputs.source_path }}" ]]; then
-          echo "Error: source_path is required." >&2
-          exit 1
-        fi
         if [[ -z "${{ inputs.source_ref }}" ]]; then
           echo "Error: source_ref is required." >&2
           exit 1
@@ -75,11 +68,10 @@ runs:
         payload=$(jq -n \
           --arg event_type "syncweaver-update-source" \
           --arg source_repository "${{ inputs.source_repository }}" \
-          --arg source_path "${{ inputs.source_path }}" \
           --arg lockfile "${{ inputs.lockfile }}" \
           --arg ref "${{ inputs.source_ref }}" \
           --arg remote_subdir "${{ inputs.remote_subdir }}" \
-          '{event_type: $event_type, client_payload: {source_repository: $source_repository, source_path: $source_path, lockfile: $lockfile, ref: $ref, remote_subdir: $remote_subdir}}')
+          '{event_type: $event_type, client_payload: {source_repository: $source_repository, lockfile: $lockfile, ref: $ref, remote_subdir: $remote_subdir}}')
 
         gh api \
           --method POST \
@@ -93,7 +85,6 @@ runs:
         set -euo pipefail
         echo "Dispatched syncweaver-update-source to ${{ inputs.host_repository }}"
         echo "source_repository=${{ inputs.source_repository }}"
-        echo "source_path=${{ inputs.source_path }}"
         echo "lockfile=${{ inputs.lockfile }}"
         echo "ref=${{ inputs.source_ref }}"
         echo "remote_subdir=${{ inputs.remote_subdir }}"

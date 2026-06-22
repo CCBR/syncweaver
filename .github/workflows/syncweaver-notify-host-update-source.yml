@@ -4,8 +4,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      source_repo_url:
-        description: URL of the source repository to dispatch to hosts.
+      source_repo:
+        description: The source repository to dispatch to hosts (OWNER/REPO or https://github.com/OWNER/REPO)
         required: true
         type: string
       source_ref:
@@ -24,7 +24,7 @@ jobs:
       hosts: ${{ steps.build_matrix.outputs.hosts }}
       count: ${{ steps.build_matrix.outputs.count }}
     env:
-      SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo_url || '' }}
+      SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo || '' }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
     steps:
       - name: Validate source ref
@@ -48,7 +48,7 @@ jobs:
           if not raw_value:
             raise SystemExit(
               "Error: source repository is required. Provide client_payload.source_repository for repository_dispatch "
-              "or source_repo_url for workflow_dispatch."
+              "or source_repo for workflow_dispatch."
             )
 
           def owner_repo_from_input(value: str) -> str:
