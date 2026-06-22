@@ -10,7 +10,6 @@ import yaml
 def build_host_matrix_from_registry(
     registry_path: pathlib.Path,
     source_repository: str,
-    source_path_override: str | None = None,
 ) -> list[dict[str, str]]:
     """Build host-dispatch matrix entries from a host repository registry file.
 
@@ -18,8 +17,6 @@ def build_host_matrix_from_registry(
         registry_path (pathlib.Path): Path to `.github/host-repositories.yml`.
         source_repository (str): Source repository in OWNER/REPO format used to
             filter host entries with `source_repository` constraints.
-        source_path_override (str | None): Optional source path applied to all
-            selected hosts.
 
     Returns:
         list[dict[str, str]]: Matrix rows for workflow fan-out dispatch.
@@ -39,16 +36,12 @@ def build_host_matrix_from_registry(
         )
 
     normalized_source_repository = source_repository.strip()
-    normalized_source_path_override = ""
-    if source_path_override is not None:
-        normalized_source_path_override = source_path_override.strip()
 
     matrix_hosts: list[dict[str, str]] = []
     for host in hosts:
         include_host = isinstance(host, dict)
         host_repository = ""
         host_source_repository = ""
-        host_source_path = ""
         lockfile = ".syncweaver-lock.json"
         remote_subdir = ""
 
@@ -64,12 +57,6 @@ def build_host_matrix_from_registry(
             )
 
         if include_host:
-            host_source_path = normalized_source_path_override
-            if not host_source_path:
-                host_source_path = str(host.get("source_path", "")).strip()
-            include_host = bool(host_source_path)
-
-        if include_host:
             lockfile = str(host.get("lockfile", ".syncweaver-lock.json")).strip()
             if not lockfile:
                 lockfile = ".syncweaver-lock.json"
@@ -77,7 +64,6 @@ def build_host_matrix_from_registry(
             matrix_hosts.append(
                 {
                     "repository": host_repository,
-                    "source_path": host_source_path,
                     "lockfile": lockfile,
                     "remote_subdir": remote_subdir,
                 }

@@ -12,10 +12,6 @@ on:
         description: Source ref to dispatch to hosts.
         required: true
         type: string
-      source_path:
-        description: Optional source path override for all hosts.
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -30,7 +26,6 @@ jobs:
     env:
       SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo_url || '' }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
-      SOURCE_PATH_OVERRIDE: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_path || github.event.inputs.source_path || '' }}
     steps:
       - name: Validate source ref
         shell: bash
@@ -110,7 +105,6 @@ jobs:
           from syncweaver.host_registry import build_host_matrix_from_registry
 
           source_repository = os.environ["SOURCE_REPOSITORY"].strip()
-          source_path_override = os.environ["SOURCE_PATH_OVERRIDE"].strip()
           registry_path = pathlib.Path(os.environ["HOST_REGISTRY_FILE"])
           output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
 
@@ -118,7 +112,6 @@ jobs:
             matrix_hosts = build_host_matrix_from_registry(
               registry_path=registry_path,
               source_repository=source_repository,
-              source_path_override=source_path_override,
             )
           except (FileNotFoundError, ValueError) as exc:
             raise SystemExit(f"Error: {exc}") from exc
@@ -129,12 +122,10 @@ jobs:
               "Error: No host repositories matched .github/host-repositories.yml for this dispatch. "
               "Actionable guidance: "
               "1) Verify .github/host-repositories.yml exists and defines a top-level 'hosts' list. "
-              "2) Ensure each host has 'repository' and 'source_path' fields. "
+              "2) Ensure each host has 'repository' field. "
               "3) If a host defines 'source_repository', it must match SOURCE_REPOSITORY for this dispatch. "
-              "4) If source_path override is used, confirm it is non-empty and valid. "
               f"Debug context: SOURCE_REPOSITORY={source_repository}; "
               f"SOURCE_REF={source_ref}; "
-              f"SOURCE_PATH_OVERRIDE={source_path_override}; "
               f"HOST_REGISTRY_FILE={registry_path}"
             )
 
@@ -166,7 +157,6 @@ jobs:
         with:
           source_repository: ${{ env.SOURCE_REPOSITORY }}
           host_repository: ${{ matrix.host.repository }}
-          source_path: ${{ matrix.host.source_path }}
           lockfile: ${{ matrix.host.lockfile }}
           remote_subdir: ${{ matrix.host.remote_subdir }}
           source_ref: ${{ env.SOURCE_REF }}

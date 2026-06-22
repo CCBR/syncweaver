@@ -55,17 +55,15 @@ def test_build_host_matrix_selects_matching_hosts(tmp_path):
             {
                 "repository": "NIDAP/MOSuite-create",
                 "source_repository": "CCBR/package1",
-                "source_path": "code/package1",
                 "lockfile": ".syncweaver-lock.json",
                 "remote_subdir": "",
             },
             {
                 "repository": "NIDAP/Other-host",
                 "source_repository": "CCBR/package2",
-                "source_path": "code/package2",
             },
             {
-                "repository": "NIDAP/No-source-path",
+                "repository": "NIDAP/No-filter",
                 "source_repository": "CCBR/package1",
             },
             "bad-item",
@@ -79,40 +77,11 @@ def test_build_host_matrix_selects_matching_hosts(tmp_path):
         source_repository="CCBR/package1",
     )
 
-    assert len(matrix_hosts) == 1
+    assert len(matrix_hosts) == 2
     assert matrix_hosts[0]["repository"] == "NIDAP/MOSuite-create"
-    assert matrix_hosts[0]["source_path"] == "code/package1"
     assert matrix_hosts[0]["lockfile"] == ".syncweaver-lock.json"
-
-
-def test_build_host_matrix_applies_source_path_override(tmp_path):
-    """Verify source_path_override is applied across selected host entries.
-
-    Args:
-        tmp_path: Temporary directory fixture.
-
-    Returns:
-        None: Assertions validate function behavior.
-    """
-    registry_data = {
-        "hosts": [
-            {
-                "repository": "NIDAP/MOSuite-create",
-                "source_path": "code/old-path",
-            }
-        ]
-    }
-    registry_path = tmp_path / "host-repositories.yml"
-    registry_path.write_text(yaml.safe_dump(registry_data))
-
-    matrix_hosts = build_host_matrix_from_registry(
-        registry_path=registry_path,
-        source_repository="CCBR/package1",
-        source_path_override="code/override-path",
-    )
-
-    assert len(matrix_hosts) == 1
-    assert matrix_hosts[0]["source_path"] == "code/override-path"
+    assert "source_path" not in matrix_hosts[0]
+    assert matrix_hosts[1]["repository"] == "NIDAP/No-filter"
 
 
 def test_build_host_matrix_serializable_for_strategy(tmp_path):
@@ -128,7 +97,6 @@ def test_build_host_matrix_serializable_for_strategy(tmp_path):
         "hosts": [
             {
                 "repository": "NIDAP/MOSuite-create",
-                "source_path": "code/package1",
             }
         ]
     }

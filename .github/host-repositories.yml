@@ -2,4 +2,3 @@ hosts:
   - name: MOSuite-create
     repository: NIDAP/MOSuite-create
     lockfile: .syncweaver-lock.json
-    source_path: code/package1
