@@ -74,7 +74,7 @@ runs:
         owner: ${{ inputs.app_owner }}
 
     - name: Checkout host repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: ${{ inputs.host_repository }}
         token: ${{ steps.ccbr_bot.outputs.token }}
