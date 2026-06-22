@@ -1,4 +1,4 @@
-name: syncweaver-notify-host-update-source
+name: syncweaver-update-hosts
 
 on:
   repository_dispatch:
