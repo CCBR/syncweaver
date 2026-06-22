@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>usage – syncweaver</title>
+<title>syncweaver_functracer_reference_guide – syncweaver</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -315,8 +315,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#syncweaver-functracer-tool-reference" id="toc-syncweaver-functracer-tool-reference" class="nav-link active" data-scroll-target="#syncweaver-functracer-tool-reference">syncweaver &amp; functracer — Tool Reference</a>
+  <ul class="collapse">
+  <li><a href="#functracer" id="toc-functracer" class="nav-link" data-scroll-target="#functracer">functracer</a>
+  <ul class="collapse">
+  <li><a href="#what-it-does" id="toc-what-it-does" class="nav-link" data-scroll-target="#what-it-does">What it does</a></li>
+  <li><a href="#why-it-exists" id="toc-why-it-exists" class="nav-link" data-scroll-target="#why-it-exists">Why it exists</a></li>
+  <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
+  <li><a href="#querying-the-dependency-map-two-directions" id="toc-querying-the-dependency-map-two-directions" class="nav-link" data-scroll-target="#querying-the-dependency-map-two-directions">Querying the dependency map — two directions</a></li>
+  <li><a href="#decision-logic" id="toc-decision-logic" class="nav-link" data-scroll-target="#decision-logic">Decision logic</a></li>
+  <li><a href="#critical-risk" id="toc-critical-risk" class="nav-link" data-scroll-target="#critical-risk">Critical risk</a></li>
+  </ul></li>
+  <li><a href="#syncweaver" id="toc-syncweaver" class="nav-link" data-scroll-target="#syncweaver">syncweaver</a>
+  <ul class="collapse">
+  <li><a href="#what-it-does-1" id="toc-what-it-does-1" class="nav-link" data-scroll-target="#what-it-does-1">What it does</a></li>
+  <li><a href="#why-it-exists-1" id="toc-why-it-exists-1" class="nav-link" data-scroll-target="#why-it-exists-1">Why it exists</a></li>
+  <li><a href="#the-lockfile" id="toc-the-lockfile" class="nav-link" data-scroll-target="#the-lockfile">The lockfile</a></li>
+  <li><a href="#key-operations" id="toc-key-operations" class="nav-link" data-scroll-target="#key-operations">Key operations</a></li>
+  <li><a href="#multi-module-support" id="toc-multi-module-support" class="nav-link" data-scroll-target="#multi-module-support">Multi-module support</a></li>
+  <li><a href="#relationship-with-functracer" id="toc-relationship-with-functracer" class="nav-link" data-scroll-target="#relationship-with-functracer">Relationship with functracer</a></li>
+  </ul></li>
+  <li><a href="#how-they-fit-into-the-release-pipeline" id="toc-how-they-fit-into-the-release-pipeline" class="nav-link" data-scroll-target="#how-they-fit-into-the-release-pipeline">How they fit into the release pipeline</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/syncweaver_functracer_reference_guide.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
@@ -325,37 +352,127 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--help</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="295ff8cc" class="cell" data-execution_count="1">
-<div class="cell-output cell-output-stdout">
-<pre><code>Usage: syncweaver [OPTIONS] COMMAND [ARGS]...
+<section id="syncweaver-functracer-tool-reference" class="level1">
+<h1>syncweaver &amp; functracer — Tool Reference</h1>
+<p>These two tools form the automation backbone of Approach B (per-capsule repos). They are purpose-built for the OMIX/NIDAP architecture and are <strong>not part of Approach A</strong>.</p>
+<hr>
+<section id="functracer" class="level2">
+<h2 class="anchored" data-anchor-id="functracer">functracer</h2>
+<section id="what-it-does" class="level3">
+<h3 class="anchored" data-anchor-id="what-it-does">What it does</h3>
+<ul>
+<li>Given a capsule’s entry script (<code>main.R</code>) and a package, <code>functracer</code> analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).</li>
+<li>Given a new package tag (e.g.&nbsp;a new release version) and the previous tag, <code>functracer</code> determines whether the new tag contains changes that would affect the capsule based on the list of functions used by the capsule entry script.</li>
+</ul>
+</section>
+<section id="why-it-exists" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-exists">Why it exists</h3>
+<p>When a new version of the OMIX monorepo or MOSuite is released, not every capsule needs to be updated. A change to a volcano-specific plotting function is irrelevant to the heatmap capsule. But the reverse is equally important: a change made inside the volcano module might touch a shared core function that other capsules also depend on — and those capsules need to be updated too, even though the change originated in volcano. <code>functracer</code> answers both questions: <em>“Does this upstream change affect my capsule?”</em> and <em>“Does this change in one module ripple out to other capsules that share the same underlying functions?”</em></p>
+</section>
+<section id="how-it-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-it-works">How it works</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>functracer<span class="sc">::</span><span class="fu">analyze_dependencies</span>(entry_script, package)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Returns a table of every function dependency with:</p>
+<ul>
+<li><strong>function</strong> — the function name</li>
+<li><strong>source</strong> — which package it comes from (e.g.&nbsp;MOSuite)</li>
+<li><strong>dep_type</strong> — <code>direct</code> (called by <code>main.R</code>) or <code>indirect</code> (called transitively)</li>
+<li><strong>call_path</strong> — the full chain, e.g.&nbsp;<code>main.R -&gt; batch_correct_counts -&gt; plot_corr_heatmap</code></li>
+</ul>
+</section>
+<section id="querying-the-dependency-map-two-directions" class="level3">
+<h3 class="anchored" data-anchor-id="querying-the-dependency-map-two-directions">Querying the dependency map — two directions</h3>
+<p>functracer builds a complete dependency map across <strong>all</strong> capsules. Once built, it can be queried in either direction:</p>
+<p><strong>Forward — upstream change → which capsules are affected?</strong> A new version of MOSuite or OMIX is released → functracer checks each capsule’s dependency graph against the changed functions → only capsules that call those functions (directly or transitively) are updated. A change to a volcano-specific plotting function leaves the heatmap capsule untouched.</p>
+<p><strong>Reverse — a module change → which other capsules are also affected?</strong> A developer edits a function inside the volcano module. If that function is shared with core, or is called transitively by other capsules, functracer identifies all capsules that depend on it — not just the volcano capsule. This prevents a scenario where a change to one module silently breaks another capsule that happened to share the same underlying function.</p>
+<p>Because functracer traces <strong>transitive</strong> dependencies (the full call chain, not just direct calls), it catches indirect coupling that a manual review would likely miss. For example: volcano calls <code>plot_corr_heatmap</code>, which calls <code>extract_counts</code> from core. If <code>extract_counts</code> changes, functracer flags every capsule whose call graph passes through it — even if that capsule never explicitly references <code>extract_counts</code> in its own <code>main.R</code>.</p>
+</section>
+<section id="decision-logic" class="level3">
+<h3 class="anchored" data-anchor-id="decision-logic">Decision logic</h3>
+<p>When any function changes — whether from an upstream release or an edit within a module:</p>
+<ol type="1">
+<li>Identify which functions changed</li>
+<li>Query the full cross-capsule dependency map for those functions</li>
+<li><strong>If a capsule’s call graph includes the changed function</strong> → update that capsule’s lockfile and cut a new release</li>
+<li><strong>If no capsule depends on the changed function</strong> → do nothing</li>
+</ol>
+</section>
+<section id="critical-risk" class="level3">
+<h3 class="anchored" data-anchor-id="critical-risk">Critical risk</h3>
+<p>A silent false negative — <code>functracer</code> incorrectly marking a capsule as unaffected when it is — would cause the capsule to ship stale code with no warning. This tool <strong>must have thorough test coverage</strong> before the system goes to production.</p>
+<hr>
+</section>
+</section>
+<section id="syncweaver" class="level2">
+<h2 class="anchored" data-anchor-id="syncweaver">syncweaver</h2>
+<section id="what-it-does-1" class="level3">
+<h3 class="anchored" data-anchor-id="what-it-does-1">What it does</h3>
+<p>A command-line interface (CLI) for synchronizing code between upstream sources (the OMIX monorepo, MOSuite R package) and individual capsule repos. It handles both directions: pulling upstream changes down into a capsule repo, and contributing capsule edits back upstream.</p>
+</section>
+<section id="why-it-exists-1" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-exists-1">Why it exists</h3>
+<p>Capsule repos need to stay in sync with upstream sources, but the relationship is not a simple <code>git pull</code>. The monorepo has a different directory layout than the capsule repo, versions must be pinned independently, and changes from analysts working in Code Ocean need a structured path back to the upstream source — with conflict handling and patch management that GitHub Actions alone cannot reliably provide.</p>
+</section>
+<section id="the-lockfile" class="level3">
+<h3 class="anchored" data-anchor-id="the-lockfile">The lockfile</h3>
+<p>Each capsule repo contains a <code>.syncweaver-lock.json</code> that specifies every upstream source the capsule depends on:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"sources"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"code/OMIX-core"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"repo_url"</span><span class="fu">:</span> <span class="st">"https://github.com/CCBR/OMIX-core"</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"remote_subdir"</span><span class="fu">:</span> <span class="st">"core/"</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"ref"</span><span class="fu">:</span> <span class="st">"v1.0.0"</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"git_sha"</span><span class="fu">:</span> <span class="st">"c09ee39"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"code/OMIX-module-volcano"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"repo_url"</span><span class="fu">:</span> <span class="st">"https://github.com/CCBR/OMIX-core"</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"remote_subdir"</span><span class="fu">:</span> <span class="st">"modules/volcano"</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"ref"</span><span class="fu">:</span> <span class="st">"v1.3.2"</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"git_sha"</span><span class="fu">:</span> <span class="st">"e2b4fa7"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each source entry is <strong>independently pinned</strong> by both semantic version (<code>ref</code>) and exact commit (<code>git_sha</code>). A capsule can upgrade one source while holding another stable.</p>
+</section>
+<section id="key-operations" class="level3">
+<h3 class="anchored" data-anchor-id="key-operations">Key operations</h3>
+<ul>
+<li><strong>Sync downstream</strong> — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review</li>
+<li><strong>Patch upstream</strong> — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR</li>
+<li><strong>Staleness check</strong> — compare the locked <code>git_sha</code> against upstream HEAD to detect whether a capsule is out of date</li>
+<li><strong>Conflict handling</strong> — explicit patching operations, not silent overwrites; conflicts surface for human resolution before <code>main</code> is touched</li>
+</ul>
+</section>
+<section id="multi-module-support" class="level3">
+<h3 class="anchored" data-anchor-id="multi-module-support">Multi-module support</h3>
+<p>Because the lockfile is a list of source entries, a capsule that needs code from multiple monorepo modules simply declares multiple entries. syncweaver pulls each independently and places them in the correct subdirectory of the capsule repo. There is no combinatorial complexity — adding a module dependency is adding one JSON entry.</p>
+</section>
+<section id="relationship-with-functracer" class="level3">
+<h3 class="anchored" data-anchor-id="relationship-with-functracer">Relationship with functracer</h3>
+<p>syncweaver and functracer work in tandem:</p>
+<ol type="1">
+<li>New upstream release is tagged</li>
+<li><code>functracer</code> determines which capsules are affected</li>
+<li><code>syncweaver</code> updates only those capsules’ lockfiles and opens PRs</li>
+<li>GitHub Actions orchestrates the entire sequence automatically</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="how-they-fit-into-the-release-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="how-they-fit-into-the-release-pipeline">How they fit into the release pipeline</h2>
+<pre><code>New release tagged in OMIX monorepo
+         │
+         ▼
+functracer: which capsules depend on changed functions?
+         │
+         ├─ Capsule A: affected → syncweaver updates lockfile → PR opened → CI passes → maintainer merges → new capsule release
+         │
+         └─ Capsule B: unaffected → no action taken</code></pre>
 
-  syncweaver: synchronize code and weave patches seamlessly.
 
-Options:
-  -v, --version   Show the version and exit.
-  -c, --citation  Print the citation in BibTeX format and exit.
-  -h, --help      Show this message and exit.
-
-Commands:
-  add        Add an external repository to the current host repository.
-  patch      Create, annotate, and list source patch artifacts.
-  remove     Remove a tracked external repository from the current host...
-  templates  List and add workflow templates to a repo.
-  update     Update a tracked external repository in the current host...
-  validate   Validate a lockfile against the syncweaver lockfile JSON...
-</code></pre>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> <span class="at">--version</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="f57e16fe" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-stdout">
-<pre><code>syncweaver, version 0.0.1-dev
-</code></pre>
-</div>
-</div>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -779,7 +896,7 @@ Commands:
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/usage.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/syncweaver_functracer_reference_guide.md" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
