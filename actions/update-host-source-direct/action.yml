@@ -283,7 +283,7 @@ runs:
         source_paths = json.loads(os.environ["SOURCE_PATHS_JSON"])
         output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
 
-        lines = [f"- {source_path}" for source_path in source_paths]
+        lines = [f"- `{source_path}`" for source_path in source_paths]
         markdown = "\n".join(lines)
 
         with output_path.open("a", encoding="utf-8") as fh:
@@ -324,10 +324,10 @@ runs:
           Automated source update executed from CCBR/syncweaver.
 
           Inputs used:
-          - source_repository: ${{ inputs.source_repository }}
-          - lockfile: ${{ inputs.lockfile }}
-          - ref: ${{ inputs.source_ref }}
-          - remote_subdir: ${{ inputs.remote_subdir }}
+          - source_repository: `${{ inputs.source_repository }}`
+          - lockfile: `${{ inputs.lockfile }}`
+          - ref: `${{ inputs.source_ref }}`
+          - remote_subdir: `${{ inputs.remote_subdir }}`
 
           Updated source paths:
           ${{ steps.source_list.outputs.source_paths_md }}
