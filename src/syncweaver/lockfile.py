@@ -102,28 +102,28 @@ def load_existing_lockfile(lockfile: pathlib.Path) -> dict:
     return lock_data
 
 
-def resolve_source_path_from_lockfile(
+def resolve_source_paths_from_lockfile(
     lockfile: pathlib.Path,
     source_path: str | None,
     repo_url: str | None = None,
-) -> str:
-    """Resolve the tracked source path for a sync operation.
+) -> list[str]:
+    """Resolve one or more tracked source paths for a sync operation.
 
     Args:
         lockfile (pathlib.Path): Path to the syncweaver lockfile.
         source_path (str | None): Optional requested source path from CLI or workflow
             inputs.
-        repo_url (str | None): Optional repository URL used to select a matching
-            source path when source_path is omitted.
+        repo_url (str | None): Optional repository URL used to select matching source
+            paths when source_path is omitted.
 
     Returns:
-        str: Resolved source path to update.
+        list[str]: Resolved source path list.
 
     Raises:
         ValueError: If source_path is not provided and lockfile content cannot
-            determine a single tracked source path.
+            determine matching tracked source paths.
     """
-    resolved_source_path = ""
+    resolved_source_paths: list[str] = []
     source_path_input = ""
     repo_url_input = ""
     if source_path is not None:
@@ -132,7 +132,7 @@ def resolve_source_path_from_lockfile(
         repo_url_input = repo_url.strip()
 
     if source_path_input:
-        resolved_source_path = source_path_input
+        resolved_source_paths = [source_path_input]
     else:
         lock_data: dict
         try:
@@ -165,16 +165,7 @@ def resolve_source_path_from_lockfile(
                     f"repo_url: {repo_url_input}"
                 )
 
-            if len(matching_source_paths) != 1:
-                matching_paths_csv = ", ".join(sorted(matching_source_paths))
-                raise ValueError(
-                    "source_path was not provided and multiple tracked sources "
-                    f"matched repo_url {repo_url_input}. "
-                    "Please provide source_path explicitly. "
-                    f"Matching sources: {matching_paths_csv}"
-                )
-
-            resolved_source_path = matching_source_paths[0]
+            resolved_source_paths = sorted(matching_source_paths)
         else:
             source_paths = sorted(str(path) for path in sources.keys())
             if len(source_paths) != 1:
@@ -184,8 +175,49 @@ def resolve_source_path_from_lockfile(
                     "Please provide source_path explicitly or set repo_url. "
                     f"Tracked sources: {source_paths_csv}"
                 )
+            resolved_source_paths = source_paths
+    return resolved_source_paths
 
-            resolved_source_path = source_paths[0]
+
+def resolve_source_path_from_lockfile(
+    lockfile: pathlib.Path,
+    source_path: str | None,
+    repo_url: str | None = None,
+) -> str:
+    """Resolve the tracked source path for a sync operation.
+
+    Args:
+        lockfile (pathlib.Path): Path to the syncweaver lockfile.
+        source_path (str | None): Optional requested source path from CLI or workflow
+            inputs.
+        repo_url (str | None): Optional repository URL used to select a matching
+            source path when source_path is omitted.
+
+    Returns:
+        str: Resolved source path to update.
+
+    Raises:
+        ValueError: If source_path is not provided and lockfile content cannot
+            determine a single tracked source path.
+    """
+    resolved_source_path = ""
+    resolved_source_paths = resolve_source_paths_from_lockfile(
+        lockfile=lockfile,
+        source_path=source_path,
+        repo_url=repo_url,
+    )
+    if len(resolved_source_paths) != 1:
+        repo_url_input = ""
+        if repo_url is not None:
+            repo_url_input = repo_url.strip()
+        matching_paths_csv = ", ".join(sorted(resolved_source_paths))
+        raise ValueError(
+            "source_path was not provided and multiple tracked sources "
+            f"matched repo_url {repo_url_input}. "
+            "Please provide source_path explicitly. "
+            f"Matching sources: {matching_paths_csv}"
+        )
+    resolved_source_path = resolved_source_paths[0]
     return resolved_source_path
 
 
