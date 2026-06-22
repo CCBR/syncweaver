@@ -32,6 +32,10 @@ inputs:
   app_owner:
     description: GitHub owner for GitHub App token generation.
     required: true
+  syncweaver-version:
+    description: syncweaver version/ref to install (e.g. main, v0.1.0, or commit SHA).
+    required: false
+    default: main
 
 outputs:
   source_paths:
@@ -81,18 +85,25 @@ runs:
         fetch-depth: 0
         path: host-repo
 
-    - name: Set up Python
-      uses: actions/setup-python@v6
+    - uses: actions/checkout@v7
+      with:
+        repository: CCBR/syncweaver
+        ref: ${{ inputs.syncweaver-version }}
+        sparse-checkout: pyproject.toml
+        path: syncweaver-cache
+
+    - uses: actions/setup-python@v6
       with:
         python-version: "3.14"
         cache: pip
+        cache-dependency-path: syncweaver-cache/pyproject.toml
 
     - name: Install syncweaver
       shell: bash
       run: |
         set -euo pipefail
         python -m pip install --upgrade pip
-        python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
+        python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
 
     - name: Resolve source paths from host lockfile
       id: resolve_source_paths
