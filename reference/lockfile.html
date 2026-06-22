@@ -439,6 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#syncweaver.lockfile.load_existing_lockfile" id="toc-syncweaver.lockfile.load_existing_lockfile" class="nav-link" data-scroll-target="#syncweaver.lockfile.load_existing_lockfile">load_existing_lockfile</a></li>
   <li><a href="#syncweaver.lockfile.read_lockfile" id="toc-syncweaver.lockfile.read_lockfile" class="nav-link" data-scroll-target="#syncweaver.lockfile.read_lockfile">read_lockfile</a></li>
   <li><a href="#syncweaver.lockfile.resolve_source_path_from_lockfile" id="toc-syncweaver.lockfile.resolve_source_path_from_lockfile" class="nav-link" data-scroll-target="#syncweaver.lockfile.resolve_source_path_from_lockfile">resolve_source_path_from_lockfile</a></li>
+  <li><a href="#syncweaver.lockfile.resolve_source_paths_from_lockfile" id="toc-syncweaver.lockfile.resolve_source_paths_from_lockfile" class="nav-link" data-scroll-target="#syncweaver.lockfile.resolve_source_paths_from_lockfile">resolve_source_paths_from_lockfile</a></li>
   <li><a href="#syncweaver.lockfile.write_lockfile" id="toc-syncweaver.lockfile.write_lockfile" class="nav-link" data-scroll-target="#syncweaver.lockfile.write_lockfile">write_lockfile</a></li>
   </ul></li>
   </ul></li>
@@ -479,6 +480,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Resolve the tracked source path for a sync operation.</td>
 </tr>
 <tr class="even">
+<td><a href="#syncweaver.lockfile.resolve_source_paths_from_lockfile">resolve_source_paths_from_lockfile</a></td>
+<td>Resolve one or more tracked source paths for a sync operation.</td>
+</tr>
+<tr class="odd">
 <td><a href="#syncweaver.lockfile.write_lockfile">write_lockfile</a></td>
 <td>Write lockfile JSON with a stable format.</td>
 </tr>
@@ -581,9 +586,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 </section>
+<section id="syncweaver.lockfile.resolve_source_paths_from_lockfile" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.lockfile.resolve_source_paths_from_lockfile">resolve_source_paths_from_lockfile</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lockfile.resolve_source_paths_from_lockfile(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    lockfile,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    source_path,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    repo_url<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resolve one or more tracked source paths for a sync operation.</p>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 70%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>lockfile</td>
+<td>pathlib.Path</td>
+<td>Path to the syncweaver lockfile.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>source_path</td>
+<td>str | None</td>
+<td>Optional requested source path from CLI or workflow inputs.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>repo_url</td>
+<td>str | None</td>
+<td>Optional repository URL used to select matching source paths when source_path is omitted.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>list[str]</td>
+<td>list[str]: Resolved source path list.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="raises-1" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 83%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>ValueError</td>
+<td>If source_path is not provided and lockfile content cannot determine matching tracked source paths.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="syncweaver.lockfile.write_lockfile" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.lockfile.write_lockfile">write_lockfile</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lockfile.write_lockfile(lockfile, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lockfile.write_lockfile(lockfile, data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Write lockfile JSON with a stable format.</p>
 
 
