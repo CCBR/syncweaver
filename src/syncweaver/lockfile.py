@@ -93,6 +93,93 @@ def load_existing_lockfile(lockfile: pathlib.Path) -> dict:
     return lock_data
 
 
+def resolve_source_path_from_lockfile(
+    lockfile: pathlib.Path,
+    source_path: str | None,
+    repo_url: str | None = None,
+) -> str:
+    """Resolve the tracked source path for a sync operation.
+
+    Args:
+        lockfile (pathlib.Path): Path to the syncweaver lockfile.
+        source_path (str | None): Optional requested source path from CLI or workflow
+            inputs.
+        repo_url (str | None): Optional repository URL used to select a matching
+            source path when source_path is omitted.
+
+    Returns:
+        str: Resolved source path to update.
+
+    Raises:
+        ValueError: If source_path is not provided and lockfile content cannot
+            determine a single tracked source path.
+    """
+    resolved_source_path = ""
+    source_path_input = ""
+    repo_url_input = ""
+    if source_path is not None:
+        source_path_input = source_path.strip()
+    if repo_url is not None:
+        repo_url_input = repo_url.strip()
+
+    if source_path_input:
+        resolved_source_path = source_path_input
+    else:
+        lock_data: dict
+        try:
+            lock_data = load_existing_lockfile(lockfile)
+        except FileNotFoundError as exc:
+            raise ValueError(
+                f"lockfile does not exist and source_path was not provided: {lockfile}"
+            ) from exc
+
+        sources = lock_data.get("sources", {})
+        has_sources = isinstance(sources, dict) and bool(sources)
+        if not has_sources:
+            raise ValueError(
+                "no tracked sources found in lockfile and source_path was not provided"
+            )
+
+        if repo_url_input:
+            normalized_repo_url = _normalize_remote_url(repo_url_input)
+            matching_source_paths: list[str] = []
+            for path_key, source_entry in sources.items():
+                entry_repo_url = str(source_entry.get("repo_url", "")).strip()
+                if entry_repo_url:
+                    normalized_entry_url = _normalize_remote_url(entry_repo_url)
+                    if normalized_entry_url == normalized_repo_url:
+                        matching_source_paths.append(str(path_key))
+
+            if not matching_source_paths:
+                raise ValueError(
+                    "source_path was not provided and no tracked sources matched "
+                    f"repo_url: {repo_url_input}"
+                )
+
+            if len(matching_source_paths) != 1:
+                matching_paths_csv = ", ".join(sorted(matching_source_paths))
+                raise ValueError(
+                    "source_path was not provided and multiple tracked sources "
+                    f"matched repo_url {repo_url_input}. "
+                    "Please provide source_path explicitly. "
+                    f"Matching sources: {matching_paths_csv}"
+                )
+
+            resolved_source_path = matching_source_paths[0]
+        else:
+            source_paths = sorted(str(path) for path in sources.keys())
+            if len(source_paths) != 1:
+                source_paths_csv = ", ".join(source_paths)
+                raise ValueError(
+                    "source_path was not provided and lockfile tracks multiple sources. "
+                    "Please provide source_path explicitly or set repo_url. "
+                    f"Tracked sources: {source_paths_csv}"
+                )
+
+            resolved_source_path = source_paths[0]
+    return resolved_source_path
+
+
 def write_lockfile(lockfile: pathlib.Path, data: dict) -> None:
     """Write lockfile JSON with a stable format."""
     lockfile.parent.mkdir(parents=True, exist_ok=True)

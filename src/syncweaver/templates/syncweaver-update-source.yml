@@ -1,4 +1,4 @@
-name: update-source
+name: syncweaver-update-source
 
 on:
   repository_dispatch:
@@ -6,7 +6,11 @@ on:
     inputs:
       source_path:
         description: Tracked source path in the host repository.
-        required: true
+        required: false
+        type: string
+      repo_url:
+        description: Optional source repository URL used to resolve source_path from lockfile.
+        required: false
         type: string
       lockfile:
         description: Path to the syncweaver lockfile.
@@ -35,6 +39,7 @@ jobs:
       remote_subdir: ${{ steps.update_source.outputs.remote_subdir }}
     env:
       SOURCE_PATH: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.source_path || github.event.client_payload.source_path || '' }}
+      REPO_URL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.repo_url || github.event.client_payload.repo_url || github.event.client_payload.source_repository || '' }}
       LOCKFILE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.lockfile || github.event.client_payload.lockfile || '.syncweaver-lock.json' }}
       REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.client_payload.ref || '' }}
       REMOTE_SUBDIR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.remote_subdir || github.event.client_payload.remote_subdir || '' }}
@@ -62,11 +67,41 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
 
+      - name: Resolve source path
+        id: resolve_source_path
+        shell: python
+        env:
+          SOURCE_PATH_INPUT: ${{ env.SOURCE_PATH }}
+          REPO_URL_INPUT: ${{ env.REPO_URL }}
+          LOCKFILE_PATH: ${{ env.LOCKFILE }}
+        run: |
+          import os
+          import pathlib
+
+          from syncweaver.lockfile import resolve_source_path_from_lockfile
+
+          source_path_input = os.environ["SOURCE_PATH_INPUT"].strip()
+          repo_url_input = os.environ["REPO_URL_INPUT"].strip()
+          lockfile_path = pathlib.Path(os.environ["LOCKFILE_PATH"])
+          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+          try:
+            resolved_source_path = resolve_source_path_from_lockfile(
+              lockfile=lockfile_path,
+              source_path=source_path_input,
+              repo_url=repo_url_input,
+            )
+          except ValueError as exc:
+            raise SystemExit(f"Error: {exc}") from exc
+
+          with output_path.open("a", encoding="utf-8") as fh:
+            fh.write(f"source_path={resolved_source_path}\n")
+
       - name: Run update-source composite action
         id: update_source
         uses: CCBR/syncweaver/actions/update-source@latest
         with:
-          source_path: ${{ env.SOURCE_PATH }}
+          source_path: ${{ steps.resolve_source_path.outputs.source_path }}
           lockfile: ${{ env.LOCKFILE }}
           ref: ${{ env.REF }}
           remote_subdir: ${{ env.REMOTE_SUBDIR }}
@@ -75,15 +110,16 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.ccbr_bot.outputs.token }}
-          branch: syncweaver/update-source/${{ env.SOURCE_PATH }}
+          branch: syncweaver/update-source/${{ steps.resolve_source_path.outputs.source_path }}
           delete-branch: true
-          commit-message: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
-          title: "chore(syncweaver): update ${{ env.SOURCE_PATH}} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          commit-message: "chore(syncweaver): update ${{ steps.resolve_source_path.outputs.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
+          title: "chore(syncweaver): update ${{ steps.resolve_source_path.outputs.source_path }} from ${{ steps.update_source.outputs.source_repo }}@${{ steps.update_source.outputs.ref }}"
           body: |
             Automated source update from the update-source workflow.
 
             Inputs used:
-            - source_path: ${{ env.SOURCE_PATH }}
+            - source_path: ${{ steps.resolve_source_path.outputs.source_path }}
+            - repo_url: ${{ env.REPO_URL }}
             - lockfile: ${{ env.LOCKFILE }}
             - ref: ${{ env.REF }}
             - remote_subdir: ${{ env.REMOTE_SUBDIR }}
