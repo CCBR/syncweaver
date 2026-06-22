@@ -101,7 +101,7 @@ runs:
 
     - name: Generate CCBR-bot token
       id: ccbr_bot
-      uses: actions/create-github-app-token@v1
+      uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app_id }}
         private-key: ${{ inputs.app_private_key }}
@@ -312,7 +312,7 @@ runs:
 
     - name: Create pull request in host repository
       id: create_pr
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ steps.ccbr_bot.outputs.token }}
         path: host-repo
