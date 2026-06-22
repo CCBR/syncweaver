@@ -318,7 +318,7 @@ runs:
         path: host-repo
         branch: ${{ steps.pr_branch.outputs.branch_name }}
         delete-branch: true
-        commit-message: "chore(syncweaver): update ${{ inputs.source_repository }} tracked sources"
+        commit-message: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         title: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         body: |
           Automated source update executed from CCBR/syncweaver.
