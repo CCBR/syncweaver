@@ -31,7 +31,8 @@ inputs:
     required: true
   app_owner:
     description: GitHub owner for GitHub App token generation.
-    required: true
+    required: false
+    default: ""
   syncweaver-version:
     description: syncweaver version/ref to install (e.g. main, v0.1.0, or commit SHA).
     required: false
@@ -69,13 +70,42 @@ runs:
           exit 1
         fi
 
+    - name: Resolve GitHub App token owner
+      id: resolve_app_owner
+      shell: python
+      env:
+        HOST_REPOSITORY_INPUT: ${{ inputs.host_repository }}
+        APP_OWNER_INPUT: ${{ inputs.app_owner }}
+      run: |
+        import os
+        import pathlib
+
+        host_repository = os.environ.get("HOST_REPOSITORY_INPUT", "").strip()
+        app_owner_input = os.environ.get("APP_OWNER_INPUT", "").strip()
+
+        if app_owner_input:
+          app_owner = app_owner_input
+        else:
+          if "/" not in host_repository:
+            raise SystemExit(
+              "Error: host_repository must be in OWNER/REPO format to derive app_owner"
+            )
+          app_owner = host_repository.split("/", 1)[0].strip()
+
+        if not app_owner:
+          raise SystemExit("Error: unable to resolve app_owner for GitHub App token")
+
+        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+        with output_path.open("a", encoding="utf-8") as fh:
+          fh.write(f"app_owner={app_owner}\n")
+
     - name: Generate CCBR-bot token
       id: ccbr_bot
       uses: actions/create-github-app-token@v1
       with:
         app-id: ${{ inputs.app_id }}
         private-key: ${{ inputs.app_private_key }}
-        owner: ${{ inputs.app_owner }}
+        owner: ${{ steps.resolve_app_owner.outputs.app_owner }}
 
     - name: Checkout host repository
       uses: actions/checkout@v7
