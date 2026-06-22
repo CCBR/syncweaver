@@ -160,6 +160,6 @@ jobs:
           lockfile: ${{ matrix.host.lockfile }}
           remote_subdir: ${{ matrix.host.remote_subdir }}
           source_ref: ${{ env.SOURCE_REF }}
-          app_id: ${{ secrets.CCBR_BOT_APP_ID }}
+          app_id: ${{ vars.CCBR_BOT_APP_ID }}
           app_private_key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           app_owner: ${{ github.repository_owner }}
