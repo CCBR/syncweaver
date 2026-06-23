@@ -37,14 +37,36 @@ inputs:
     description: syncweaver version/ref to install (e.g. main, v0.1.0, or commit SHA).
     required: false
     default: main
+  functracer-version:
+    description: functracer version/ref to install when dependency gating is used.
+    required: false
+    default: main
+  functracer-entry-scripts:
+    description: Optional comma/newline-separated host entry scripts used for functracer release impact checks.
+    required: false
+    default: ""
+  functracer-source-paths:
+    description: Optional comma/newline-separated tracked source paths that should be dependency-gated with functracer.
+    required: false
+    default: ""
+  functracer-package-name:
+    description: Optional package_name override passed to functracer release impact analysis.
+    required: false
+    default: ""
 
 outputs:
   source_paths:
     description: JSON array of source paths updated in the host repository.
-    value: ${{ steps.resolve_source_paths.outputs.source_paths }}
+    value: ${{ steps.filter_source_paths.outputs.source_paths }}
   source_count:
     description: Number of source paths updated in the host repository.
-    value: ${{ steps.resolve_source_paths.outputs.source_count }}
+    value: ${{ steps.filter_source_paths.outputs.source_count }}
+  skipped_source_paths:
+    description: JSON array of source paths skipped by functracer dependency checks.
+    value: ${{ steps.filter_source_paths.outputs.skipped_source_paths }}
+  skipped_source_count:
+    description: Number of source paths skipped by functracer dependency checks.
+    value: ${{ steps.filter_source_paths.outputs.skipped_source_count }}
   pull_request_url:
     description: Pull request URL, when a PR is created.
     value: ${{ steps.create_pr.outputs.pull-request-url }}
@@ -80,7 +102,7 @@ runs:
         import os
         import pathlib
 
-        from syncweaver.workflow_update_host_source_direct import resolve_app_owner
+        from syncweaver.host_source_update import resolve_app_owner
 
         host_repository = os.environ.get("HOST_REPOSITORY_INPUT", "").strip()
         app_owner_input = os.environ.get("APP_OWNER_INPUT", "").strip()
@@ -130,6 +152,18 @@ runs:
         python -m pip install --upgrade pip
         python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
 
+    - name: Setup R for optional functracer dependency checks
+      if: ${{ inputs.functracer-entry-scripts != '' }}
+      uses: r-lib/actions/setup-r@v2
+
+    - name: Install functracer for dependency checks
+      if: ${{ inputs.functracer-entry-scripts != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        Rscript -e "install.packages('remotes', repos='https://cloud.r-project.org')"
+        Rscript -e "remotes::install_github('CCBR/functracer@${{ inputs.functracer-version }}', upgrade = 'never')"
+
     - name: Resolve source paths from host lockfile
       id: resolve_source_paths
       shell: python
@@ -142,7 +176,7 @@ runs:
         import os
         import pathlib
 
-        from syncweaver.workflow_update_host_source_direct import (
+        from syncweaver.host_source_update import (
             resolve_source_paths_for_host_update,
         )
 
@@ -168,10 +202,32 @@ runs:
             fh.write(f"source_paths={json.dumps(resolved_source_paths)}\n")
             fh.write(f"source_count={len(resolved_source_paths)}\n")
 
+    - name: Filter resolved source paths with optional functracer dependency checks
+      id: filter_source_paths
+      shell: bash
+      env:
+        SOURCE_PATHS_JSON: ${{ steps.resolve_source_paths.outputs.source_paths }}
+        LOCKFILE_INPUT: ${{ inputs.lockfile }}
+        SOURCE_REF_INPUT: ${{ inputs.source_ref }}
+        FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
+        FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
+        FUNCTRACER_PACKAGE_NAME_INPUT: ${{ inputs.functracer-package-name }}
+      run: |
+        set -euo pipefail
+        syncweaver deps select-update-paths \
+          --source-paths-json "${SOURCE_PATHS_JSON}" \
+          --lockfile "${LOCKFILE_INPUT}" \
+          --source-ref "${SOURCE_REF_INPUT}" \
+          --host-repo "host-repo" \
+          --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
+          --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
+          --functracer-package-name "${FUNCTRACER_PACKAGE_NAME_INPUT}" \
+          --github-output "${GITHUB_OUTPUT}"
+
     - name: Run syncweaver update for each resolved source path
       shell: python
       env:
-        SOURCE_PATHS_JSON: ${{ steps.resolve_source_paths.outputs.source_paths }}
+        SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
         REMOTE_SUBDIR_INPUT: ${{ inputs.remote_subdir }}
@@ -180,7 +236,7 @@ runs:
         import os
         import pathlib
 
-        from syncweaver.workflow_update_host_source_direct import run_syncweaver_updates
+        from syncweaver.host_source_update import run_syncweaver_updates
 
         source_paths = json.loads(os.environ["SOURCE_PATHS_JSON"])
         lockfile_input = os.environ.get("LOCKFILE_INPUT", ".syncweaver-lock.json")
@@ -200,13 +256,13 @@ runs:
       id: source_list
       shell: python
       env:
-        SOURCE_PATHS_JSON: ${{ steps.resolve_source_paths.outputs.source_paths }}
+        SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
       run: |
         import json
         import os
         import pathlib
 
-        from syncweaver.workflow_update_host_source_direct import (
+        from syncweaver.host_source_update import (
             format_source_paths_markdown,
         )
 
@@ -229,7 +285,7 @@ runs:
         import os
         import pathlib
 
-        from syncweaver.workflow_update_host_source_direct import (
+        from syncweaver.host_source_update import (
             build_source_update_branch_name,
         )
 
@@ -242,6 +298,7 @@ runs:
 
     - name: Create pull request in host repository
       id: create_pr
+      if: ${{ steps.filter_source_paths.outputs.source_count != '0' }}
       uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ steps.ccbr_bot.outputs.token }}
