@@ -139,6 +139,50 @@ def resolve_contribute_patch_metadata(
     return result
 
 
+def _resolve_github_token(token: str) -> str:
+    """Resolve a GitHub token from explicit input, env var, or the gh CLI.
+
+    Resolution order:
+    1. ``token`` argument if non-empty.
+    2. ``GITHUB_TOKEN`` environment variable.
+    3. ``gh auth token`` CLI output.
+
+    Args:
+        token: Explicit token string; may be empty to trigger fallback.
+
+    Returns:
+        str: Resolved non-empty token.
+
+    Raises:
+        RuntimeError: If no token can be resolved from any source.
+    """
+    resolved_token = token.strip()
+
+    if not resolved_token:
+        resolved_token = os.environ.get("GITHUB_TOKEN", "").strip()
+
+    if not resolved_token:
+        try:
+            result = subprocess.run(
+                ["gh", "auth", "token"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode == 0:
+                resolved_token = result.stdout.strip()
+        except FileNotFoundError:
+            resolved_token = ""
+
+    if not resolved_token:
+        raise RuntimeError(
+            "No GitHub token found. Provide --token, set GITHUB_TOKEN, "
+            "or run `gh auth login`."
+        )
+
+    return resolved_token
+
+
 def contribute_patch(
     resolved: dict[str, str],
     host_cwd: pathlib.Path,

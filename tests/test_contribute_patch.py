@@ -8,9 +8,81 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from syncweaver.contribute_patch import (
+    _resolve_github_token,
     contribute_patch,
     resolve_contribute_patch_metadata,
 )
+
+
+def test_resolve_github_token_uses_explicit_token():
+    """Verify explicit token argument is returned directly.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    result = _resolve_github_token("ghp_explicit")
+    assert result == "ghp_explicit"
+
+
+def test_resolve_github_token_falls_back_to_env(monkeypatch):
+    """Verify GITHUB_TOKEN env var is used when no explicit token is given.
+
+    Args:
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    monkeypatch.setenv("GITHUB_TOKEN", "ghp_from_env")
+    result = _resolve_github_token("")
+    assert result == "ghp_from_env"
+
+
+def test_resolve_github_token_falls_back_to_gh_cli(monkeypatch):
+    """Verify gh auth token output is used when env var is absent.
+
+    Args:
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    fake_result = MagicMock(returncode=0, stdout="ghp_from_gh\n")
+    with patch("subprocess.run", return_value=fake_result):
+        result = _resolve_github_token("")
+    assert result == "ghp_from_gh"
+
+
+def test_resolve_github_token_raises_when_nothing_available(monkeypatch):
+    """Verify RuntimeError is raised when no token source is available.
+
+    Args:
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    fake_result = MagicMock(returncode=1, stdout="")
+    with patch("subprocess.run", return_value=fake_result):
+        with pytest.raises(RuntimeError, match="No GitHub token found"):
+            _resolve_github_token("")
+
+
+def test_resolve_github_token_raises_when_gh_not_installed(monkeypatch):
+    """Verify RuntimeError is raised when gh binary is not installed.
+
+    Args:
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        with pytest.raises(RuntimeError, match="No GitHub token found"):
+            _resolve_github_token("")
 
 
 def _write_lockfile(tmp_path, lock_data: dict) -> None:
