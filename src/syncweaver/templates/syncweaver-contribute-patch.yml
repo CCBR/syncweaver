@@ -76,7 +76,7 @@ jobs:
           SOURCE_BASE_REF_INPUT: ${{ env.SOURCE_BASE_REF }}
           SYNCWEAVER_HOST_CWD: ${{ github.workspace }}
         run: |
-          python -m syncweaver.workflow_contribute_patch
+          python -m syncweaver.contribute_patch
 
       - name: Print resolved metadata
         shell: bash

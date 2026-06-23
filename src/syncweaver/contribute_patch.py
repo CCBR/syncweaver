@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import os
 import pathlib
+import subprocess
+import tempfile
 from urllib.parse import urlparse
 
+import requests
+
+from syncweaver.git import run_git
 from syncweaver.lockfile import (
     load_existing_lockfile,
     resolve_source_path_from_lockfile,
@@ -132,6 +137,137 @@ def resolve_contribute_patch_metadata(
         "source_base_ref": resolved_source_base_ref,
     }
     return result
+
+
+def contribute_patch(
+    resolved: dict[str, str],
+    host_cwd: pathlib.Path,
+    github_token: str,
+    *,
+    run_id: str = "",
+    debug: bool = False,
+) -> str:
+    """Clone source repo, apply patch, push branch, and open a pull request.
+
+    Args:
+        resolved: Metadata dict from :func:`resolve_contribute_patch_metadata`.
+        host_cwd: Host repository working directory; patch path is resolved relative
+            to this directory.
+        github_token: GitHub personal access token or App token used to push and
+            to call the GitHub REST API.
+        run_id: Optional identifier appended to the branch name for uniqueness
+            (e.g. a CI run ID or timestamp).
+        debug: When ``True`` print verbose git output to stdout.
+
+    Returns:
+        str: URL of the opened pull request.
+
+    Raises:
+        RuntimeError: If git operations or the GitHub API call fail.
+    """
+    source_repository = resolved["source_repository"]
+    source_base_ref = resolved["source_base_ref"]
+    patch_path = resolved["patch_path"]
+    source_path = resolved["source_path"]
+    repo_url = resolved["repo_url"]
+
+    patch_file = (host_cwd / pathlib.Path(patch_path)).resolve()
+    if not patch_file.exists():
+        raise FileNotFoundError(f"Patch file does not exist: {patch_path}")
+
+    branch_stub = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
+    suffix = f"-{run_id}" if run_id else ""
+    branch_name = f"syncweaver/contribute-patch/{branch_stub}{suffix}"
+
+    authed_url = (
+        f"https://x-access-token:{github_token}@github.com/{source_repository}.git"
+    )
+
+    with tempfile.TemporaryDirectory(prefix="syncweaver-contribute-") as tmp_dir:
+        clone_root = pathlib.Path(tmp_dir) / "source"
+
+        def _git(*args: str) -> str:
+            """Run git inside the cloned source repository."""
+            cmd = ["-C", str(clone_root), *args]
+            if debug:
+                import sys
+
+                print(f"git {' '.join(args)}", file=sys.stderr)
+            return run_git(cmd)
+
+        run_git(["clone", "--quiet", "--no-checkout", authed_url, str(clone_root)])
+        _git("fetch", "--depth", "1", "origin", source_base_ref)
+        _git("checkout", "--quiet", "-b", branch_name, "FETCH_HEAD")
+        _git("config", "user.name", "github-actions[bot]")
+        _git(
+            "config",
+            "user.email",
+            "41898282+github-actions[bot]@users.noreply.github.com",
+        )
+
+        apply_result = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(clone_root),
+                "apply",
+                "--3way",
+                "--whitespace=nowarn",
+                str(patch_file),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if apply_result.returncode != 0:
+            raise RuntimeError(
+                f"Patch failed to apply to {source_repository}@{source_base_ref}:\n"
+                f"{apply_result.stderr.strip()}"
+            )
+
+        diff_output = run_git(["-C", str(clone_root), "diff", "--stat"])
+        if not diff_output.strip():
+            raise RuntimeError(
+                "Patch applied cleanly but introduced no source changes. "
+                "Nothing to contribute."
+            )
+
+        _git("add", "--all")
+        _git(
+            "commit",
+            "--message",
+            f"chore(syncweaver): apply host patch for {source_path}",
+        )
+        _git("push", "origin", f"HEAD:refs/heads/{branch_name}")
+
+    pr_body = (
+        f"Automated patch contribution from host repository.\n\n"
+        f"**Inputs**\n"
+        f"- source_path: `{source_path}`\n"
+        f"- repo_url: `{repo_url}`\n"
+        f"- source_repository: `{source_repository}`\n"
+        f"- source_base_ref: `{source_base_ref}`\n"
+        f"- patch_path: `{patch_path}`\n"
+    )
+
+    api_url = f"https://api.github.com/repos/{source_repository}/pulls"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {github_token}",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    payload = {
+        "title": f"chore(syncweaver): apply host patch for {source_path}",
+        "head": branch_name,
+        "base": source_base_ref,
+        "body": pr_body,
+    }
+    response = requests.post(api_url, headers=headers, json=payload, timeout=30)
+    if not response.ok:
+        raise RuntimeError(
+            f"GitHub API error {response.status_code} opening PR: {response.text}"
+        )
+    pr_url = response.json()["html_url"]
+    return pr_url
 
 
 def write_github_output(outputs: dict[str, str], output_path: pathlib.Path) -> None:

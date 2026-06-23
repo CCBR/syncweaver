@@ -1,12 +1,16 @@
-"""Tests for contribute-patch workflow metadata resolution."""
+"""Tests for contribute-patch metadata resolution and patch contribution."""
 
 from __future__ import annotations
 
 import json
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from syncweaver.workflow_contribute_patch import resolve_contribute_patch_metadata
+from syncweaver.contribute_patch import (
+    contribute_patch,
+    resolve_contribute_patch_metadata,
+)
 
 
 def _write_lockfile(tmp_path, lock_data: dict) -> None:
@@ -160,3 +164,105 @@ def test_resolve_contribute_patch_uses_repo_selector_for_source_resolution(tmp_p
 
     assert result["source_path"] == "code/pkg2"
     assert result["source_repository"] == "CCBR/package2"
+
+
+def test_contribute_patch_clones_applies_and_opens_pr(tmp_path):
+    """Verify contribute_patch drives git operations and the GitHub API call.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    resolved = {
+        "source_path": "code/pkg",
+        "repo_url": "https://github.com/CCBR/package1",
+        "source_repository": "CCBR/package1",
+        "patch_path": "code/pkg/.syncweaver/code-pkg.diff",
+        "source_base_ref": "main",
+    }
+
+    git_calls: list[list[str]] = []
+
+    def _fake_run_git(args: list[str], cwd=None) -> str:
+        git_calls.append(args)
+        if args[-1] == "diff" or "diff" in args:
+            return "1 file changed"
+        return ""
+
+    fake_apply = MagicMock(return_value=MagicMock(returncode=0, stderr=""))
+
+    fake_response = MagicMock()
+    fake_response.ok = True
+    fake_response.json.return_value = {
+        "html_url": "https://github.com/CCBR/package1/pull/99"
+    }
+
+    with (
+        patch("syncweaver.contribute_patch.run_git", side_effect=_fake_run_git),
+        patch("subprocess.run", return_value=fake_apply.return_value),
+        patch("requests.post", return_value=fake_response) as mock_post,
+    ):
+        pr_url = contribute_patch(
+            resolved=resolved,
+            host_cwd=tmp_path,
+            github_token="ghp_testtoken",
+        )
+
+    assert pr_url == "https://github.com/CCBR/package1/pull/99"
+    assert mock_post.called
+    call_kwargs = mock_post.call_args
+    assert "CCBR/package1" in call_kwargs.args[0]
+    assert call_kwargs.kwargs["json"]["base"] == "main"
+    assert "code/pkg" in call_kwargs.kwargs["json"]["title"]
+
+
+def test_contribute_patch_raises_when_no_diff(tmp_path):
+    """Verify contribute_patch raises when patch introduces no changes.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    resolved = {
+        "source_path": "code/pkg",
+        "repo_url": "https://github.com/CCBR/package1",
+        "source_repository": "CCBR/package1",
+        "patch_path": "code/pkg/.syncweaver/code-pkg.diff",
+        "source_base_ref": "main",
+    }
+
+    def _fake_run_git(args: list[str], cwd=None) -> str:
+        if "diff" in args:
+            return ""
+        return ""
+
+    with (
+        patch("syncweaver.contribute_patch.run_git", side_effect=_fake_run_git),
+        patch("syncweaver.contribute_patch.run_git", side_effect=_fake_run_git),
+        patch(
+            "subprocess.run",
+            return_value=MagicMock(returncode=0, stderr=""),
+        ),
+    ):
+        with pytest.raises(RuntimeError, match="no source changes"):
+            contribute_patch(
+                resolved=resolved,
+                host_cwd=tmp_path,
+                github_token="ghp_testtoken",
+            )
