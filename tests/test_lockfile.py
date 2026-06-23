@@ -6,7 +6,10 @@ import json
 
 import pytest
 
-from syncweaver.lockfile import resolve_source_path_from_lockfile
+from syncweaver.lockfile import (
+    resolve_source_path_from_lockfile,
+    resolve_source_paths_from_lockfile,
+)
 
 
 def test_resolve_source_path_uses_explicit_input(tmp_path):
@@ -276,3 +279,45 @@ def test_resolve_source_path_fails_when_repo_url_matches_multiple(tmp_path):
             source_path="",
             repo_url="https://github.com/CCBR/package1",
         )
+
+
+def test_resolve_source_paths_returns_all_repo_url_matches(tmp_path):
+    """Verify multi-path resolver returns all paths matching repository URL.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    lock_data = {
+        "name": "CCBR/host-repo1",
+        "homePage": "https://github.com/CCBR/host-repo1",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+            },
+            "code/package1-alt": {
+                "repo_url": "git@github.com:CCBR/package1.git",
+                "ref": "main",
+                "git_sha": "4b2f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b11",
+            },
+            "code/package2": {
+                "repo_url": "https://github.com/CCBR/package2",
+                "ref": "main",
+                "git_sha": "5c3f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b12",
+            },
+        },
+    }
+    lockfile_path = tmp_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    resolved = resolve_source_paths_from_lockfile(
+        lockfile=lockfile_path,
+        source_path="",
+        repo_url="CCBR/package1",
+    )
+
+    assert resolved == ["code/package1", "code/package1-alt"]
