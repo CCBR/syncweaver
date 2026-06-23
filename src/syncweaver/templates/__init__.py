@@ -17,7 +17,7 @@ import importlib.resources
 import pathlib
 
 _TEMPLATE_DESCRIPTIONS = {
-    "syncweaver-notify-host-update-source.yml": "On source release, dispatch a host repo to run syncweaver-update-source",
+    "syncweaver-notify-host-update-source.yml": "On source release or manual dispatch, trigger syncweaver-update-hosts in CCBR/syncweaver",
     "syncweaver-update-source.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
 }
 
