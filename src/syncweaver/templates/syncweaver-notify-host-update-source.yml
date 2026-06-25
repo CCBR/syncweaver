@@ -36,6 +36,10 @@ jobs:
             echo "Error: source ref cannot be empty." >&2
             exit 1
           fi
+          if [[ -z "${{ secrets.CCBR_BOT_TOKEN }}" ]]; then
+            echo "Error: secrets.CCBR_BOT_TOKEN is required to dispatch to CCBR/syncweaver." >&2
+            exit 1
+          fi
 
       - name: Dispatch syncweaver-update-hosts workflow in CCBR/syncweaver
         uses: peter-evans/repository-dispatch@v3
