@@ -18,8 +18,26 @@ from syncweaver.lockfile import (
 
 
 def _repo_slug_from_url(url: str) -> str:
-    """Extract OWNER/REPO slug from a normalized repository URL."""
-    parsed = urlparse(url.strip())
+    """Extract OWNER/REPO slug from a repository URL or shorthand."""
+    raw = url.strip()
+    if not raw:
+        raise ValueError("Cannot derive repository slug from an empty value")
+
+    # Support SSH remotes like git@github.com:OWNER/REPO(.git)
+    if raw.startswith("git@") and ":" in raw:
+        _, path_part = raw.split(":", 1)
+        path = path_part.removesuffix(".git").strip("/")
+        parts = [part for part in path.split("/") if part]
+        if len(parts) >= 2:
+            return f"{parts[0]}/{parts[1]}"
+        raise ValueError(f"Cannot derive repository slug from: {url}")
+
+    # Support OWNER/REPO shorthand
+    if "://" not in raw and raw.count("/") == 1 and "@" not in raw:
+        owner, repo = raw.split("/", 1)
+        return f"{owner}/{repo.removesuffix('.git')}"
+
+    parsed = urlparse(raw.removesuffix(".git"))
     if parsed.scheme not in {"http", "https"}:
         raise ValueError(f"Cannot derive repository slug from: {url}")
 
@@ -28,9 +46,8 @@ def _repo_slug_from_url(url: str) -> str:
         raise ValueError(f"Cannot derive repository slug from: {url}")
 
     owner = path_parts[0]
-    repo = path_parts[1]
-    slug = f"{owner}/{repo}"
-    return slug
+    repo = path_parts[1].removesuffix(".git")
+    return f"{owner}/{repo}"
 
 
 def resolve_contribute_patch_metadata(
