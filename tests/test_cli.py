@@ -204,6 +204,7 @@ def test_update_help_includes_remote_subdir_option():
     result = runner.invoke(cli, ["update", "--help"])
     assert result.exit_code == 0
     assert "--remote-subdir" in result.output
+    assert "--patch-conflict-strategy" in result.output
 
 
 def test_templates_list():

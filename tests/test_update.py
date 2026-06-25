@@ -8,6 +8,7 @@ import subprocess
 
 from click.testing import CliRunner
 
+import syncweaver.cli.update as update_module
 from syncweaver.cli import cli
 
 
@@ -89,7 +90,7 @@ def test_update_refreshes_tracked_subdir_and_lockfile(tmp_path, monkeypatch):
         ],
     )
 
-    assert update_result.exit_code == 0
+    assert update_result.exit_code == 0, update_result.output
     assert (host_repo / "code/package1/pkg.py").read_text() == "VALUE = 2\n"
 
     new_lock = json.loads((host_repo / ".syncweaver-lock.json").read_text())
@@ -155,8 +156,173 @@ def test_update_allows_remote_subdir_override(tmp_path, monkeypatch):
         ],
     )
 
-    assert update_result.exit_code == 0
+    assert update_result.exit_code == 0, update_result.output
     assert (host_repo / "code/package1/pkg.py").read_text() == "VALUE = 99\n"
 
     lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     assert lock_data["sources"]["code/package1"]["remote_subdir"] == "new-subdir"
+
+
+def test_update_reapplies_tracked_patch_after_refresh(tmp_path, monkeypatch):
+    """Verify `update` reapplies the tracked patch after refreshing vendored files.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    package_root = source_repo / "subprojects/package1"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    _run(["git", "add", "subprojects/package1/pkg.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+    assert add_result.exit_code == 0
+
+    (host_repo / "code/package1/pkg.py").write_text("VALUE = 7\n")
+    patch_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "create",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+        ],
+    )
+    assert patch_result.exit_code == 0
+
+    called = {"value": False}
+    original_create_patch = update_module.create_patch
+
+    def _spy_create_patch(*args, **kwargs):
+        called["value"] = True
+        return original_create_patch(*args, **kwargs)
+
+    monkeypatch.setattr(update_module, "create_patch", _spy_create_patch)
+
+    (package_root / "new_feature.py").write_text("FEATURE_FLAG = True\n")
+    _run(["git", "add", "subprojects/package1/new_feature.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "upstream update"], cwd=source_repo)
+
+    update_result = runner.invoke(
+        cli,
+        [
+            "update",
+            "--path",
+            "code/package1",
+        ],
+    )
+
+    assert update_result.exit_code == 0, update_result.output
+    assert (host_repo / "code/package1/pkg.py").read_text() == "VALUE = 7\n"
+    assert (
+        host_repo / "code/package1/new_feature.py"
+    ).read_text() == "FEATURE_FLAG = True\n"
+    assert called["value"]
+
+
+def test_update_warn_strategy_continues_when_patch_conflicts(tmp_path, monkeypatch):
+    """Verify `update` can continue with upstream files when patch reapply conflicts.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    package_root = source_repo / "subprojects/package1"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    _run(["git", "add", "subprojects/package1/pkg.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+    assert add_result.exit_code == 0
+
+    (host_repo / "code/package1/pkg.py").write_text("VALUE = 7\n")
+    patch_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "create",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+        ],
+    )
+    assert patch_result.exit_code == 0
+
+    (package_root / "pkg.py").write_text("VALUE = 2\n")
+    _run(["git", "add", "subprojects/package1/pkg.py"], cwd=source_repo)
+    _run(
+        ["git", "commit", "--no-verify", "-m", "conflicting upstream update"],
+        cwd=source_repo,
+    )
+
+    update_result = runner.invoke(
+        cli,
+        [
+            "update",
+            "--path",
+            "code/package1",
+            "--patch-conflict-strategy",
+            "warn",
+        ],
+    )
+
+    assert update_result.exit_code == 0, update_result.output
+    assert "Warning: tracked patch failed to reapply" in update_result.output
+    assert (host_repo / "code/package1/pkg.py").read_text() == "VALUE = 2\n"
