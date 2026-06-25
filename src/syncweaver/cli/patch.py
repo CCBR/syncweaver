@@ -9,7 +9,6 @@ import click
 
 from syncweaver.patch import (
     PATCH_STATUSES,
-    annotate_rejected_patch,
     create_patch,
     list_patches,
     mark_patch_status,
@@ -18,7 +17,7 @@ from syncweaver.patch import (
 
 @click.group("patch")
 def patch_group() -> None:
-    """Create, mark, annotate, and list source patch artifacts."""
+    """Create, mark, and list source patch artifacts."""
 
 
 @patch_group.command("create")
@@ -133,57 +132,6 @@ def mark_status_cmd(
         raise click.ClickException(str(exc)) from exc
 
     click.echo(f"Marked patch {patch_key} as {status.lower()} in {lockfile_written}")
-
-
-@patch_group.command("annotate-rejected")
-@click.option(
-    "--patch",
-    "patch_path",
-    required=True,
-    type=click.Path(path_type=pathlib.Path),
-    help="Relative patch path, e.g. code/package1/.syncweaver/package1.diff.",
-)
-@click.option(
-    "--pr-url",
-    required=True,
-    help="URL of the upstream pull request associated with this patch.",
-)
-@click.option(
-    "--reason",
-    required=True,
-    help="Free-text reason for rejection.",
-)
-@click.option(
-    "--lockfile",
-    default=".syncweaver-lock.json",
-    show_default=True,
-    type=click.Path(path_type=pathlib.Path),
-    help="Path to .syncweaver-lock.json in the host repository.",
-)
-def annotate_rejected_cmd(
-    patch_path: pathlib.Path,
-    pr_url: str,
-    reason: str,
-    lockfile: pathlib.Path,
-) -> None:
-    """Record rejected patch metadata in lockfile extension fields."""
-    try:
-        patch_key, lockfile_written = annotate_rejected_patch(
-            patch_path=patch_path,
-            pr_url=pr_url,
-            reason=reason,
-            lockfile_path=lockfile,
-        )
-    except (
-        FileNotFoundError,
-        KeyError,
-        ValueError,
-        json.JSONDecodeError,
-        OSError,
-    ) as exc:
-        raise click.ClickException(str(exc)) from exc
-
-    click.echo(f"Annotated rejected patch {patch_key} in {lockfile_written}")
 
 
 @patch_group.command("list")

@@ -171,6 +171,74 @@ def test_contribute_opens_pr(tmp_path, monkeypatch):
     assert patch_record["pr_url"] == "https://github.com/CCBR/package1/pull/42"
 
 
+def test_contribute_marks_relevant_patch_path(tmp_path, monkeypatch):
+    """Verify contribute marks the resolved patch path as open.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        contrib_module,
+        "contribute_patch",
+        lambda *a, **kw: "https://github.com/CCBR/package1/pull/43",
+    )
+
+    marked: dict[str, str] = {}
+
+    def _fake_mark_patch_status(
+        patch_path, status, lockfile_path, *, pr_url="", reason=""
+    ):
+        marked["patch_path"] = patch_path.as_posix()
+        marked["status"] = status
+        marked["pr_url"] = pr_url
+        marked["lockfile_path"] = str(lockfile_path)
+        del reason
+        return patch_path.as_posix(), str(lockfile_path)
+
+    monkeypatch.setattr(contrib_module, "mark_patch_status", _fake_mark_patch_status)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["contribute", "--path", "code/pkg", "--token", "ghp_testtoken"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert marked["patch_path"] == "code/pkg/.syncweaver/code-pkg.diff"
+    assert marked["status"] == "open"
+    assert marked["pr_url"] == "https://github.com/CCBR/package1/pull/43"
+    assert marked["lockfile_path"].endswith(".syncweaver-lock.json")
+
+
 def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
     """Verify --debug flag prints resolved metadata before opening PR.
 

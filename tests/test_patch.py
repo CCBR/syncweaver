@@ -149,8 +149,8 @@ def test_patch_list_shows_tracked_patch_for_source_path(tmp_path, monkeypatch):
     assert "code/package1/.syncweaver/code-package1.diff" in list_result.output
 
 
-def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
-    """Verify rejected patch annotation is persisted in lockfile audit metadata.
+def test_patch_mark_status_rejects_stores_audit_metadata(tmp_path, monkeypatch):
+    """Verify rejected status is persisted in lockfile audit metadata via mark-status.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -176,13 +176,15 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
     )
     assert create_result.exit_code == 0
 
-    annotate_result = runner.invoke(
+    mark_result = runner.invoke(
         cli,
         [
             "patch",
-            "annotate-rejected",
+            "mark-status",
             "--patch",
             "code/package1/.syncweaver/code-package1.diff",
+            "--status",
+            "rejected",
             "--pr-url",
             "https://github.com/ccbr/source/pull/42",
             "--reason",
@@ -190,7 +192,7 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
         ],
     )
 
-    assert annotate_result.exit_code == 0
+    assert mark_result.exit_code == 0
     lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     source_entry = lock_data["sources"]["code/package1"]
     audit = source_entry["patch_audit"]["code/package1/.syncweaver/code-package1.diff"]

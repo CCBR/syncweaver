@@ -112,9 +112,10 @@ def contribute_cmd(
     it, and opens a pull request.  Runs from the host repository directory.
     """
     cwd = pathlib.Path.cwd()
+    resolved_lockfile = cwd / lockfile
     try:
         resolved = resolve_contribute_patch_metadata(
-            lockfile=cwd / lockfile,
+            lockfile=resolved_lockfile,
             host_cwd=cwd,
             source_path=source_path,
             repo_url=repo_url,
@@ -156,7 +157,7 @@ def contribute_cmd(
             patch_path=pathlib.Path(resolved["patch_path"]),
             status="open",
             pr_url=pr_url,
-            lockfile_path=lockfile,
+            lockfile_path=resolved_lockfile,
         )
     except (FileNotFoundError, KeyError, ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
