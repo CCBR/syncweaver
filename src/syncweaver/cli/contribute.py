@@ -12,6 +12,7 @@ from syncweaver.contribute_patch import (
     contribute_patch,
     resolve_contribute_patch_metadata,
 )
+from syncweaver.patch import mark_patch_status
 
 
 @click.command("contribute")
@@ -151,7 +152,13 @@ def contribute_cmd(
             run_id=run_id,
             debug=debug,
         )
-    except (FileNotFoundError, RuntimeError, OSError) as exc:
+        mark_patch_status(
+            patch_path=pathlib.Path(resolved["patch_path"]),
+            status="open",
+            pr_url=pr_url,
+            lockfile_path=lockfile,
+        )
+    except (FileNotFoundError, KeyError, ValueError, RuntimeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
 
     click.echo(f"Pull request opened: {pr_url}")

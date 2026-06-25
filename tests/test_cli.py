@@ -164,6 +164,12 @@ def test_contribute_opens_pr(tmp_path, monkeypatch):
     assert captured["resolved"]["source_path"] == "code/pkg"
     assert captured["token"] == "ghp_testtoken"
 
+    updated_lock_data = json.loads(lockfile.read_text())
+    audit = updated_lock_data["sources"]["code/pkg"]["patch_audit"]
+    patch_record = audit["code/pkg/.syncweaver/code-pkg.diff"]
+    assert patch_record["status"] == "open"
+    assert patch_record["pr_url"] == "https://github.com/CCBR/package1/pull/42"
+
 
 def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
     """Verify --debug flag prints resolved metadata before opening PR.

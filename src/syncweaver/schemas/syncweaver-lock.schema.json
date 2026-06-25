@@ -78,11 +78,11 @@
     },
     "patchAudit": {
       "type": "object",
-      "required": ["status", "pr_url", "reason", "annotated_at"],
+      "required": ["status", "annotated_at"],
       "properties": {
         "status": {
           "type": "string",
-          "enum": ["rejected"]
+          "enum": ["local", "open", "accepted", "rejected"]
         },
         "pr_url": {
           "type": "string",

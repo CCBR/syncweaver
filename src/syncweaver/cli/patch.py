@@ -7,12 +7,18 @@ import pathlib
 
 import click
 
-from syncweaver.patch import annotate_rejected_patch, create_patch, list_patches
+from syncweaver.patch import (
+    PATCH_STATUSES,
+    annotate_rejected_patch,
+    create_patch,
+    list_patches,
+    mark_patch_status,
+)
 
 
 @click.group("patch")
 def patch_group() -> None:
-    """Create, annotate, and list source patch artifacts."""
+    """Create, mark, annotate, and list source patch artifacts."""
 
 
 @patch_group.command("create")
@@ -68,6 +74,67 @@ def create_cmd(
         click.echo("No source changes detected; patch file removed or unchanged.")
 
 
+@patch_group.command("mark-status")
+@click.option(
+    "--patch",
+    "patch_path",
+    required=True,
+    type=click.Path(path_type=pathlib.Path),
+    help="Relative patch path, e.g. code/package1/.syncweaver/package1.diff.",
+)
+@click.option(
+    "--status",
+    required=True,
+    type=click.Choice(PATCH_STATUSES, case_sensitive=False),
+    help="Patch lifecycle status to record in the lockfile.",
+)
+@click.option(
+    "--pr-url",
+    default="",
+    show_default=False,
+    help="Optional upstream pull request URL associated with this patch.",
+)
+@click.option(
+    "--reason",
+    default="",
+    show_default=False,
+    help="Optional free-text note, required for rejected patches.",
+)
+@click.option(
+    "--lockfile",
+    default=".syncweaver-lock.json",
+    show_default=True,
+    type=click.Path(path_type=pathlib.Path),
+    help="Path to .syncweaver-lock.json in the host repository.",
+)
+def mark_status_cmd(
+    patch_path: pathlib.Path,
+    status: str,
+    pr_url: str,
+    reason: str,
+    lockfile: pathlib.Path,
+) -> None:
+    """Record patch lifecycle status metadata in lockfile extension fields."""
+    try:
+        patch_key, lockfile_written = mark_patch_status(
+            patch_path=patch_path,
+            status=status,
+            pr_url=pr_url,
+            reason=reason,
+            lockfile_path=lockfile,
+        )
+    except (
+        FileNotFoundError,
+        KeyError,
+        ValueError,
+        json.JSONDecodeError,
+        OSError,
+    ) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    click.echo(f"Marked patch {patch_key} as {status.lower()} in {lockfile_written}")
+
+
 @patch_group.command("annotate-rejected")
 @click.option(
     "--patch",
@@ -107,7 +174,13 @@ def annotate_rejected_cmd(
             reason=reason,
             lockfile_path=lockfile,
         )
-    except (FileNotFoundError, KeyError, json.JSONDecodeError, OSError) as exc:
+    except (
+        FileNotFoundError,
+        KeyError,
+        ValueError,
+        json.JSONDecodeError,
+        OSError,
+    ) as exc:
         raise click.ClickException(str(exc)) from exc
 
     click.echo(f"Annotated rejected patch {patch_key} in {lockfile_written}")
