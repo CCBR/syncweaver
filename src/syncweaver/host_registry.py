@@ -20,6 +20,9 @@ def build_host_matrix_from_registry(
 
     Returns:
         list[dict[str, str]]: Matrix rows for workflow fan-out dispatch.
+            Each host item is read from a mapping that must provide
+            `repository` in OWNER/REPO format. Optional keys:
+            `source_repository`, `lockfile`, and `remote_subdir`.
 
     Raises:
         FileNotFoundError: If the registry file does not exist.

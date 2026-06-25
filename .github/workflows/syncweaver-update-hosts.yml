@@ -122,7 +122,7 @@ jobs:
               "Error: No host repositories matched .github/host-repositories.yml for this dispatch. "
               "Actionable guidance: "
               "1) Verify .github/host-repositories.yml exists and defines a top-level 'hosts' list. "
-              "2) Ensure each host has 'repository' field. "
+              "2) Ensure each host item has a 'repository' field in OWNER/REPO format (the optional 'name' field is not used). "
               "3) If a host defines 'source_repository', it must match SOURCE_REPOSITORY for this dispatch. "
               f"Debug context: SOURCE_REPOSITORY={source_repository}; "
               f"SOURCE_REF={source_ref}; "

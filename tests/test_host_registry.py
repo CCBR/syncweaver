@@ -110,3 +110,66 @@ def test_build_host_matrix_serializable_for_strategy(tmp_path):
 
     serialized = json.dumps(matrix_hosts)
     assert "NIDAP/MOSuite-create" in serialized
+
+
+def test_build_host_matrix_does_not_require_name(tmp_path):
+    """Verify registry entries resolve without a legacy `name` field.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    registry_data = {
+        "hosts": [
+            {
+                "repository": "NIDAP/MOSuite-create",
+                "source_repository": "CCBR/package1",
+            }
+        ]
+    }
+    registry_path = tmp_path / "host-repositories.yml"
+    registry_path.write_text(yaml.safe_dump(registry_data))
+
+    matrix_hosts = build_host_matrix_from_registry(
+        registry_path=registry_path,
+        source_repository="CCBR/package1",
+    )
+
+    assert len(matrix_hosts) == 1
+    assert matrix_hosts[0]["repository"] == "NIDAP/MOSuite-create"
+
+
+def test_build_host_matrix_ignores_name_only_entries(tmp_path):
+    """Verify entries without repository are skipped even if `name` is present.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    registry_data = {
+        "hosts": [
+            {
+                "name": "legacy-host-name-only",
+                "source_repository": "CCBR/package1",
+            },
+            {
+                "name": "legacy-name",
+                "repository": "NIDAP/MOSuite-create",
+                "source_repository": "CCBR/package1",
+            },
+        ]
+    }
+    registry_path = tmp_path / "host-repositories.yml"
+    registry_path.write_text(yaml.safe_dump(registry_data))
+
+    matrix_hosts = build_host_matrix_from_registry(
+        registry_path=registry_path,
+        source_repository="CCBR/package1",
+    )
+
+    assert len(matrix_hosts) == 1
+    assert matrix_hosts[0]["repository"] == "NIDAP/MOSuite-create"
