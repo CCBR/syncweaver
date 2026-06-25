@@ -195,7 +195,10 @@ def contribute_patch(
     source_path = resolved["source_path"]
     repo_url = resolved["repo_url"]
 
-    patch_file = (host_cwd / pathlib.Path(patch_path)).resolve()
+    host_root = host_cwd.resolve()
+    patch_file = (host_root / pathlib.Path(patch_path)).resolve()
+    if not patch_file.is_relative_to(host_root):
+        raise ValueError(f"Patch path must be within the host repository: {patch_path}")
     if not patch_file.is_file():
         raise FileNotFoundError(f"Patch file does not exist: {patch_path}")
 
