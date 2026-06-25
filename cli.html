@@ -624,16 +624,22 @@ Options:
   Update a tracked external repository in the current host repository.
 
 Options:
-  --path PATH           Tracked destination path in the host repository, e.g.
-                        code/package1.  [required]
-  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults
-                        to lockfile ref.
-  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.
-                        src/package1. Defaults to lockfile remote_subdir when
-                        present.
-  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.
-                        [default: .syncweaver-lock.json]
-  -h, --help            Show this message and exit.
+  --path PATH                     Tracked destination path in the host
+                                  repository, e.g. code/package1.  [required]
+  --ref TEXT                      Git ref to vendor (branch, tag, or commit).
+                                  Defaults to lockfile ref.
+  --remote-subdir TEXT            Optional repository subdirectory to vendor,
+                                  e.g. src/package1. Defaults to lockfile
+                                  remote_subdir when present.
+  --patch-conflict-strategy [fail|warn]
+                                  Behavior when tracked patch reapply fails
+                                  during update. Use 'fail' to abort update or
+                                  'warn' to continue with unpatched files.
+                                  [default: fail]
+  --lockfile PATH                 Path to .syncweaver-lock.json in the host
+                                  repository.  [default: .syncweaver-
+                                  lock.json]
+  -h, --help                      Show this message and exit.
 </code></pre>
 </section>
 <section id="validate" class="level3">
