@@ -144,12 +144,6 @@ def analyze_cmd(
     help="Optional comma/newline-separated source paths to gate with functracer.",
 )
 @click.option(
-    "--functracer-package-name",
-    default="",
-    show_default=True,
-    help="Optional package_name override passed to functracer.",
-)
-@click.option(
     "--github-output",
     default=None,
     type=click.Path(path_type=pathlib.Path, dir_okay=False),
@@ -162,7 +156,6 @@ def select_update_paths_cmd(
     host_repo: pathlib.Path,
     functracer_entry_scripts: str,
     functracer_source_paths: str,
-    functracer_package_name: str,
     github_output: pathlib.Path | None,
 ) -> None:
     """Filter candidate source paths and emit selection JSON and optional outputs."""
@@ -187,7 +180,6 @@ def select_update_paths_cmd(
             host_repo_path=host_repo,
             functracer_entry_scripts_input=functracer_entry_scripts,
             functracer_source_paths_input=functracer_source_paths,
-            functracer_package_name_input=functracer_package_name,
         )
     except (
         FileNotFoundError,

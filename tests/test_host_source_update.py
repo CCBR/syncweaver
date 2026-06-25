@@ -175,7 +175,7 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     monkeypatch.setattr(
         host_source_update,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag, package_name: False,
+        lambda entry_script, repository, release_tag, previous_tag: False,
     )
 
     selected, skipped = select_source_paths_for_update(
@@ -185,7 +185,6 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
         host_repo_path=host_repo,
         functracer_entry_scripts_input="main.R",
         functracer_source_paths_input="",
-        functracer_package_name_input="",
     )
 
     assert selected == []
@@ -230,7 +229,6 @@ def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
         host_repo_path=host_repo,
         functracer_entry_scripts_input="main.R",
         functracer_source_paths_input="",
-        functracer_package_name_input="",
     )
 
     assert selected == ["code/package1"]

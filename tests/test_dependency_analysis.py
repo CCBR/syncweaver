@@ -141,7 +141,7 @@ def test_analyze_source_dependencies_reports_release_impact(
     monkeypatch.setattr(
         dependency_analysis,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag, package_name: True,
+        lambda entry_script, repository, release_tag, previous_tag: True,
     )
 
     result = analyze_source_dependencies(

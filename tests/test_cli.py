@@ -105,7 +105,6 @@ def test_deps_select_update_paths_outputs_json(tmp_path):
         host_repo_path,
         functracer_entry_scripts_input,
         functracer_source_paths_input,
-        functracer_package_name_input,
     ):
         return ["code/package1"], ["code/package2"]
 
@@ -160,7 +159,6 @@ def test_deps_select_update_paths_writes_github_output(tmp_path):
         host_repo_path,
         functracer_entry_scripts_input,
         functracer_source_paths_input,
-        functracer_package_name_input,
     ):
         return ["code/package1"], []
 

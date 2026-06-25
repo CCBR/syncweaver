@@ -44,7 +44,6 @@ def select_source_paths_for_update(
     host_repo_path: pathlib.Path,
     functracer_entry_scripts_input: str | None,
     functracer_source_paths_input: str | None,
-    functracer_package_name_input: str | None,
 ) -> tuple[list[str], list[str]]:
     """Filter source paths for update with optional functracer impact checks.
 
@@ -61,16 +60,12 @@ def select_source_paths_for_update(
             host entry scripts to analyze.
         functracer_source_paths_input (str | None): Optional comma/newline list of
             source paths that should be functracer-gated.
-        functracer_package_name_input (str | None): Optional package name override.
 
     Returns:
         tuple[list[str], list[str]]: Source paths to update and source paths skipped.
     """
     entry_scripts = _parse_list_input(functracer_entry_scripts_input)
     selected_source_paths = _parse_list_input(functracer_source_paths_input)
-    package_name = ""
-    if functracer_package_name_input is not None:
-        package_name = functracer_package_name_input.strip()
     source_ref = ""
     if source_ref_input is not None:
         source_ref = source_ref_input.strip()
@@ -118,7 +113,6 @@ def select_source_paths_for_update(
                                 repository=repository,
                                 release_tag=source_ref,
                                 previous_tag=previous_tag,
-                                package_name=package_name,
                             )
                             impacted = impacted or script_affected
                         except (

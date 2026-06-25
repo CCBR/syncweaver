@@ -49,10 +49,6 @@ inputs:
     description: Optional comma/newline-separated tracked source paths that should be dependency-gated with functracer.
     required: false
     default: ""
-  functracer-package-name:
-    description: Optional package_name override passed to functracer release impact analysis.
-    required: false
-    default: ""
 
 outputs:
   source_paths:
@@ -211,7 +207,6 @@ runs:
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
-        FUNCTRACER_PACKAGE_NAME_INPUT: ${{ inputs.functracer-package-name }}
       run: |
         set -euo pipefail
         syncweaver deps select-update-paths \
@@ -221,7 +216,6 @@ runs:
           --host-repo "host-repo" \
           --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
           --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
-          --functracer-package-name "${FUNCTRACER_PACKAGE_NAME_INPUT}" \
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path

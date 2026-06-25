@@ -139,7 +139,6 @@ def run_functracer_release_impact(
     repository: str,
     release_tag: str,
     previous_tag: str,
-    package_name: str,
 ) -> bool:
     """Run functracer release impact analysis for an entry script.
 
@@ -148,7 +147,6 @@ def run_functracer_release_impact(
         repository (str): Source repository URL.
         release_tag (str): Candidate release tag/ref.
         previous_tag (str): Previously tracked source ref.
-        package_name (str): Optional package name override.
 
     Returns:
         bool: True when entry script is affected by dependency changes.
@@ -160,7 +158,6 @@ def run_functracer_release_impact(
             repository,
             release_tag,
             previous_tag,
-            package_name,
         ],
     )
     return result
@@ -313,9 +310,6 @@ def analyze_source_dependencies(
     normalized_previous_tag = ""
     if previous_tag is not None:
         normalized_previous_tag = previous_tag.strip()
-    normalized_package_name = ""
-    if package_name is not None:
-        normalized_package_name = package_name.strip()
 
     impacted_scripts: list[str] = []
     unaffected_scripts: list[str] = []
@@ -334,7 +328,6 @@ def analyze_source_dependencies(
                 repository=normalized_repository,
                 release_tag=normalized_release_tag,
                 previous_tag=normalized_previous_tag,
-                package_name=normalized_package_name,
             )
             if script_affected:
                 impacted_scripts.append(script_path)
