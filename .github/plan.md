@@ -137,15 +137,15 @@ scan-dependencies/
 
 ## github actions workflow templates in src/syncweaver/templates
 
-- syncweaver-update-source.yml
+- syncweaver-host-update.yml
 
   - on repository dispatch or workflow dispatch
   - call `update-source` composite action
 
-- syncweaver-notify-host-update-source.yml
+- syncweaver-source-dispatch.yml
 
   - on release published in a source repo
-  - dispatch host repository workflows that run `syncweaver-update-source`
+  - dispatch host repository workflows that run `syncweaver-host-update`
 
 - syncweaver-generate-patches.yml
 

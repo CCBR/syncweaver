@@ -1,4 +1,4 @@
-name: syncweaver-notify-host-update-source
+name: syncweaver-source-dispatch
 
 on:
   release:
