@@ -457,8 +457,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Workflow template files for syncweaver.</p>
 <p>Templates can be listed and copied into downstream host repository or package repos using the helper functions below or via the CLI:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> templates list</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> templates add syncweaver-update-source <span class="at">--output</span> .github/workflows/</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> templates add syncweaver-notify-host-update-source <span class="at">--output</span> .github/workflows/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> templates add syncweaver-host-update <span class="at">--output</span> .github/workflows/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> templates add syncweaver-source-dispatch <span class="at">--output</span> .github/workflows/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Use <code>available_templates_markdown()</code> to render the current template inventory.</p>
 <section id="functions" class="level2">
 <h2 class="anchored" data-anchor-id="functions">Functions</h2>
