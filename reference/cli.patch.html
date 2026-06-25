@@ -436,9 +436,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
-  <li><a href="#syncweaver.cli.patch.annotate_rejected_cmd" id="toc-syncweaver.cli.patch.annotate_rejected_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.patch.annotate_rejected_cmd">annotate_rejected_cmd</a></li>
   <li><a href="#syncweaver.cli.patch.create_cmd" id="toc-syncweaver.cli.patch.create_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.patch.create_cmd">create_cmd</a></li>
   <li><a href="#syncweaver.cli.patch.list_cmd" id="toc-syncweaver.cli.patch.list_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.patch.list_cmd">list_cmd</a></li>
+  <li><a href="#syncweaver.cli.patch.mark_status_cmd" id="toc-syncweaver.cli.patch.mark_status_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.patch.mark_status_cmd">mark_status_cmd</a></li>
   <li><a href="#syncweaver.cli.patch.patch_group" id="toc-syncweaver.cli.patch.patch_group" class="nav-link" data-scroll-target="#syncweaver.cli.patch.patch_group">patch_group</a></li>
   </ul></li>
   </ul></li>
@@ -467,42 +467,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#syncweaver.cli.patch.annotate_rejected_cmd">annotate_rejected_cmd</a></td>
-<td>Record rejected patch metadata in lockfile extension fields.</td>
-</tr>
-<tr class="even">
 <td><a href="#syncweaver.cli.patch.create_cmd">create_cmd</a></td>
 <td>Create or update a canonical patch file for a</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#syncweaver.cli.patch.list_cmd">list_cmd</a></td>
 <td>List tracked patch file records for a source path.</td>
 </tr>
+<tr class="odd">
+<td><a href="#syncweaver.cli.patch.mark_status_cmd">mark_status_cmd</a></td>
+<td>Record patch lifecycle status metadata in lockfile extension fields.</td>
+</tr>
 <tr class="even">
 <td><a href="#syncweaver.cli.patch.patch_group">patch_group</a></td>
-<td>Create, annotate, and list source patch artifacts.</td>
+<td>Create, mark, and list source patch artifacts.</td>
 </tr>
 </tbody>
 </table>
-<section id="syncweaver.cli.patch.annotate_rejected_cmd" class="level3">
-<h3 class="anchored" data-anchor-id="syncweaver.cli.patch.annotate_rejected_cmd">annotate_rejected_cmd</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cli.patch.annotate_rejected_cmd(patch_path, pr_url, reason, lockfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Record rejected patch metadata in lockfile extension fields.</p>
-</section>
 <section id="syncweaver.cli.patch.create_cmd" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.cli.patch.create_cmd">create_cmd</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cli.patch.create_cmd(source_path, repo_url, lockfile, patch_dir)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Create or update a canonical patch file for a tracked source path.</p>
 </section>
 <section id="syncweaver.cli.patch.list_cmd" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.cli.patch.list_cmd">list_cmd</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cli.patch.list_cmd(source_path, lockfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cli.patch.list_cmd(source_path, lockfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>List tracked patch file records for a source path.</p>
+</section>
+<section id="syncweaver.cli.patch.mark_status_cmd" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.cli.patch.mark_status_cmd">mark_status_cmd</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cli.patch.mark_status_cmd(patch_path, status, pr_url, reason, lockfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record patch lifecycle status metadata in lockfile extension fields.</p>
 </section>
 <section id="syncweaver.cli.patch.patch_group" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.cli.patch.patch_group">patch_group</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cli.patch.patch_group()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Create, annotate, and list source patch artifacts.</p>
+<p>Create, mark, and list source patch artifacts.</p>
 
 
 </section>

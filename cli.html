@@ -321,6 +321,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#add" id="toc-add" class="nav-link active" data-scroll-target="#add"><code>add</code></a></li>
+  <li><a href="#contribute" id="toc-contribute" class="nav-link" data-scroll-target="#contribute"><code>contribute</code></a></li>
   <li><a href="#deps" id="toc-deps" class="nav-link" data-scroll-target="#deps"><code>deps</code></a></li>
   <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch"><code>patch</code></a></li>
   <li><a href="#remove" id="toc-remove" class="nav-link" data-scroll-target="#remove"><code>remove</code></a></li>
@@ -364,13 +365,14 @@ Options:
   -h, --help      Show this message and exit.
 
 Commands:
-  add        Add an external repository to the current host repository.
-  deps       Analyze source dependencies for host repository integration.
-  patch      Create, annotate, and list source patch artifacts.
-  remove     Remove a tracked external repository from the current host...
-  templates  List and add workflow templates to a repo.
-  update     Update a tracked external repository in the current host...
-  validate   Validate a lockfile against the syncweaver lockfile JSON...
+  add         Add an external repository to the current host repository.
+  contribute  Contribute a tracked host patch back to the source repository.
+  deps        Analyze source dependencies for host repository integration.
+  patch       Create, mark, and list source patch artifacts.
+  remove      Remove a tracked external repository from the current host...
+  templates   List and add workflow templates to a repo.
+  update      Update a tracked external repository in the current host...
+  validate    Validate a lockfile against the syncweaver lockfile JSON...
 </code></pre>
 <section id="add" class="level3">
 <h3 class="anchored" data-anchor-id="add"><code>add</code></h3>
@@ -391,6 +393,41 @@ Options:
                         [default: .syncweaver-lock.json]
   --overwrite           Overwrite destination path if it already exists.
   -h, --help            Show this message and exit.
+</code></pre>
+</section>
+<section id="contribute" class="level3">
+<h3 class="anchored" data-anchor-id="contribute"><code>contribute</code></h3>
+<pre><code>Usage: syncweaver contribute [OPTIONS]
+
+  Contribute a tracked host patch back to the source repository.
+
+  Clones the source repository, applies the patch to a new branch, pushes it,
+  and opens a pull request.  Runs from the host repository directory.
+
+Options:
+  --path TEXT               Tracked source path in the host repository, e.g.
+                            code/package1. Resolved automatically from
+                            lockfile when not provided.
+  --repo-url TEXT           Source repository URL or OWNER/REPO shorthand.
+                            Used to disambiguate when multiple sources are
+                            tracked.
+  --source-repository TEXT  Source repository in OWNER/REPO format. Derived
+                            from lockfile repo_url when not provided.
+  --patch PATH              Path to the patch file to contribute. Resolved
+                            from lockfile patch entry when not provided.
+  --base-ref TEXT           Base branch or ref in the source repository to
+                            target. Defaults to lockfile ref when not
+                            provided.
+  --lockfile PATH           Path to .syncweaver-lock.json in the host
+                            repository.  [default: .syncweaver-lock.json]
+  --token TEXT              GitHub token with push access to the source
+                            repository. May also be set via the GITHUB_TOKEN
+                            environment variable or resolved from `gh auth
+                            token` when not provided.
+  --run-id TEXT             Optional identifier appended to the branch name
+                            for uniqueness.
+  --debug                   Print resolved metadata and verbose git output.
+  -h, --help                Show this message and exit.
 </code></pre>
 </section>
 <section id="deps" class="level3">
@@ -462,33 +499,16 @@ Options:
 <h3 class="anchored" data-anchor-id="patch"><code>patch</code></h3>
 <pre><code>Usage: syncweaver patch [OPTIONS] COMMAND [ARGS]...
 
-  Create, annotate, and list source patch artifacts.
+  Create, mark, and list source patch artifacts.
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  annotate-rejected  Record rejected patch metadata in lockfile extension...
-  create             Create or update a canonical patch file for a...
-  list               List tracked patch file records for a source path.
+  create       Create or update a canonical patch file for a tracked...
+  list         List tracked patch file records for a source path.
+  mark-status  Record patch lifecycle status metadata in lockfile...
 </code></pre>
-<section id="patch-annotate-rejected" class="level4">
-<h4 class="anchored" data-anchor-id="patch-annotate-rejected"><code>patch annotate-rejected</code></h4>
-<pre><code>Usage: syncweaver patch annotate-rejected [OPTIONS]
-
-  Record rejected patch metadata in lockfile extension fields.
-
-Options:
-  --patch PATH     Relative patch path, e.g.
-                   code/package1/.syncweaver/package1.diff.  [required]
-  --pr-url TEXT    URL of the upstream pull request associated with this
-                   patch.  [required]
-  --reason TEXT    Free-text reason for rejection.  [required]
-  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.
-                   [default: .syncweaver-lock.json]
-  -h, --help       Show this message and exit.
-</code></pre>
-</section>
 <section id="patch-create" class="level4">
 <h4 class="anchored" data-anchor-id="patch-create"><code>patch create</code></h4>
 <pre><code>Usage: syncweaver patch create [OPTIONS]
@@ -518,6 +538,29 @@ Options:
   --lockfile PATH  Path to .syncweaver-lock.json in the host repository.
                    [default: .syncweaver-lock.json]
   -h, --help       Show this message and exit.
+</code></pre>
+</section>
+<section id="patch-mark-status" class="level4">
+<h4 class="anchored" data-anchor-id="patch-mark-status"><code>patch mark-status</code></h4>
+<pre><code>Usage: syncweaver patch mark-status [OPTIONS]
+
+  Record patch lifecycle status metadata in lockfile extension fields.
+
+Options:
+  --patch PATH                    Relative patch path, e.g.
+                                  code/package1/.syncweaver/package1.diff.
+                                  [required]
+  --status [local|open|accepted|rejected]
+                                  Patch lifecycle status to record in the
+                                  lockfile.  [required]
+  --pr-url TEXT                   Optional upstream pull request URL
+                                  associated with this patch.
+  --reason TEXT                   Optional free-text note, required for
+                                  rejected patches.
+  --lockfile PATH                 Path to .syncweaver-lock.json in the host
+                                  repository.  [default: .syncweaver-
+                                  lock.json]
+  -h, --help                      Show this message and exit.
 </code></pre>
 </section>
 </section>

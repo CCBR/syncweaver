@@ -439,6 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#syncweaver.patch.annotate_rejected_patch" id="toc-syncweaver.patch.annotate_rejected_patch" class="nav-link" data-scroll-target="#syncweaver.patch.annotate_rejected_patch">annotate_rejected_patch</a></li>
   <li><a href="#syncweaver.patch.create_patch" id="toc-syncweaver.patch.create_patch" class="nav-link" data-scroll-target="#syncweaver.patch.create_patch">create_patch</a></li>
   <li><a href="#syncweaver.patch.list_patches" id="toc-syncweaver.patch.list_patches" class="nav-link" data-scroll-target="#syncweaver.patch.list_patches">list_patches</a></li>
+  <li><a href="#syncweaver.patch.mark_patch_status" id="toc-syncweaver.patch.mark_patch_status" class="nav-link" data-scroll-target="#syncweaver.patch.mark_patch_status">mark_patch_status</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -477,6 +478,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><a href="#syncweaver.patch.list_patches">list_patches</a></td>
 <td>List recorded patches for a tracked source path.</td>
 </tr>
+<tr class="even">
+<td><a href="#syncweaver.patch.mark_patch_status">mark_patch_status</a></td>
+<td>Record patch lifecycle status metadata in the syncweaver lockfile.</td>
+</tr>
 </tbody>
 </table>
 <section id="syncweaver.patch.annotate_rejected_patch" class="level3">
@@ -493,8 +498,124 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="syncweaver.patch.list_patches">list_patches</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>patch.list_patches(path, lockfile_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>List recorded patches for a tracked source path.</p>
+</section>
+<section id="syncweaver.patch.mark_patch_status" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.patch.mark_patch_status">mark_patch_status</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>patch.mark_patch_status(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    patch_path,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    status,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    lockfile_path,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    pr_url<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    reason<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record patch lifecycle status metadata in the syncweaver lockfile.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 64%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>patch_path</td>
+<td>pathlib.Path</td>
+<td>Relative patch path tracked in the lockfile.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>status</td>
+<td>str</td>
+<td>Patch lifecycle state: <code>local</code>, <code>open</code>, <code>accepted</code>, or <code>rejected</code>.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>lockfile_path</td>
+<td>pathlib.Path</td>
+<td>Path to the host repository lockfile.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>pr_url</td>
+<td>str</td>
+<td>Optional upstream pull request URL for open or reviewed patches.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>reason</td>
+<td>str</td>
+<td>Optional free-text note, required for rejected patches.</td>
+<td><code>''</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 19%">
+<col style="width: 72%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>tuple[str, str]</td>
+<td>tuple[str, str]: The tracked patch key and the lockfile path written.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="raises" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 71%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>KeyError</td>
+<td>If the patch path is not tracked in the lockfile.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>ValueError</td>
+<td>If the requested status metadata is invalid.</td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 </section>
 </section>
 </section>

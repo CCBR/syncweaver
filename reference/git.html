@@ -436,6 +436,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
+  <li><a href="#syncweaver.git.build_github_git_env" id="toc-syncweaver.git.build_github_git_env" class="nav-link" data-scroll-target="#syncweaver.git.build_github_git_env">build_github_git_env</a></li>
+  <li><a href="#syncweaver.git.resolve_github_token" id="toc-syncweaver.git.resolve_github_token" class="nav-link" data-scroll-target="#syncweaver.git.resolve_github_token">resolve_github_token</a></li>
   <li><a href="#syncweaver.git.run_git" id="toc-syncweaver.git.run_git" class="nav-link" data-scroll-target="#syncweaver.git.run_git">run_git</a></li>
   </ul></li>
   </ul></li>
@@ -464,14 +466,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
+<td><a href="#syncweaver.git.build_github_git_env">build_github_git_env</a></td>
+<td>Build process-local GitHub auth headers for git-over-HTTPS commands.</td>
+</tr>
+<tr class="even">
+<td><a href="#syncweaver.git.resolve_github_token">resolve_github_token</a></td>
+<td>Resolve a GitHub token from explicit input, env var, or the gh CLI.</td>
+</tr>
+<tr class="odd">
 <td><a href="#syncweaver.git.run_git">run_git</a></td>
 <td>Run a git command and return stdout, raising RuntimeError on failure.</td>
 </tr>
 </tbody>
 </table>
+<section id="syncweaver.git.build_github_git_env" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.git.build_github_git_env">build_github_git_env</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>git.build_github_git_env(github_token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Build process-local GitHub auth headers for git-over-HTTPS commands.</p>
+</section>
+<section id="syncweaver.git.resolve_github_token" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.git.resolve_github_token">resolve_github_token</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>git.resolve_github_token(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resolve a GitHub token from explicit input, env var, or the gh CLI.</p>
+</section>
 <section id="syncweaver.git.run_git" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.run_git">run_git</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>, env<span class="op">=</span><span class="va">None</span>, redacted_values<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Run a git command and return stdout, raising RuntimeError on failure.</p>
 
 
