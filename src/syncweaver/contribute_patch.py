@@ -193,6 +193,7 @@ def contribute_patch(
         FileNotFoundError: If the patch file does not exist in the host repository.
         KeyError: If required metadata keys are missing from ``resolved``.
         RuntimeError: If git operations or the GitHub API call fail.
+    """
     source_repository = resolved["source_repository"]
     source_base_ref = resolved["source_base_ref"]
     patch_path = resolved["patch_path"]
@@ -326,6 +327,7 @@ def write_github_output(outputs: dict[str, str], output_path: pathlib.Path) -> N
                 handle.write(f"{key}<<{delimiter}\n{safe_value}\n{delimiter}\n")
             else:
                 handle.write(f"{key}={safe_value}\n")
+
 
 def main() -> int:
     """Resolve metadata from workflow environment and emit GitHub outputs."""
