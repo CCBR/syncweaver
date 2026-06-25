@@ -36,17 +36,26 @@ jobs:
             echo "Error: source ref cannot be empty." >&2
             exit 1
           fi
-          if [[ -z "${{ secrets.CCBR_BOT_TOKEN }}" ]]; then
-            echo "Error: secrets.CCBR_BOT_TOKEN is required to dispatch to CCBR/syncweaver." >&2
+          if [[ -z "${{ vars.CCBR_BOT_APP_ID }}" ]]; then
+            echo "Error: vars.CCBR_BOT_APP_ID is required to generate a dispatch token." >&2
             exit 1
           fi
+          if [[ -z "${{ secrets.CCBR_BOT_PRIVATE_KEY }}" ]]; then
+            echo "Error: secrets.CCBR_BOT_PRIVATE_KEY is required to generate a dispatch token." >&2
+            exit 1
+          fi
+
+      - name: Generate CCBR-bot token
+        id: ccbr_bot
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 
       - name: Dispatch syncweaver-update-hosts workflow in CCBR/syncweaver
         uses: peter-evans/repository-dispatch@v3
         with:
-          # This token must have permission to dispatch events to CCBR/syncweaver.
-          # A GitHub App token or PAT with repo scope is typically used.
-          token: ${{ secrets.CCBR_BOT_TOKEN }}
+          token: ${{ steps.ccbr_bot.outputs.token }}
           repository: CCBR/syncweaver
           event-type: syncweaver-update-hosts
           client-payload: >-
