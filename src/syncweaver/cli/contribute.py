@@ -12,6 +12,7 @@ from syncweaver.contribute_patch import (
     resolve_contribute_patch_metadata,
 )
 from syncweaver.git import resolve_github_token
+from syncweaver.lockfile import load_existing_lockfile
 from syncweaver.patch import mark_patch_status
 
 
@@ -143,6 +144,19 @@ def contribute_cmd(
     try:
         resolved_token = resolve_github_token(token)
     except RuntimeError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    try:
+        lock_data = load_existing_lockfile(resolved_lockfile)
+        patch_key = resolved["patch_path"]
+        patch_found = False
+        for source_entry in lock_data.get("sources", {}).values():
+            if source_entry.get("patch") == patch_key:
+                patch_found = True
+                break
+        if not patch_found:
+            raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
+    except (FileNotFoundError, KeyError, json.JSONDecodeError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
 
     try:

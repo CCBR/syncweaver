@@ -484,3 +484,68 @@ def test_contribute_fails_when_lockfile_missing(tmp_path, monkeypatch):
     runner = CliRunner()
     result = runner.invoke(cli, ["contribute", "--token", "ghp_testtoken"])
     assert result.exit_code != 0
+
+
+def test_contribute_fails_when_patch_not_tracked(tmp_path, monkeypatch):
+    """Verify contribute fails when patch is not tracked in lockfile before opening PR.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    # Create a different patch file (not the tracked one)
+    patch_file = tmp_path / "code/pkg/.syncweaver/other-patch.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+
+    contribute_patch_called = False
+
+    def _fake_contribute_patch(*args, **kwargs):
+        nonlocal contribute_patch_called
+        contribute_patch_called = True
+        return "https://github.com/CCBR/package1/pull/99"
+
+    monkeypatch.setattr(contrib_module, "contribute_patch", _fake_contribute_patch)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "contribute",
+            "--path",
+            "code/pkg",
+            "--patch",
+            "code/pkg/.syncweaver/other-patch.diff",
+            "--token",
+            "ghp_testtoken",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "not tracked in lockfile" in result.output
+    assert not contribute_patch_called
