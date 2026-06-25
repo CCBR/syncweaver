@@ -134,7 +134,7 @@ def resolve_contribute_patch_metadata(
         )
 
     patch_file = (host_cwd / pathlib.Path(resolved_patch_path)).resolve()
-    if not patch_file.exists():
+    if not patch_file.is_file():
         raise FileNotFoundError(
             "resolved patch file does not exist in host repository: "
             f"{resolved_patch_path}"
@@ -233,7 +233,7 @@ def contribute_patch(
     repo_url = resolved["repo_url"]
 
     patch_file = (host_cwd / pathlib.Path(patch_path)).resolve()
-    if not patch_file.exists():
+    if not patch_file.is_file():
         raise FileNotFoundError(f"Patch file does not exist: {patch_path}")
 
     branch_stub = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
