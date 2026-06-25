@@ -63,20 +63,23 @@ def test_deps_analyze_outputs_json(tmp_path):
         }
         return output
 
+    original = deps_cli.analyze_source_dependencies
     deps_cli.analyze_source_dependencies = _stub_analyze_source_dependencies
-
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "deps",
-            "analyze",
-            "--host-repo",
-            str(host_repo_path),
-            "--source-path",
-            "code/package1",
-        ],
-    )
+    try:
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "deps",
+                "analyze",
+                "--host-repo",
+                str(host_repo_path),
+                "--source-path",
+                "code/package1",
+            ],
+        )
+    finally:
+        deps_cli.analyze_source_dependencies = original
     assert result.exit_code == 0
     assert '"analysis_engine": "functracer"' in result.output
 
@@ -106,24 +109,27 @@ def test_deps_select_update_paths_outputs_json(tmp_path):
     ):
         return ["code/package1"], ["code/package2"]
 
+    original = deps_cli.select_source_paths_for_update
     deps_cli.select_source_paths_for_update = _stub_select_source_paths_for_update
-
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "deps",
-            "select-update-paths",
-            "--host-repo",
-            str(host_repo_path),
-            "--lockfile",
-            ".syncweaver-lock.json",
-            "--source-paths-json",
-            '["code/package1", "code/package2"]',
-            "--source-ref",
-            "v1.2.3",
-        ],
-    )
+    try:
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "deps",
+                "select-update-paths",
+                "--host-repo",
+                str(host_repo_path),
+                "--lockfile",
+                ".syncweaver-lock.json",
+                "--source-paths-json",
+                '["code/package1", "code/package2"]',
+                "--source-ref",
+                "v1.2.3",
+            ],
+        )
+    finally:
+        deps_cli.select_source_paths_for_update = original
     assert result.exit_code == 0
     payload = json.loads(result.output)
     assert payload["source_paths"] == ["code/package1"]
@@ -158,26 +164,29 @@ def test_deps_select_update_paths_writes_github_output(tmp_path):
     ):
         return ["code/package1"], []
 
+    original = deps_cli.select_source_paths_for_update
     deps_cli.select_source_paths_for_update = _stub_select_source_paths_for_update
-
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "deps",
-            "select-update-paths",
-            "--host-repo",
-            str(host_repo_path),
-            "--lockfile",
-            ".syncweaver-lock.json",
-            "--source-paths-json",
-            '["code/package1"]',
-            "--source-ref",
-            "v1.2.3",
-            "--github-output",
-            str(github_output_path),
-        ],
-    )
+    try:
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "deps",
+                "select-update-paths",
+                "--host-repo",
+                str(host_repo_path),
+                "--lockfile",
+                ".syncweaver-lock.json",
+                "--source-paths-json",
+                '["code/package1"]',
+                "--source-ref",
+                "v1.2.3",
+                "--github-output",
+                str(github_output_path),
+            ],
+        )
+    finally:
+        deps_cli.select_source_paths_for_update = original
     assert result.exit_code == 0
     output_text = github_output_path.read_text(encoding="utf-8")
     assert 'source_paths=["code/package1"]' in output_text
