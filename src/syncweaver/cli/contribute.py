@@ -8,10 +8,10 @@ import pathlib
 import click
 
 from syncweaver.contribute_patch import (
-    _resolve_github_token,
     contribute_patch,
     resolve_contribute_patch_metadata,
 )
+from syncweaver.git import resolve_github_token
 from syncweaver.patch import mark_patch_status
 
 
@@ -140,7 +140,7 @@ def contribute_cmd(
         click.echo(f"  source_base_ref:   {resolved['source_base_ref']}")
 
     try:
-        resolved_token = _resolve_github_token(token)
+        resolved_token = resolve_github_token(token)
     except RuntimeError as exc:
         raise click.ClickException(str(exc)) from exc
 

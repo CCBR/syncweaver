@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 import requests
 
-from syncweaver.git import run_git
+from syncweaver.git import build_github_git_env, run_git
 from syncweaver.lockfile import (
     load_existing_lockfile,
     resolve_source_path_from_lockfile,
@@ -156,50 +156,6 @@ def resolve_contribute_patch_metadata(
     return result
 
 
-def _resolve_github_token(token: str) -> str:
-    """Resolve a GitHub token from explicit input, env var, or the gh CLI.
-
-    Resolution order:
-    1. ``token`` argument if non-empty.
-    2. ``GITHUB_TOKEN`` environment variable.
-    3. ``gh auth token`` CLI output.
-
-    Args:
-        token: Explicit token string; may be empty to trigger fallback.
-
-    Returns:
-        str: Resolved non-empty token.
-
-    Raises:
-        RuntimeError: If no token can be resolved from any source.
-    """
-    resolved_token = token.strip()
-
-    if not resolved_token:
-        resolved_token = os.environ.get("GITHUB_TOKEN", "").strip()
-
-    if not resolved_token:
-        try:
-            result = subprocess.run(
-                ["gh", "auth", "token"],
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if result.returncode == 0:
-                resolved_token = result.stdout.strip()
-        except FileNotFoundError:
-            resolved_token = ""
-
-    if not resolved_token:
-        raise RuntimeError(
-            "No GitHub token found. Provide --token, set GITHUB_TOKEN, "
-            "or run `gh auth login`."
-        )
-
-    return resolved_token
-
-
 def contribute_patch(
     resolved: dict[str, str],
     host_cwd: pathlib.Path,
@@ -239,10 +195,9 @@ def contribute_patch(
     branch_stub = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
     suffix = f"-{run_id}" if run_id else ""
     branch_name = f"syncweaver/contribute-patch/{branch_stub}{suffix}"
-
-    authed_url = (
-        f"https://x-access-token:{github_token}@github.com/{source_repository}.git"
-    )
+    source_git_url = f"https://github.com/{source_repository}.git"
+    git_env = build_github_git_env(github_token)
+    redacted_values = [github_token]
 
     with tempfile.TemporaryDirectory(prefix="syncweaver-contribute-") as tmp_dir:
         clone_root = pathlib.Path(tmp_dir) / "source"
@@ -254,9 +209,13 @@ def contribute_patch(
                 import sys
 
                 print(f"git {' '.join(args)}", file=sys.stderr)
-            return run_git(cmd)
+            return run_git(cmd, env=git_env, redacted_values=redacted_values)
 
-        run_git(["clone", "--quiet", "--no-checkout", authed_url, str(clone_root)])
+        run_git(
+            ["clone", "--quiet", "--no-checkout", source_git_url, str(clone_root)],
+            env=git_env,
+            redacted_values=redacted_values,
+        )
         _git("fetch", "--depth", "1", "origin", source_base_ref)
         _git("checkout", "--quiet", "-b", branch_name, "FETCH_HEAD")
         _git("config", "user.name", "github-actions[bot]")
@@ -285,7 +244,11 @@ def contribute_patch(
                 f"{apply_result.stderr.strip()}"
             )
 
-        diff_output = run_git(["-C", str(clone_root), "diff", "--stat"])
+        diff_output = run_git(
+            ["-C", str(clone_root), "diff", "--stat"],
+            env=git_env,
+            redacted_values=redacted_values,
+        )
         if not diff_output.strip():
             raise RuntimeError(
                 "Patch applied cleanly but introduced no source changes. "
