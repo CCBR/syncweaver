@@ -6,8 +6,9 @@ using the helper functions below or via the CLI:
 
 ```sh
 syncweaver templates list
-syncweaver templates add syncweaver-update-source --output .github/workflows/
-syncweaver templates add syncweaver-contribute-patch --output .github/workflows/
+syncweaver templates add syncweaver-host-update --output .github/workflows/
+syncweaver templates add syncweaver-host-contribute-patch --output .github/workflows/
+syncweaver templates add syncweaver-source-dispatch --output .github/workflows/
 ```
 
 Use `available_templates_markdown()` to render the current template inventory.
@@ -17,8 +18,9 @@ import importlib.resources
 import pathlib
 
 _TEMPLATE_DESCRIPTIONS = {
-    "syncweaver-contribute-patch.yml": "Apply a tracked host patch to a source repo and open a pull request on workflow dispatch",
-    "syncweaver-update-source.yml": "Run syncweaver update from a workflow dispatch or repository dispatch",
+    "syncweaver-host-contribute-patch.yml": "Apply a tracked host patch to a source repo and open a pull request on workflow dispatch",
+    "syncweaver-source-dispatch.yml": "On source release or manual dispatch in a package source repo, trigger syncweaver-update-hosts in CCBR/syncweaver",
+    "syncweaver-host-update.yml": "Run syncweaver update in a host repo from a workflow dispatch or repository dispatch",
 }
 
 

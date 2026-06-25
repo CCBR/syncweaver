@@ -6,12 +6,14 @@ import json
 
 import pytest
 
-from syncweaver.workflow_update_host_source_direct import (
+from syncweaver.host_source_update import (
     build_source_update_branch_name,
     format_source_paths_markdown,
     resolve_app_owner,
     resolve_source_paths_for_host_update,
+    select_source_paths_for_update,
 )
+import syncweaver.host_source_update as host_source_update
 
 
 def test_resolve_app_owner_prefers_explicit_owner() -> None:
@@ -131,3 +133,103 @@ def test_build_source_update_branch_name_sanitizes_repository() -> None:
     branch_name = build_source_update_branch_name("https://github.com/CCBR/package1")
 
     assert branch_name == "syncweaver/update-source/https-github.com-CCBR-package1"
+
+
+def test_select_source_paths_for_update_skips_unaffected_r_package(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify unaffected R package paths are skipped when functracer says false.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    entry_script = host_repo / "main.R"
+    entry_script.write_text("run <- function() package1_fn()\n")
+
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "v1.0.0",
+                "git_sha": "1111111111111111111111111111111111111111",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        lambda entry_script, repository, release_tag, previous_tag: False,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="v1.1.0",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="main.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == []
+    assert skipped == ["code/package1"]
+
+
+def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
+    tmp_path,
+) -> None:
+    """Verify non-R sources are still selected when functracer inputs are present.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "README.md").write_text("not an R package\n")
+
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "v1.0.0",
+                "git_sha": "1111111111111111111111111111111111111111",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="v1.1.0",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="main.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == ["code/package1"]
+    assert skipped == []

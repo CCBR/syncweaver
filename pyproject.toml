@@ -64,7 +64,7 @@ version = { file = "VERSION" }
 readme = { file = "README.md", content-type = "text/markdown" }
 
 [tool.setuptools.package-data]
-"syncweaver" = ["CITATION.cff", "VERSION"]
+"syncweaver" = ["CITATION.cff", "VERSION", "data/*.R"]
 "syncweaver.schemas" = ["*.json"]
 "syncweaver.templates" = ["*.yml"]
 
