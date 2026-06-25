@@ -49,8 +49,5 @@ jobs:
           token: ${{ secrets.CCBR_BOT_TOKEN }}
           repository: CCBR/syncweaver
           event-type: syncweaver-update-hosts
-          client-payload: |
-            {
-              "source_repository": "${{ env.SOURCE_REPOSITORY }}",
-              "ref": "${{ env.SOURCE_REF }}"
-            }
+          client-payload: >-
+            {"source_repository": ${{ toJson(env.SOURCE_REPOSITORY) }}, "ref": ${{ toJson(env.SOURCE_REF) }}}
