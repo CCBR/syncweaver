@@ -185,7 +185,9 @@ def add_external_repository(
     help="Destination path in the host repository, e.g. code/package1.",
 )
 @click.option(
+    "--repo",
     "--repo-url",
+    "repo",
     required=True,
     help="External repository URL or OWNER/REPO shorthand.",
 )
@@ -217,7 +219,7 @@ def add_external_repository(
 )
 def add_cmd(
     destination_path: pathlib.Path,
-    repo_url: str,
+    repo: str,
     ref: str | None,
     remote_subdir: str | None,
     lockfile: pathlib.Path,
@@ -227,7 +229,7 @@ def add_cmd(
     try:
         dest, lock_path, selected_ref, git_sha = add_external_repository(
             destination_path=destination_path,
-            repo_url=repo_url,
+            repo_url=repo,
             ref=ref,
             remote_subdir=remote_subdir,
             lockfile_path=lockfile,

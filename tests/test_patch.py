@@ -90,7 +90,7 @@ def test_patch_create_generates_file_and_updates_lockfile(tmp_path, monkeypatch)
             "create",
             "--path",
             "code/package1",
-            "--repo-url",
+            "--repo",
             str(source_repo),
         ],
     )

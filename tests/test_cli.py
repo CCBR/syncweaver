@@ -206,6 +206,32 @@ def test_update_help_includes_remote_subdir_option():
     assert "--remote-subdir" in result.output
 
 
+def test_add_help_includes_repo_aliases():
+    """Verify `add --help` documents --repo and compatibility alias --repo-url.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    runner = CliRunner()
+    result = runner.invoke(cli, ["add", "--help"])
+    assert result.exit_code == 0
+    assert "--repo" in result.output
+    assert "--repo-url" in result.output
+
+
+def test_patch_create_help_includes_repo_aliases():
+    """Verify `patch create --help` documents --repo and --repo-url.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    runner = CliRunner()
+    result = runner.invoke(cli, ["patch", "create", "--help"])
+    assert result.exit_code == 0
+    assert "--repo" in result.output
+    assert "--repo-url" in result.output
+
+
 def test_templates_list():
     """Verify template listing command prints YAML template names.
 

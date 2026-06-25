@@ -228,7 +228,7 @@ def test_add_rejects_local_repo_path(tmp_path, monkeypatch):
 
 
 def test_add_accepts_owner_repo_shorthand(tmp_path, monkeypatch):
-    """Verify `add --repo-url OWNER/REPO` resolves to a GitHub clone URL.
+    """Verify `add --repo OWNER/REPO` resolves to a GitHub clone URL.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -271,7 +271,7 @@ def test_add_accepts_owner_repo_shorthand(tmp_path, monkeypatch):
             "add",
             "--path",
             "code/package1",
-            "--repo-url",
+            "--repo",
             "CCBR/package1",
             "--ref",
             "main",
