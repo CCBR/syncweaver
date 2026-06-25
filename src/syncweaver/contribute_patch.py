@@ -199,7 +199,12 @@ def contribute_patch(
     if not patch_file.is_file():
         raise FileNotFoundError(f"Patch file does not exist: {patch_path}")
 
-    branch_stub = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
+    branch_stub_raw = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
+    branch_stub = "".join(
+        ch for ch in branch_stub_raw if ch.isalnum() or ch in {".", "_", "-"}
+    )
+    if not branch_stub:
+        branch_stub = "patch"
     suffix = f"-{run_id}" if run_id else ""
     branch_name = f"syncweaver/contribute-patch/{branch_stub}{suffix}"
     source_git_url = f"https://github.com/{source_repository}.git"
