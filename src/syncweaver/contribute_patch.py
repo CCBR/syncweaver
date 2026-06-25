@@ -137,7 +137,13 @@ def resolve_contribute_patch_metadata(
             f"for source_path: {resolved_source_path}"
         )
 
-    patch_file = (host_cwd / pathlib.Path(resolved_patch_path)).resolve()
+    host_root = host_cwd.resolve()
+    patch_file = (host_root / pathlib.Path(resolved_patch_path)).resolve()
+    if not patch_file.is_relative_to(host_root):
+        raise ValueError(
+            "resolved patch path must remain within the host repository: "
+            f"{resolved_patch_path}"
+        )
     if not patch_file.is_file():
         raise FileNotFoundError(
             "resolved patch file does not exist in host repository: "
@@ -184,19 +190,28 @@ def contribute_patch(
         str: URL of the opened pull request.
 
     Raises:
+        FileNotFoundError: If the patch file does not exist in the host repository.
+        KeyError: If required metadata keys are missing from ``resolved``.
         RuntimeError: If git operations or the GitHub API call fail.
-    """
     source_repository = resolved["source_repository"]
     source_base_ref = resolved["source_base_ref"]
     patch_path = resolved["patch_path"]
     source_path = resolved["source_path"]
     repo_url = resolved["repo_url"]
 
-    patch_file = (host_cwd / pathlib.Path(patch_path)).resolve()
+    host_root = host_cwd.resolve()
+    patch_file = (host_root / pathlib.Path(patch_path)).resolve()
+    if not patch_file.is_relative_to(host_root):
+        raise ValueError(f"Patch path must be within the host repository: {patch_path}")
     if not patch_file.is_file():
         raise FileNotFoundError(f"Patch file does not exist: {patch_path}")
 
-    branch_stub = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
+    branch_stub_raw = pathlib.PurePosixPath(source_path).as_posix().replace("/", "--")
+    branch_stub = "".join(
+        ch for ch in branch_stub_raw if ch.isalnum() or ch in {".", "_", "-"}
+    )
+    if not branch_stub:
+        branch_stub = "patch"
     suffix = f"-{run_id}" if run_id else ""
     branch_name = f"syncweaver/contribute-patch/{branch_stub}{suffix}"
     source_git_url = f"https://github.com/{source_repository}.git"
@@ -303,8 +318,14 @@ def write_github_output(outputs: dict[str, str], output_path: pathlib.Path) -> N
     """Write key-value pairs to the GitHub Actions output file."""
     with output_path.open("a", encoding="utf-8") as handle:
         for key, value in outputs.items():
-            handle.write(f"{key}={value}\n")
-
+            safe_value = "" if value is None else str(value)
+            if "\n" in safe_value or "\r" in safe_value:
+                delimiter = "SYNCWEAVER_OUTPUT"
+                while delimiter in safe_value:
+                    delimiter += "_X"
+                handle.write(f"{key}<<{delimiter}\n{safe_value}\n{delimiter}\n")
+            else:
+                handle.write(f"{key}={safe_value}\n")
 
 def main() -> int:
     """Resolve metadata from workflow environment and emit GitHub outputs."""

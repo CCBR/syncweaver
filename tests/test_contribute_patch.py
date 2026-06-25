@@ -335,7 +335,6 @@ def test_contribute_patch_raises_when_no_diff(tmp_path):
 
     with (
         patch("syncweaver.contribute_patch.run_git", side_effect=_fake_run_git),
-        patch("syncweaver.contribute_patch.run_git", side_effect=_fake_run_git),
         patch(
             "subprocess.run",
             return_value=MagicMock(returncode=0, stderr=""),
