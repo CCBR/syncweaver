@@ -305,8 +305,14 @@ def write_github_output(outputs: dict[str, str], output_path: pathlib.Path) -> N
     """Write key-value pairs to the GitHub Actions output file."""
     with output_path.open("a", encoding="utf-8") as handle:
         for key, value in outputs.items():
-            handle.write(f"{key}={value}\n")
-
+            safe_value = "" if value is None else str(value)
+            if "\n" in safe_value or "\r" in safe_value:
+                delimiter = "SYNCWEAVER_OUTPUT"
+                while delimiter in safe_value:
+                    delimiter += "_X"
+                handle.write(f"{key}<<{delimiter}\n{safe_value}\n{delimiter}\n")
+            else:
+                handle.write(f"{key}={safe_value}\n")
 
 def main() -> int:
     """Resolve metadata from workflow environment and emit GitHub outputs."""
