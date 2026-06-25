@@ -101,6 +101,10 @@ def test_patch_create_generates_file_and_updates_lockfile(tmp_path, monkeypatch)
     source_entry = lock_data["sources"]["code/package1"]
     assert source_entry["repo_url"] == str(source_repo)
     assert source_entry["patch"] == "code/package1/.syncweaver/code-package1.diff"
+    audit = source_entry["patch_audit"]["code/package1/.syncweaver/code-package1.diff"]
+    assert audit["status"] == "local"
+    assert "pr_url" not in audit
+    assert "reason" not in audit
 
 
 def test_patch_list_shows_tracked_patch_for_source_path(tmp_path, monkeypatch):
@@ -145,8 +149,8 @@ def test_patch_list_shows_tracked_patch_for_source_path(tmp_path, monkeypatch):
     assert "code/package1/.syncweaver/code-package1.diff" in list_result.output
 
 
-def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
-    """Verify rejected patch annotation is persisted in lockfile audit metadata.
+def test_patch_mark_status_rejects_stores_audit_metadata(tmp_path, monkeypatch):
+    """Verify rejected status is persisted in lockfile audit metadata via mark-status.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -172,13 +176,15 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
     )
     assert create_result.exit_code == 0
 
-    annotate_result = runner.invoke(
+    mark_result = runner.invoke(
         cli,
         [
             "patch",
-            "annotate-rejected",
+            "mark-status",
             "--patch",
             "code/package1/.syncweaver/code-package1.diff",
+            "--status",
+            "rejected",
             "--pr-url",
             "https://github.com/ccbr/source/pull/42",
             "--reason",
@@ -186,7 +192,7 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
         ],
     )
 
-    assert annotate_result.exit_code == 0
+    assert mark_result.exit_code == 0
     lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     source_entry = lock_data["sources"]["code/package1"]
     audit = source_entry["patch_audit"]["code/package1/.syncweaver/code-package1.diff"]
@@ -194,6 +200,101 @@ def test_patch_annotate_rejected_stores_audit_metadata(tmp_path, monkeypatch):
     assert audit["pr_url"] == "https://github.com/ccbr/source/pull/42"
     assert audit["reason"] == "upstream declined behavior change"
     assert "annotated_at" in audit
+
+
+def test_patch_mark_status_records_accepted_metadata(tmp_path, monkeypatch):
+    """Verify generic status marking records accepted patch metadata.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo, host_repo = _setup_source_and_host(tmp_path, monkeypatch)
+    (host_repo / "code/package1/pkg.py").write_text("VALUE = 2\n")
+
+    runner = CliRunner()
+    create_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "create",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+        ],
+    )
+    assert create_result.exit_code == 0
+
+    mark_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "mark-status",
+            "--patch",
+            "code/package1/.syncweaver/code-package1.diff",
+            "--status",
+            "accepted",
+            "--pr-url",
+            "https://github.com/ccbr/source/pull/42",
+        ],
+    )
+
+    assert mark_result.exit_code == 0
+    lock_data = json.loads((host_repo / ".syncweaver-lock.json").read_text())
+    source_entry = lock_data["sources"]["code/package1"]
+    audit = source_entry["patch_audit"]["code/package1/.syncweaver/code-package1.diff"]
+    assert audit["status"] == "accepted"
+    assert audit["pr_url"] == "https://github.com/ccbr/source/pull/42"
+    assert "reason" not in audit
+
+
+def test_patch_mark_status_rejected_requires_reason(tmp_path, monkeypatch):
+    """Verify rejected status enforces a free-text reason.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo, _host_repo = _setup_source_and_host(tmp_path, monkeypatch)
+    (pathlib.Path.cwd() / "code/package1/pkg.py").write_text("VALUE = 2\n")
+
+    runner = CliRunner()
+    create_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "create",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+        ],
+    )
+    assert create_result.exit_code == 0
+
+    mark_result = runner.invoke(
+        cli,
+        [
+            "patch",
+            "mark-status",
+            "--patch",
+            "code/package1/.syncweaver/code-package1.diff",
+            "--status",
+            "rejected",
+            "--pr-url",
+            "https://github.com/ccbr/source/pull/42",
+        ],
+    )
+
+    assert mark_result.exit_code != 0
+    assert "requires a non-empty reason" in mark_result.output
 
 
 def test_patch_structure_validation_rejects_missing_plus_header():

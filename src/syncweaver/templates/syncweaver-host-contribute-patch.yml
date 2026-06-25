@@ -1,0 +1,190 @@
+name: syncweaver-contribute-patch
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_path:
+        description: Optional tracked source path override; if omitted, source_path is resolved from lockfile.
+        required: false
+        type: string
+      repo_url:
+        description: Optional source repository identifier (URL or OWNER/REPO) used to resolve source_path from lockfile.
+        required: false
+        type: string
+      source_repository:
+        description: Optional source repository in OWNER/REPO format; if omitted, derives from lockfile repo_url.
+        required: false
+        type: string
+      lockfile:
+        description: Path to the syncweaver lockfile.
+        required: false
+        default: .syncweaver-lock.json
+        type: string
+      patch_path:
+        description: Optional patch path override; if omitted, uses source entry patch value from lockfile.
+        required: false
+        type: string
+      source_base_ref:
+        description: Optional source repository base branch for PR; if omitted, uses source entry ref from lockfile.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-patch-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      source_path: ${{ steps.resolve.outputs.source_path }}
+      repo_url: ${{ steps.resolve.outputs.repo_url }}
+      source_repository: ${{ steps.resolve.outputs.source_repository }}
+      patch_path: ${{ steps.resolve.outputs.patch_path }}
+      source_base_ref: ${{ steps.resolve.outputs.source_base_ref }}
+      lockfile: ${{ env.LOCKFILE }}
+    env:
+      SOURCE_PATH: ${{ github.event.inputs.source_path || '' }}
+      REPO_URL: ${{ github.event.inputs.repo_url || '' }}
+      SOURCE_REPOSITORY: ${{ github.event.inputs.source_repository || '' }}
+      LOCKFILE: ${{ github.event.inputs.lockfile || '.syncweaver-lock.json' }}
+      PATCH_PATH: ${{ github.event.inputs.patch_path || '' }}
+      SOURCE_BASE_REF: ${{ github.event.inputs.source_base_ref || '' }}
+    steps:
+      - name: Checkout host repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install syncweaver
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "git+https://github.com/CCBR/syncweaver.git@main"
+
+      - name: Resolve source and patch metadata
+        id: resolve
+        shell: bash
+        env:
+          SOURCE_PATH_INPUT: ${{ env.SOURCE_PATH }}
+          REPO_URL_INPUT: ${{ env.REPO_URL }}
+          SOURCE_REPOSITORY_INPUT: ${{ env.SOURCE_REPOSITORY }}
+          LOCKFILE_PATH: ${{ env.LOCKFILE }}
+          PATCH_PATH_INPUT: ${{ env.PATCH_PATH }}
+          SOURCE_BASE_REF_INPUT: ${{ env.SOURCE_BASE_REF }}
+          SYNCWEAVER_HOST_CWD: ${{ github.workspace }}
+        run: |
+          python -m syncweaver.contribute_patch
+
+      - name: Print resolved metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "source_path=${{ steps.resolve.outputs.source_path }}"
+          echo "repo_url=${{ steps.resolve.outputs.repo_url }}"
+          echo "source_repository=${{ steps.resolve.outputs.source_repository }}"
+          echo "patch_path=${{ steps.resolve.outputs.patch_path }}"
+          echo "source_base_ref=${{ steps.resolve.outputs.source_base_ref }}"
+
+  contribute-patch:
+    runs-on: ubuntu-latest
+    needs: resolve-patch-metadata
+    permissions:
+      contents: read
+    env:
+      SOURCE_PATH: ${{ needs.resolve-patch-metadata.outputs.source_path }}
+      REPO_URL: ${{ needs.resolve-patch-metadata.outputs.repo_url }}
+      SOURCE_REPOSITORY: ${{ needs.resolve-patch-metadata.outputs.source_repository }}
+      PATCH_PATH: ${{ needs.resolve-patch-metadata.outputs.patch_path }}
+      SOURCE_BASE_REF: ${{ needs.resolve-patch-metadata.outputs.source_base_ref }}
+      LOCKFILE: ${{ needs.resolve-patch-metadata.outputs.lockfile }}
+    steps:
+      - name: Generate CCBR-bot token
+        id: ccbr_bot
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+
+      - name: Checkout host repository
+        uses: actions/checkout@v6
+        with:
+          path: host
+
+      - name: Checkout source repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.SOURCE_REPOSITORY }}
+          ref: ${{ env.SOURCE_BASE_REF }}
+          token: ${{ steps.ccbr_bot.outputs.token }}
+          path: source
+
+      - name: Apply patch to source repository
+        id: apply_patch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          patch_file="$GITHUB_WORKSPACE/host/${PATCH_PATH}"
+          if [[ ! -f "$patch_file" ]]; then
+            echo "Error: patch file not found in host repository: ${PATCH_PATH}" >&2
+            exit 1
+          fi
+
+          branch_stub=$(printf '%s' "$SOURCE_PATH" | tr '/ ' '--' | tr -cd '[:alnum:]._-')
+          if [[ -z "$branch_stub" ]]; then
+            branch_stub="patch"
+          fi
+          branch_name="syncweaver/contribute-patch/${branch_stub}-${GITHUB_RUN_ID}"
+
+          cd "$GITHUB_WORKSPACE/source"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch_name"
+
+          if ! git apply --3way --whitespace=nowarn "$patch_file"; then
+            echo "Error: patch failed to apply cleanly to ${SOURCE_REPOSITORY}@${SOURCE_BASE_REF}" >&2
+            exit 1
+          fi
+
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request in source repository
+        if: steps.apply_patch.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.ccbr_bot.outputs.token }}
+          path: source
+          base: ${{ env.SOURCE_BASE_REF }}
+          branch: ${{ steps.apply_patch.outputs.branch_name }}
+          delete-branch: true
+          commit-message: "chore(syncweaver): apply host patch for ${{ env.SOURCE_PATH }}"
+          title: "chore(syncweaver): apply host patch for ${{ env.SOURCE_PATH }}"
+          body: |
+            Automated patch contribution from host repository workflow dispatch.
+
+            Inputs used:
+            - source_path: ${{ env.SOURCE_PATH }}
+            - repo_url: ${{ env.REPO_URL }}
+            - source_repository: ${{ env.SOURCE_REPOSITORY }}
+            - source_base_ref: ${{ env.SOURCE_BASE_REF }}
+            - patch_path: ${{ env.PATCH_PATH }}
+            - lockfile: ${{ env.LOCKFILE }}
+
+            Trigger context:
+            - host_repository: ${{ github.repository }}
+            - workflow_run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Print no-op summary
+        if: steps.apply_patch.outputs.has_changes == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Patch applied cleanly but introduced no source changes. No PR created."

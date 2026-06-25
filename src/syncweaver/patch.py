@@ -13,6 +13,9 @@ from syncweaver.git import run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 
 
+PATCH_STATUSES = ("local", "open", "accepted", "rejected")
+
+
 def _source_entry(lock_data: dict, repo_url: str, source_path: str) -> dict:
     """Return the lockfile source entry for a given repository URL and path."""
     sources = lock_data.get("sources", {})
@@ -172,6 +175,112 @@ def _validate_patch_reverse_apply(patch_text: str, destination: pathlib.Path) ->
             )
 
 
+def _build_patch_audit_record(
+    status: str,
+    pr_url: str,
+    reason: str,
+) -> dict[str, str]:
+    """Build a normalized patch audit record for lockfile persistence."""
+    record = {
+        "status": status,
+        "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
+    }
+    normalized_pr_url = pr_url.strip()
+    normalized_reason = reason.strip()
+
+    if normalized_pr_url:
+        record["pr_url"] = normalized_pr_url
+    if normalized_reason:
+        record["reason"] = normalized_reason
+
+    return record
+
+
+def _mark_patch_status_in_entry(
+    source_entry: dict,
+    patch_key: str,
+    status: str,
+    pr_url: str,
+    reason: str,
+) -> None:
+    """Write one normalized patch audit record into a source entry."""
+    patch_audit = source_entry.setdefault("patch_audit", {})
+    patch_audit[patch_key] = _build_patch_audit_record(status, pr_url, reason)
+
+
+def _remove_patch_status_from_entry(source_entry: dict, patch_key: str) -> None:
+    """Drop patch audit metadata for a patch when the patch file is removed."""
+    patch_audit = source_entry.get("patch_audit")
+    if isinstance(patch_audit, dict):
+        patch_audit.pop(patch_key, None)
+        if not patch_audit:
+            source_entry.pop("patch_audit", None)
+
+
+def mark_patch_status(
+    patch_path: pathlib.Path,
+    status: str,
+    lockfile_path: pathlib.Path,
+    *,
+    pr_url: str = "",
+    reason: str = "",
+) -> tuple[str, str]:
+    """Record patch lifecycle status metadata in the syncweaver lockfile.
+
+    Args:
+        patch_path: Relative patch path tracked in the lockfile.
+        status: Patch lifecycle state: ``local``, ``open``, ``accepted``, or
+            ``rejected``.
+        lockfile_path: Path to the host repository lockfile.
+        pr_url: Optional upstream pull request URL for open or reviewed patches.
+        reason: Optional free-text note, required for rejected patches.
+
+    Returns:
+        tuple[str, str]: The tracked patch key and the lockfile path written.
+
+    Raises:
+        KeyError: If the patch path is not tracked in the lockfile.
+        ValueError: If the requested status metadata is invalid.
+    """
+    normalized_status = status.strip().lower()
+    normalized_pr_url = pr_url.strip()
+    normalized_reason = reason.strip()
+
+    if normalized_status not in PATCH_STATUSES:
+        raise ValueError("Patch status must be one of: " + ", ".join(PATCH_STATUSES))
+
+    if normalized_status in {"open", "accepted", "rejected"} and not normalized_pr_url:
+        raise ValueError(
+            f"Patch status '{normalized_status}' requires a non-empty pr_url"
+        )
+
+    if normalized_status == "rejected" and not normalized_reason:
+        raise ValueError("Patch status 'rejected' requires a non-empty reason")
+
+    cwd = pathlib.Path.cwd()
+    lockfile = cwd / lockfile_path
+    lock_data = load_existing_lockfile(lockfile)
+    patch_key = patch_path.as_posix()
+
+    found_patch = False
+    for source_entry in lock_data.get("sources", {}).values():
+        if source_entry.get("patch") == patch_key:
+            _mark_patch_status_in_entry(
+                source_entry,
+                patch_key,
+                normalized_status,
+                normalized_pr_url,
+                normalized_reason,
+            )
+            found_patch = True
+
+    if not found_patch:
+        raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
+
+    write_lockfile(lockfile, lock_data)
+    return patch_key, str(lockfile)
+
+
 def create_patch(
     source_path: pathlib.Path,
     repo_url: str,
@@ -229,6 +338,13 @@ def create_patch(
         patch_output.parent.mkdir(parents=True, exist_ok=True)
         patch_output.write_text(patch_text)
         source_entry["patch"] = patch_file.as_posix()
+        _mark_patch_status_in_entry(
+            source_entry,
+            patch_file.as_posix(),
+            "local",
+            "",
+            "",
+        )
         write_lockfile(lockfile, lock_data)
     else:
         existing_patch = source_entry.get("patch")
@@ -236,6 +352,7 @@ def create_patch(
             patch_path = cwd / pathlib.Path(existing_patch)
             if patch_path.exists():
                 patch_path.unlink()
+            _remove_patch_status_from_entry(source_entry, str(existing_patch))
             source_entry.pop("patch", None)
             write_lockfile(lockfile, lock_data)
 
@@ -249,27 +366,14 @@ def annotate_rejected_patch(
     lockfile_path: pathlib.Path,
 ) -> tuple[str, str]:
     """Annotate a tracked patch as rejected in lockfile extension metadata."""
-    cwd = pathlib.Path.cwd()
-    lockfile = cwd / lockfile_path
-    lock_data = load_existing_lockfile(lockfile)
-    patch_key = patch_path.as_posix()
-
-    found_patch = False
-    for source_entry in lock_data.get("sources", {}).values():
-        if source_entry.get("patch") == patch_key:
-            patch_audit = source_entry.setdefault("patch_audit", {})
-            patch_audit[patch_key] = {
-                "status": "rejected",
-                "pr_url": pr_url,
-                "reason": reason,
-                "annotated_at": dt.datetime.now(tz=dt.UTC).isoformat(),
-            }
-            write_lockfile(lockfile, lock_data)
-            found_patch = True
-
-    if not found_patch:
-        raise KeyError(f"Patch path is not tracked in lockfile: {patch_key}")
-    return patch_key, str(lockfile)
+    result = mark_patch_status(
+        patch_path=patch_path,
+        status="rejected",
+        lockfile_path=lockfile_path,
+        pr_url=pr_url,
+        reason=reason,
+    )
+    return result
 
 
 def list_patches(

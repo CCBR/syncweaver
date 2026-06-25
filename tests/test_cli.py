@@ -22,6 +22,7 @@ def test_cli_help():
     assert "syncweaver" in result.output
     assert "update" in result.output
     assert "remove" in result.output
+    assert "contribute" in result.output
     assert "deps" in result.output
 
 
@@ -256,3 +257,295 @@ def test_templates_add_no_overwrite(tmp_path):
         ["templates", "add", template_name, "--output", str(tmp_path)],
     )
     assert result.exit_code != 0
+
+
+def test_contribute_help():
+    """Verify contribute subcommand exposes expected options.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    runner = CliRunner()
+    result = runner.invoke(cli, ["contribute", "--help"])
+    assert result.exit_code == 0
+    assert "--path" in result.output
+    assert "--repo-url" in result.output
+    assert "--base-ref" in result.output
+    assert "--lockfile" in result.output
+    assert "--token" in result.output
+    assert "--debug" in result.output
+
+
+def test_contribute_opens_pr(tmp_path, monkeypatch):
+    """Verify contribute resolves metadata and calls contribute_patch.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+    import syncweaver.contribute_patch as contribute_patch_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+
+    captured = {}
+
+    def _fake_contribute_patch(
+        resolved, host_cwd, github_token, *, run_id="", debug=False
+    ):
+        captured["resolved"] = resolved
+        captured["token"] = github_token
+        return "https://github.com/CCBR/package1/pull/42"
+
+    monkeypatch.setattr(
+        contribute_patch_module, "contribute_patch", _fake_contribute_patch
+    )
+    monkeypatch.setattr(contrib_module, "contribute_patch", _fake_contribute_patch)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["contribute", "--path", "code/pkg", "--token", "ghp_testtoken"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "https://github.com/CCBR/package1/pull/42" in result.output
+    assert captured["resolved"]["source_path"] == "code/pkg"
+    assert captured["token"] == "ghp_testtoken"
+
+    updated_lock_data = json.loads(lockfile.read_text())
+    audit = updated_lock_data["sources"]["code/pkg"]["patch_audit"]
+    patch_record = audit["code/pkg/.syncweaver/code-pkg.diff"]
+    assert patch_record["status"] == "open"
+    assert patch_record["pr_url"] == "https://github.com/CCBR/package1/pull/42"
+
+
+def test_contribute_marks_relevant_patch_path(tmp_path, monkeypatch):
+    """Verify contribute marks the resolved patch path as open.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        contrib_module,
+        "contribute_patch",
+        lambda *a, **kw: "https://github.com/CCBR/package1/pull/43",
+    )
+
+    marked: dict[str, str] = {}
+
+    def _fake_mark_patch_status(
+        patch_path, status, lockfile_path, *, pr_url="", reason=""
+    ):
+        marked["patch_path"] = patch_path.as_posix()
+        marked["status"] = status
+        marked["pr_url"] = pr_url
+        marked["lockfile_path"] = str(lockfile_path)
+        del reason
+        return patch_path.as_posix(), str(lockfile_path)
+
+    monkeypatch.setattr(contrib_module, "mark_patch_status", _fake_mark_patch_status)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["contribute", "--path", "code/pkg", "--token", "ghp_testtoken"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert marked["patch_path"] == "code/pkg/.syncweaver/code-pkg.diff"
+    assert marked["status"] == "open"
+    assert marked["pr_url"] == "https://github.com/CCBR/package1/pull/43"
+    assert marked["lockfile_path"].endswith(".syncweaver-lock.json")
+
+
+def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
+    """Verify --debug flag prints resolved metadata before opening PR.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    patch_file = tmp_path / "code/pkg/.syncweaver/code-pkg.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+    import syncweaver.contribute_patch as contribute_patch_module
+
+    monkeypatch.setattr(
+        contribute_patch_module,
+        "contribute_patch",
+        lambda *a, **kw: "https://github.com/CCBR/package1/pull/1",
+    )
+    monkeypatch.setattr(
+        contrib_module,
+        "contribute_patch",
+        lambda *a, **kw: "https://github.com/CCBR/package1/pull/1",
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["contribute", "--path", "code/pkg", "--token", "ghp_testtoken", "--debug"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "source_path" in result.output
+    assert "CCBR/package1" in result.output
+
+
+def test_contribute_fails_when_lockfile_missing(tmp_path, monkeypatch):
+    """Verify contribute raises ClickException when lockfile does not exist.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    result = runner.invoke(cli, ["contribute", "--token", "ghp_testtoken"])
+    assert result.exit_code != 0
+
+
+def test_contribute_fails_when_patch_not_tracked(tmp_path, monkeypatch):
+    """Verify contribute fails when patch is not tracked in lockfile before opening PR.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    import json
+    import syncweaver.cli.contribute as contrib_module
+
+    lock_data = {
+        "name": "CCBR/host-repo",
+        "homePage": "https://github.com/CCBR/host-repo",
+        "sources": {
+            "code/pkg": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
+                "patch": "code/pkg/.syncweaver/code-pkg.diff",
+            }
+        },
+    }
+    lockfile = tmp_path / ".syncweaver-lock.json"
+    lockfile.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    # Create a different patch file (not the tracked one)
+    patch_file = tmp_path / "code/pkg/.syncweaver/other-patch.diff"
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(
+        "--- a/pkg.py\n+++ b/pkg.py\n@@ -1 +1 @@\n-VALUE = 1\n+VALUE = 2\n"
+    )
+
+    monkeypatch.chdir(tmp_path)
+
+    contribute_patch_called = False
+
+    def _fake_contribute_patch(*args, **kwargs):
+        nonlocal contribute_patch_called
+        contribute_patch_called = True
+        return "https://github.com/CCBR/package1/pull/99"
+
+    monkeypatch.setattr(contrib_module, "contribute_patch", _fake_contribute_patch)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "contribute",
+            "--path",
+            "code/pkg",
+            "--patch",
+            "code/pkg/.syncweaver/other-patch.diff",
+            "--token",
+            "ghp_testtoken",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "not tracked in lockfile" in result.output
+    assert not contribute_patch_called
