@@ -90,27 +90,32 @@ runs:
 
     - name: Resolve GitHub App token owner
       id: resolve_app_owner
-      shell: python
+      shell: bash
       env:
         HOST_REPOSITORY_INPUT: ${{ inputs.host_repository }}
         APP_OWNER_INPUT: ${{ inputs.app_owner }}
       run: |
-        import os
-        import pathlib
+        set -euo pipefail
 
-        from syncweaver.host_source_update import resolve_app_owner
+        host_repository="${HOST_REPOSITORY_INPUT//[[:space:]]/}"
+        app_owner_input="${APP_OWNER_INPUT//[[:space:]]/}"
 
-        host_repository = os.environ.get("HOST_REPOSITORY_INPUT", "").strip()
-        app_owner_input = os.environ.get("APP_OWNER_INPUT", "").strip()
+        if [[ -n "${app_owner_input}" ]]; then
+          app_owner="${app_owner_input}"
+        else
+          if [[ -z "${host_repository}" || "${host_repository}" != */* ]]; then
+            echo "Error: host_repository must be in OWNER/REPO format when app_owner is not provided." >&2
+            exit 1
+          fi
+          app_owner="${host_repository%%/*}"
+        fi
 
-        try:
-          app_owner = resolve_app_owner(host_repository, app_owner_input)
-        except ValueError as exc:
-          raise SystemExit(f"Error: {exc}") from exc
+        if [[ -z "${app_owner}" ]]; then
+          echo "Error: unable to resolve app owner." >&2
+          exit 1
+        fi
 
-        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
-        with output_path.open("a", encoding="utf-8") as fh:
-          fh.write(f"app_owner={app_owner}\n")
+        echo "app_owner=${app_owner}" >> "$GITHUB_OUTPUT"
 
     - name: Generate CCBR-bot token
       id: ccbr_bot
