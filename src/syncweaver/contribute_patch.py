@@ -133,7 +133,13 @@ def resolve_contribute_patch_metadata(
             f"for source_path: {resolved_source_path}"
         )
 
-    patch_file = (host_cwd / pathlib.Path(resolved_patch_path)).resolve()
+    host_root = host_cwd.resolve()
+    patch_file = (host_root / pathlib.Path(resolved_patch_path)).resolve()
+    if not patch_file.is_relative_to(host_root):
+        raise ValueError(
+            "resolved patch path must remain within the host repository: "
+            f"{resolved_patch_path}"
+        )
     if not patch_file.is_file():
         raise FileNotFoundError(
             "resolved patch file does not exist in host repository: "
