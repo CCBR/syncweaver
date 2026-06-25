@@ -23,31 +23,35 @@ def _repo_slug_from_url(url: str) -> str:
     if not raw:
         raise ValueError("Cannot derive repository slug from an empty value")
 
+    result = None
+
     # Support SSH remotes like git@github.com:OWNER/REPO(.git)
     if raw.startswith("git@") and ":" in raw:
         _, path_part = raw.split(":", 1)
         path = path_part.removesuffix(".git").strip("/")
         parts = [part for part in path.split("/") if part]
         if len(parts) >= 2:
-            return f"{parts[0]}/{parts[1]}"
-        raise ValueError(f"Cannot derive repository slug from: {url}")
-
+            result = f"{parts[0]}/{parts[1]}"
+        else:
+            raise ValueError(f"Cannot derive repository slug from: {url}")
     # Support OWNER/REPO shorthand
-    if "://" not in raw and raw.count("/") == 1 and "@" not in raw:
+    elif "://" not in raw and raw.count("/") == 1 and "@" not in raw:
         owner, repo = raw.split("/", 1)
-        return f"{owner}/{repo.removesuffix('.git')}"
+        result = f"{owner}/{repo.removesuffix('.git')}"
+    else:
+        parsed = urlparse(raw.removesuffix(".git"))
+        if parsed.scheme not in {"http", "https"}:
+            raise ValueError(f"Cannot derive repository slug from: {url}")
 
-    parsed = urlparse(raw.removesuffix(".git"))
-    if parsed.scheme not in {"http", "https"}:
-        raise ValueError(f"Cannot derive repository slug from: {url}")
+        path_parts = [part for part in parsed.path.split("/") if part]
+        if len(path_parts) < 2:
+            raise ValueError(f"Cannot derive repository slug from: {url}")
 
-    path_parts = [part for part in parsed.path.split("/") if part]
-    if len(path_parts) < 2:
-        raise ValueError(f"Cannot derive repository slug from: {url}")
+        owner = path_parts[0]
+        repo = path_parts[1].removesuffix(".git")
+        result = f"{owner}/{repo}"
 
-    owner = path_parts[0]
-    repo = path_parts[1].removesuffix(".git")
-    return f"{owner}/{repo}"
+    return result
 
 
 def resolve_contribute_patch_metadata(
@@ -209,7 +213,8 @@ def contribute_patch(
                 import sys
 
                 print(f"git {' '.join(args)}", file=sys.stderr)
-            return run_git(cmd, env=git_env, redacted_values=redacted_values)
+            result = run_git(cmd, env=git_env, redacted_values=redacted_values)
+            return result
 
         run_git(
             ["clone", "--quiet", "--no-checkout", source_git_url, str(clone_root)],
