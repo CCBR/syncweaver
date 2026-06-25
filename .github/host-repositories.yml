@@ -1,6 +1,4 @@
 hosts:
-  - name: MOSuite-create
-    repository: NIDAP-Community/MOSuite-create
+  - repository: NIDAP-Community/MOSuite-create
     lockfile: .syncweaver-lock.json
-  - name: demo-syncweaver-host
-    repository: NIDAP-Community/demo-syncweaver-host
+  - repository: NIDAP-Community/demo-syncweaver-host-capsule
