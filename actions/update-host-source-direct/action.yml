@@ -90,33 +90,38 @@ runs:
 
     - name: Resolve GitHub App token owner
       id: resolve_app_owner
-      shell: python
+      shell: bash
       env:
         HOST_REPOSITORY_INPUT: ${{ inputs.host_repository }}
         APP_OWNER_INPUT: ${{ inputs.app_owner }}
       run: |
-        import os
-        import pathlib
+        set -euo pipefail
 
-        from syncweaver.host_source_update import resolve_app_owner
+        host_repository="${HOST_REPOSITORY_INPUT//[[:space:]]/}"
+        app_owner_input="${APP_OWNER_INPUT//[[:space:]]/}"
 
-        host_repository = os.environ.get("HOST_REPOSITORY_INPUT", "").strip()
-        app_owner_input = os.environ.get("APP_OWNER_INPUT", "").strip()
+        if [[ -n "${app_owner_input}" ]]; then
+          app_owner="${app_owner_input}"
+        else
+          if [[ -z "${host_repository}" || "${host_repository}" != */* ]]; then
+            echo "Error: host_repository must be in OWNER/REPO format when app_owner is not provided." >&2
+            exit 1
+          fi
+          app_owner="${host_repository%%/*}"
+        fi
 
-        try:
-          app_owner = resolve_app_owner(host_repository, app_owner_input)
-        except ValueError as exc:
-          raise SystemExit(f"Error: {exc}") from exc
+        if [[ -z "${app_owner}" ]]; then
+          echo "Error: unable to resolve app owner." >&2
+          exit 1
+        fi
 
-        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
-        with output_path.open("a", encoding="utf-8") as fh:
-          fh.write(f"app_owner={app_owner}\n")
+        echo "app_owner=${app_owner}" >> "$GITHUB_OUTPUT"
 
     - name: Generate CCBR-bot token
       id: ccbr_bot
       uses: actions/create-github-app-token@v3
       with:
-        app-id: ${{ inputs.app_id }}
+        client-id: ${{ inputs.app_id }}
         private-key: ${{ inputs.app_private_key }}
         owner: ${{ steps.resolve_app_owner.outputs.app_owner }}
 
@@ -148,8 +153,7 @@ runs:
         python -m pip install --upgrade pip
         python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
 
-    - name: Setup R for optional functracer dependency checks
-      if: ${{ inputs.functracer-entry-scripts != '' }}
+    - name: Setup R runtime
       uses: r-lib/actions/setup-r@v2
 
     - name: Install functracer for dependency checks
@@ -192,7 +196,15 @@ runs:
             message = str(exc)
             if "repo_url:" in message:
                 message = message.replace("repo_url:", "source_repository:")
-            raise SystemExit(f"Error: {message}") from exc
+            if (
+                "source_path was not provided and no tracked sources matched "
+                "source_repository:" in message
+            ):
+                resolved_source_paths = []
+                with output_path.open("a", encoding="utf-8") as fh:
+                    fh.write(f"skipped_reason={message}\n")
+            else:
+                raise SystemExit(f"Error: {message}") from exc
 
         with output_path.open("a", encoding="utf-8") as fh:
             fh.write(f"source_paths={json.dumps(resolved_source_paths)}\n")
@@ -203,12 +215,26 @@ runs:
       shell: bash
       env:
         SOURCE_PATHS_JSON: ${{ steps.resolve_source_paths.outputs.source_paths }}
+        SOURCE_COUNT_INPUT: ${{ steps.resolve_source_paths.outputs.source_count }}
+        RESOLVE_SKIP_REASON: ${{ steps.resolve_source_paths.outputs.skipped_reason }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
       run: |
         set -euo pipefail
+
+        if [[ "${SOURCE_COUNT_INPUT}" == "0" ]]; then
+          if [[ -n "${RESOLVE_SKIP_REASON}" ]]; then
+            echo "::notice::Skipping host update: ${RESOLVE_SKIP_REASON}"
+          fi
+          echo "source_paths=[]" >> "$GITHUB_OUTPUT"
+          echo "source_count=0" >> "$GITHUB_OUTPUT"
+          echo "skipped_source_paths=[]" >> "$GITHUB_OUTPUT"
+          echo "skipped_source_count=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         syncweaver deps select-update-paths \
           --source-paths-json "${SOURCE_PATHS_JSON}" \
           --lockfile "${LOCKFILE_INPUT}" \
@@ -219,6 +245,7 @@ runs:
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path
+      if: ${{ steps.filter_source_paths.outputs.source_count != '0' }}
       shell: python
       env:
         SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
