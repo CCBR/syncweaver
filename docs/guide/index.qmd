@@ -6,28 +6,27 @@ echo: false
 ## Overview
 
 The diagram below shows how syncweaver coordinates a **source repo** and a **host repo**
-through the CCBR/syncweaver orchestrator.
+through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.
 
 ```{mermaid}
 sequenceDiagram
     actor Dev as Developer
     participant Src as Source Repo<br/>(demo-syncweaver-source)
     participant SW as Orchestrator<br/>(CCBR/syncweaver)
-    participant Host as Host Repo<br/>(demo-syncweaver-host)
+    participant Host as Host (Capsule) Repo<br/>(demo-syncweaver-host)
 
     Note over Src: .github/workflows/<br/>syncweaver-source-dispatch.yml
 
     Dev->>Src: push release tag
     Src->>SW: repository_dispatch<br/>(source_repository, ref)
 
-    SW->>Host: repository_dispatch<br/>(source_repository, ref)
+    Note over SW: .github/workflows/<br/>syncweaver-update-hosts.yml
 
-    Note over Host: .github/workflows/<br/>syncweaver-host-update.yml
+    SW->>SW: resolve target hosts from<br/>.github/host-repositories.yml
+    SW->>Src: fetch code at ref
+    SW->>SW: run functracer release impact<br/>for each host
 
-    Host->>Host: resolve source_path<br/>from .syncweaver-lock.json
-    Host->>Src: fetch code at ref
-    Host->>Host: vendor code into source_path
-    Host->>Host: open pull request<br/>with updated vendored code
+    SW->>Host: open pull request<br/>with updated vendored code<br/>if host is impacted by release
 
     Note over Host,Src: If the host has local patches...
 
@@ -79,7 +78,13 @@ demo-syncweaver-source/
 │   └── workflows/
 │       └── syncweaver-source-dispatch.yml  ← notifies orchestrator on release
 └── modules/
-  └── hello/                              ← vendored into host as code/hello
+  ├── hello/                              ← vendored into host as code/hello
+  │ ├── DESCRIPTION
+  │ ├── NAMESPACE
+  │ ├── R/
+  │ ├── inst/
+  │ └── man/
+  └── heatmap/                            ← new module for hypothetical heatmap capsule
     ├── DESCRIPTION
     ├── NAMESPACE
     ├── R/
@@ -185,3 +190,22 @@ The host repo tracks each vendored dependency in `.syncweaver-lock.json`:
 
 When the source repo publishes a release, the dispatch chain updates the
 vendored code at `code/hello` and opens a pull request in the host repo.
+
+## dependency analysis and release impact tracing
+
+This view highlights how `functracer` narrows updates to only affected capsules
+after a source release.
+
+```{mermaid}
+flowchart TD
+  A["Source release tagged<br/> (e.g. in demo-syncweaver-source or MOSuite)"]
+  B[functracer analyzes call graph<br/>from capsule entry scripts]
+  C{Capsule affected<br/>by changed functions?}
+  D[syncweaver updates lockfile<br/>and opens update PR]
+  E[No update PR<br/>for this capsule]
+
+  A --> B
+  B --> C
+  C -->|Yes| D
+  C -->|No| E
+```
