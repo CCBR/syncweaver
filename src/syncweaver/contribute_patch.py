@@ -186,8 +186,9 @@ def contribute_patch(
         str: URL of the opened pull request.
 
     Raises:
+        FileNotFoundError: If the patch file does not exist in the host repository.
+        KeyError: If required metadata keys are missing from ``resolved``.
         RuntimeError: If git operations or the GitHub API call fail.
-    """
     source_repository = resolved["source_repository"]
     source_base_ref = resolved["source_base_ref"]
     patch_path = resolved["patch_path"]
