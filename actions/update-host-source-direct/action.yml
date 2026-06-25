@@ -153,8 +153,7 @@ runs:
         python -m pip install --upgrade pip
         python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
 
-    - name: Setup R for optional functracer dependency checks
-      if: ${{ inputs.functracer-entry-scripts != '' }}
+    - name: Setup R runtime
       uses: r-lib/actions/setup-r@v2
 
     - name: Install functracer for dependency checks
@@ -197,6 +196,14 @@ runs:
             message = str(exc)
             if "repo_url:" in message:
                 message = message.replace("repo_url:", "source_repository:")
+          if (
+            "source_path was not provided and no tracked sources matched "
+            "source_repository:" in message
+          ):
+            resolved_source_paths = []
+            with output_path.open("a", encoding="utf-8") as fh:
+              fh.write(f"skipped_reason={message}\n")
+          else:
             raise SystemExit(f"Error: {message}") from exc
 
         with output_path.open("a", encoding="utf-8") as fh:
@@ -208,12 +215,26 @@ runs:
       shell: bash
       env:
         SOURCE_PATHS_JSON: ${{ steps.resolve_source_paths.outputs.source_paths }}
+        SOURCE_COUNT_INPUT: ${{ steps.resolve_source_paths.outputs.source_count }}
+        RESOLVE_SKIP_REASON: ${{ steps.resolve_source_paths.outputs.skipped_reason }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
       run: |
         set -euo pipefail
+
+        if [[ "${SOURCE_COUNT_INPUT}" == "0" ]]; then
+          if [[ -n "${RESOLVE_SKIP_REASON}" ]]; then
+            echo "::notice::Skipping host update: ${RESOLVE_SKIP_REASON}"
+          fi
+          echo "source_paths=[]" >> "$GITHUB_OUTPUT"
+          echo "source_count=0" >> "$GITHUB_OUTPUT"
+          echo "skipped_source_paths=[]" >> "$GITHUB_OUTPUT"
+          echo "skipped_source_count=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         syncweaver deps select-update-paths \
           --source-paths-json "${SOURCE_PATHS_JSON}" \
           --lockfile "${LOCKFILE_INPUT}" \
@@ -224,6 +245,7 @@ runs:
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path
+      if: ${{ steps.filter_source_paths.outputs.source_count != '0' }}
       shell: python
       env:
         SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
