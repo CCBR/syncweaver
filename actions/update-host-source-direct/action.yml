@@ -196,15 +196,15 @@ runs:
             message = str(exc)
             if "repo_url:" in message:
                 message = message.replace("repo_url:", "source_repository:")
-          if (
-            "source_path was not provided and no tracked sources matched "
-            "source_repository:" in message
-          ):
-            resolved_source_paths = []
-            with output_path.open("a", encoding="utf-8") as fh:
-              fh.write(f"skipped_reason={message}\n")
-          else:
-            raise SystemExit(f"Error: {message}") from exc
+            if (
+                "source_path was not provided and no tracked sources matched "
+                "source_repository:" in message
+            ):
+                resolved_source_paths = []
+                with output_path.open("a", encoding="utf-8") as fh:
+                    fh.write(f"skipped_reason={message}\n")
+            else:
+                raise SystemExit(f"Error: {message}") from exc
 
         with output_path.open("a", encoding="utf-8") as fh:
             fh.write(f"source_paths={json.dumps(resolved_source_paths)}\n")
