@@ -198,6 +198,11 @@ def test_update_reapplies_tracked_patch_after_refresh(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
@@ -284,6 +289,11 @@ def test_update_warn_strategy_continues_when_patch_conflicts(tmp_path, monkeypat
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
