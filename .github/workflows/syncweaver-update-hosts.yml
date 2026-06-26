@@ -102,7 +102,10 @@ jobs:
           import os
           import pathlib
 
-          from syncweaver.host_registry import build_host_matrix_from_registry
+          from syncweaver.host_registry import (
+            build_host_matrix_from_registry,
+            source_repo_in_host_lockfile,
+          )
 
           source_repository = os.environ["SOURCE_REPOSITORY"].strip()
           registry_path = pathlib.Path(os.environ["HOST_REGISTRY_FILE"])
@@ -129,9 +132,37 @@ jobs:
               f"HOST_REGISTRY_FILE={registry_path}"
             )
 
+          # Filter hosts to only include those that have the source repository
+          # tracked in their lockfile
+          filtered_hosts = []
+          for host in matrix_hosts:
+            host_repo = host.get("repository", "")
+            lockfile = host.get("lockfile", ".syncweaver-lock.json")
+            if source_repo_in_host_lockfile(
+              source_repository=source_repository,
+              host_repository=host_repo,
+              lockfile_path=lockfile,
+              ref="main",  # Using 'main' as default ref; could be parameterized if needed
+            ):
+              filtered_hosts.append(host)
+
+          if not filtered_hosts:
+            source_ref = os.environ.get("SOURCE_REF", "")
+            raise SystemExit(
+              "Error: No host repositories have the source repository tracked in their lockfile. "
+              f"Source repository '{source_repository}' was not found in any host's lockfile. "
+              "Actionable guidance: "
+              "1) Verify the source repository has been added to host lockfiles via 'syncweaver add'. "
+              "2) Check that host lockfiles exist at the paths specified in .github/host-repositories.yml. "
+              f"Debug context: SOURCE_REPOSITORY={source_repository}; "
+              f"SOURCE_REF={source_ref}; "
+              f"Initial matched hosts: {len(matrix_hosts)}; "
+              f"After lockfile filtering: {len(filtered_hosts)}"
+            )
+
           with output_path.open("a", encoding="utf-8") as fh:
-            fh.write(f"count={len(matrix_hosts)}\n")
-            fh.write(f"hosts={json.dumps(matrix_hosts)}\n")
+            fh.write(f"count={len(filtered_hosts)}\n")
+            fh.write(f"hosts={json.dumps(filtered_hosts)}\n")
 
       - name: Print selected hosts
         shell: bash
