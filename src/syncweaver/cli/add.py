@@ -13,6 +13,39 @@ from syncweaver.git import run_git
 from syncweaver.lockfile import read_lockfile, write_lockfile
 
 
+def _resolve_repo_url_input(repo_url: str, cwd: pathlib.Path) -> tuple[str, str]:
+    """Resolve clone URL and tracked URL from a user-provided repo value."""
+    normalized_input = repo_url.strip()
+    if not normalized_input:
+        raise ValueError("--repo-url cannot be empty")
+
+    if normalized_input.startswith("file://"):
+        raise ValueError("--repo-url must not be a local filesystem path")
+
+    if normalized_input.startswith(("./", "../", "/", "~")):
+        raise ValueError("--repo-url must not be a local filesystem path")
+
+    candidate_path = pathlib.Path(normalized_input).expanduser()
+    if not candidate_path.is_absolute():
+        candidate_path = cwd / candidate_path
+    if candidate_path.exists():
+        raise ValueError("--repo-url must not be a local filesystem path")
+    elif (
+        "://" not in normalized_input
+        and normalized_input.count("/") == 1
+        and "@" not in normalized_input
+    ):
+        slug = normalized_input.removesuffix(".git")
+        clone_url = f"https://github.com/{slug}.git"
+        tracked_repo_url = f"https://github.com/{slug}"
+    elif "://" not in normalized_input and "@" not in normalized_input:
+        raise ValueError("--repo-url must be a remote URL or OWNER/REPO shorthand")
+    else:
+        clone_url = normalized_input
+        tracked_repo_url = normalized_input
+    return clone_url, tracked_repo_url
+
+
 def _copy_checked_out_repo(source: pathlib.Path, destination: pathlib.Path) -> None:
     """Copy a checked-out repository working tree without the .git directory."""
     shutil.copytree(
@@ -20,6 +53,31 @@ def _copy_checked_out_repo(source: pathlib.Path, destination: pathlib.Path) -> N
         destination,
         ignore=shutil.ignore_patterns(".git"),
     )
+
+
+def _ensure_linguist_vendored_entry(
+    host_root: pathlib.Path, destination_path: pathlib.Path
+) -> None:
+    """Ensure destination path is marked linguist-vendored in .gitattributes."""
+    gitattributes_path = host_root / ".gitattributes"
+    entry_path = destination_path.as_posix()
+
+    existing_lines: list[str] = []
+    if gitattributes_path.exists():
+        existing_lines = gitattributes_path.read_text().splitlines()
+
+    has_destination_entry = False
+    for line in existing_lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#"):
+            tokens = stripped.split()
+            if tokens and tokens[0] == entry_path:
+                has_destination_entry = True
+
+    if not has_destination_entry:
+        existing_lines.append(f"{entry_path} linguist-vendored")
+
+    gitattributes_path.write_text("\n".join(existing_lines) + "\n")
 
 
 def _resolve_remote_source_path(
@@ -53,6 +111,7 @@ def add_external_repository(
     cwd = pathlib.Path.cwd()
     destination = cwd / destination_path
     lockfile = cwd / lockfile_path
+    clone_repo_url, tracked_repo_url = _resolve_repo_url_input(repo_url, cwd)
 
     if destination.exists():
         if not overwrite:
@@ -66,7 +125,7 @@ def add_external_repository(
 
     with tempfile.TemporaryDirectory(prefix="syncweaver-add-") as temp_dir:
         temp_repo = pathlib.Path(temp_dir) / "repo"
-        run_git(["clone", "--quiet", "--no-checkout", repo_url, str(temp_repo)])
+        run_git(["clone", "--quiet", "--no-checkout", clone_repo_url, str(temp_repo)])
 
         selected_ref = ref
         if selected_ref:
@@ -103,7 +162,7 @@ def add_external_repository(
     sources = lock_data.setdefault("sources", {})
     source_key = destination_path.as_posix()
     sources[source_key] = {
-        "repo_url": repo_url,
+        "repo_url": tracked_repo_url,
         "ref": selected_ref,
         "git_sha": git_sha,
         "installed_by": ["syncweaver"],
@@ -112,6 +171,7 @@ def add_external_repository(
         normalized_subdir = pathlib.PurePosixPath(remote_subdir.strip("/")).as_posix()
         sources[source_key]["remote_subdir"] = normalized_subdir
     write_lockfile(lockfile, lock_data)
+    _ensure_linguist_vendored_entry(cwd, destination_path)
 
     return destination, lockfile, selected_ref, git_sha
 
@@ -125,9 +185,11 @@ def add_external_repository(
     help="Destination path in the host repository, e.g. code/package1.",
 )
 @click.option(
+    "--repo",
     "--repo-url",
+    "repo",
     required=True,
-    help="External repository URL or local path to clone.",
+    help="External repository URL or OWNER/REPO shorthand.",
 )
 @click.option(
     "--ref",
@@ -157,7 +219,7 @@ def add_external_repository(
 )
 def add_cmd(
     destination_path: pathlib.Path,
-    repo_url: str,
+    repo: str,
     ref: str | None,
     remote_subdir: str | None,
     lockfile: pathlib.Path,
@@ -167,7 +229,7 @@ def add_cmd(
     try:
         dest, lock_path, selected_ref, git_sha = add_external_repository(
             destination_path=destination_path,
-            repo_url=repo_url,
+            repo_url=repo,
             ref=ref,
             remote_subdir=remote_subdir,
             lockfile_path=lockfile,

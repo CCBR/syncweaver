@@ -8,6 +8,7 @@ import subprocess
 
 from click.testing import CliRunner
 
+import syncweaver.cli.add as add_module
 from syncweaver.cli import cli
 
 
@@ -40,6 +41,11 @@ def test_remove_deletes_vendored_tree_and_lockfile_entry(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
