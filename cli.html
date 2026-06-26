@@ -381,18 +381,19 @@ Commands:
   Add an external repository to the current host repository.
 
 Options:
-  --path PATH           Destination path in the host repository, e.g.
-                        code/package1.  [required]
-  --repo-url TEXT       External repository URL or local path to clone.
-                        [required]
-  --ref TEXT            Git ref to vendor (branch, tag, or commit). Defaults
-                        to remote HEAD.
-  --remote-subdir TEXT  Optional repository subdirectory to vendor, e.g.
-                        src/package1. When omitted, vendors repository root.
-  --lockfile PATH       Path to .syncweaver-lock.json in the host repository.
-                        [default: .syncweaver-lock.json]
-  --overwrite           Overwrite destination path if it already exists.
-  -h, --help            Show this message and exit.
+  --path PATH              Destination path in the host repository, e.g.
+                           code/package1.  [required]
+  --repo, --repo-url TEXT  External repository URL or OWNER/REPO shorthand.
+                           [required]
+  --ref TEXT               Git ref to vendor (branch, tag, or commit).
+                           Defaults to remote HEAD.
+  --remote-subdir TEXT     Optional repository subdirectory to vendor, e.g.
+                           src/package1. When omitted, vendors repository
+                           root.
+  --lockfile PATH          Path to .syncweaver-lock.json in the host
+                           repository.  [default: .syncweaver-lock.json]
+  --overwrite              Overwrite destination path if it already exists.
+  -h, --help               Show this message and exit.
 </code></pre>
 </section>
 <section id="contribute" class="level3">
@@ -516,14 +517,14 @@ Commands:
   Create or update a canonical patch file for a tracked source path.
 
 Options:
-  --path PATH       Tracked source path in the host repository, e.g.
-                    code/package1.  [required]
-  --repo-url TEXT   Repository URL as it appears in .syncweaver-lock.json.
-                    [required]
-  --lockfile PATH   Path to .syncweaver-lock.json in the host repository.
-                    [default: .syncweaver-lock.json]
-  --patch-dir PATH  Optional directory for the generated patch file.
-  -h, --help        Show this message and exit.
+  --path PATH              Tracked source path in the host repository, e.g.
+                           code/package1.  [required]
+  --repo, --repo-url TEXT  Repository URL as it appears in .syncweaver-
+                           lock.json.  [required]
+  --lockfile PATH          Path to .syncweaver-lock.json in the host
+                           repository.  [default: .syncweaver-lock.json]
+  --patch-dir PATH         Optional directory for the generated patch file.
+  -h, --help               Show this message and exit.
 </code></pre>
 </section>
 <section id="patch-list" class="level4">
