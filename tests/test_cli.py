@@ -52,6 +52,8 @@ def test_deps_analyze_outputs_json(tmp_path):
         release_tag: str,
         previous_tag: str,
         package_name: str,
+        functracer_backend=None,
+        functracer_image_tag=None,
     ):
         output = {
             "analysis_engine": "functracer",
@@ -107,6 +109,7 @@ def test_deps_select_update_paths_outputs_json(tmp_path):
         host_repo_path,
         functracer_entry_scripts_input,
         functracer_source_paths_input,
+        functracer_backend=None,
         functracer_image_tag=None,
     ):
         return ["code/package1"], ["code/package2"]
@@ -162,6 +165,7 @@ def test_deps_select_update_paths_writes_github_output(tmp_path):
         host_repo_path,
         functracer_entry_scripts_input,
         functracer_source_paths_input,
+        functracer_backend=None,
         functracer_image_tag=None,
     ):
         return ["code/package1"], []
@@ -218,6 +222,7 @@ def test_deps_select_update_paths_surfaces_subprocess_stderr(tmp_path):
         host_repo_path,
         functracer_entry_scripts_input,
         functracer_source_paths_input,
+        functracer_backend=None,
         functracer_image_tag=None,
     ):
         raise subprocess.CalledProcessError(

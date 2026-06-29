@@ -4,22 +4,91 @@ from __future__ import annotations
 
 from importlib import resources
 import pathlib
+import shutil
 import subprocess
 from typing import Any
 
-# Default functracer docker image tag used when no explicit version is provided.
-# This is the stable release version; most callers should override with a specific
-# version or the latest development build ("main").
+# Backend types for functracer execution
+FUNCTRACER_BACKEND_LOCAL = "local"
+FUNCTRACER_BACKEND_DOCKER = "docker"
+FUNCTRACER_BACKEND_SINGULARITY = "singularity"
+
+_FUNCTRACER_BACKEND_PRECEDENCE = (
+    FUNCTRACER_BACKEND_LOCAL,
+    FUNCTRACER_BACKEND_DOCKER,
+    FUNCTRACER_BACKEND_SINGULARITY,
+)
+_FUNCTRACER_BACKEND_EXECUTABLES = {
+    FUNCTRACER_BACKEND_LOCAL: "functracer",
+    FUNCTRACER_BACKEND_DOCKER: "docker",
+    FUNCTRACER_BACKEND_SINGULARITY: "singularity",
+}
+
+# Default docker image tag used when not explicitly provided.
+DEFAULT_FUNCTRACER_BACKEND = FUNCTRACER_BACKEND_DOCKER
 DEFAULT_FUNCTRACER_IMAGE_TAG = "v0.1.0"
 
-# Set module docstring dynamically to include the constant value
+
+def _resolve_functracer_backend(requested: str | None) -> str:
+    """Resolve the functracer backend to use, auto-detecting if not specified.
+
+    When no backend is requested, probes PATH for each backend executable in
+    priority order: local functracer → docker → singularity. Fails fast with a
+    descriptive error when no backend is available.
+
+    Args:
+        requested (str | None): Explicitly requested backend name, or None to
+            auto-detect.
+
+    Returns:
+        str: Resolved backend name.
+
+    Raises:
+        ValueError: If an invalid backend name is given.
+        FileNotFoundError: If no suitable backend executable can be found.
+    """
+    valid_backends = set(_FUNCTRACER_BACKEND_PRECEDENCE)
+    if requested is not None:
+        if requested not in valid_backends:
+            raise ValueError(
+                f"Invalid functracer backend: {requested!r}. "
+                f"Must be one of {sorted(valid_backends)}."
+            )
+        # Explicit request — verify the executable is available immediately.
+        exe = _FUNCTRACER_BACKEND_EXECUTABLES[requested]
+        if shutil.which(exe) is None:
+            raise FileNotFoundError(
+                f"Requested functracer backend {requested!r} requires "
+                f"{exe!r} but it was not found on PATH."
+            )
+        return requested
+
+    # Auto-detect: try backends in priority order.
+    for backend in _FUNCTRACER_BACKEND_PRECEDENCE:
+        exe = _FUNCTRACER_BACKEND_EXECUTABLES[backend]
+        if shutil.which(exe) is not None:
+            return backend
+
+    raise FileNotFoundError(
+        "No functracer backend is available. Install one of: "
+        "functracer (local), docker, or singularity."
+    )
+
+
 __doc__ = f"""Dependency analysis helpers for host/source integration workflows.
 
 Constants:
-    DEFAULT_FUNCTRACER_IMAGE_TAG: Default functracer docker image tag used when
-        no explicit version is provided. Current value: {DEFAULT_FUNCTRACER_IMAGE_TAG}.
-        This is the stable release tag; most callers should consider overriding with
-        a specific version or the latest development build ("main").
+    FUNCTRACER_BACKEND_LOCAL: Execute functracer via locally installed binary.
+    FUNCTRACER_BACKEND_DOCKER: Execute functracer via Docker.
+    FUNCTRACER_BACKEND_SINGULARITY: Execute functracer via Singularity.
+    DEFAULT_FUNCTRACER_IMAGE_TAG: Default functracer docker/singularity image tag.
+        Current value: {DEFAULT_FUNCTRACER_IMAGE_TAG}.
+
+Backend auto-detection order (when --functracer-backend is omitted):
+    1. local  — uses installed ``functracer`` binary
+    2. docker — uses ``docker`` CLI
+    3. singularity — uses ``singularity`` CLI
+    Raises FileNotFoundError if none are found on PATH.
 """
 
 
@@ -143,59 +212,95 @@ def _preferred_host_entry_script(
 def _run_functracer_boolean_script(
     script_name: str,
     args: list[str],
+    functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> bool:
-    """Execute a packaged R helper script via functracer docker image.
+    """Execute a packaged R helper script via functracer.
+
+    Supports multiple backends: local installation, Docker, or Singularity.
+    Docker is the default backend and requires a docker image tag.
 
     Args:
         script_name (str): Data script filename located in syncweaver/data.
         args (list[str]): Positional arguments passed to Rscript.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
+            Only relevant for docker and singularity backends.
             Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         bool: Parsed boolean result emitted by helper script.
 
     Raises:
-        ValueError: If script output is not a boolean token.
-        FileNotFoundError: If docker executable is unavailable.
-        subprocess.CalledProcessError: If docker process exits non-zero.
+        ValueError: If script output is not a boolean token or invalid backend.
+        FileNotFoundError: If required executable (docker/singularity/functracer) is unavailable.
+        subprocess.CalledProcessError: If subprocess exits non-zero.
     """
+    backend = _resolve_functracer_backend(functracer_backend)
+
     script_resource = resources.files("syncweaver").joinpath(f"data/{script_name}")
     with resources.as_file(script_resource) as script_path:
-        # Use functracer docker image to run the R script.
-        # Bind-mount the host repo so absolute paths passed to the helper scripts
-        # are valid inside the container.
-        image_tag = functracer_image_tag or DEFAULT_FUNCTRACER_IMAGE_TAG
         cwd = pathlib.Path.cwd().resolve()
         entry_script_path = pathlib.Path(args[0])
         if not entry_script_path.is_absolute():
             entry_script_path = (cwd / entry_script_path).resolve()
 
-        mount_root: pathlib.Path | None = None
-        for parent in [entry_script_path.parent, *entry_script_path.parents]:
-            has_git_dir = (parent / ".git").is_dir()
-            has_lockfile = (parent / ".syncweaver-lock.json").is_file()
-            if mount_root is None and (has_git_dir or has_lockfile):
-                mount_root = parent
-        if mount_root is None:
-            mount_root = entry_script_path.parent
+        if backend == FUNCTRACER_BACKEND_LOCAL:
+            # Execute via local functracer installation
+            command = [
+                "functracer",
+                "run",
+                script_path,
+                *args,
+            ]
+        else:
+            # For docker and singularity, find mount root for bind-mounting
+            mount_root: pathlib.Path | None = None
+            for parent in [entry_script_path.parent, *entry_script_path.parents]:
+                has_git_dir = (parent / ".git").is_dir()
+                has_lockfile = (parent / ".syncweaver-lock.json").is_file()
+                if mount_root is None and (has_git_dir or has_lockfile):
+                    mount_root = parent
+            if mount_root is None:
+                mount_root = entry_script_path.parent
 
-        command = [
-            "docker",
-            "run",
-            "--rm",
-            "-v",
-            f"{script_path}:/script.R:ro",
-            "-v",
-            f"{mount_root}:{mount_root}",
-            "-w",
-            str(mount_root),
-            f"nciccbr/functracer:{image_tag}",
-            "Rscript",
-            "/script.R",
-            *args,
-        ]
+            image_tag = functracer_image_tag or DEFAULT_FUNCTRACER_IMAGE_TAG
+
+            if backend == FUNCTRACER_BACKEND_DOCKER:
+                # Execute via Docker
+                command = [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "-v",
+                    f"{script_path}:/script.R:ro",
+                    "-v",
+                    f"{mount_root}:{mount_root}",
+                    "-w",
+                    str(mount_root),
+                    f"nciccbr/functracer:{image_tag}",
+                    "Rscript",
+                    "/script.R",
+                    *args,
+                ]
+            else:  # FUNCTRACER_BACKEND_SINGULARITY
+                # Execute via Singularity
+                command = [
+                    "singularity",
+                    "run",
+                    "--bind",
+                    f"{script_path}:/script.R:ro",
+                    "--bind",
+                    f"{mount_root}:{mount_root}",
+                    "--pwd",
+                    str(mount_root),
+                    f"docker://nciccbr/functracer:{image_tag}",
+                    "Rscript",
+                    "/script.R",
+                    *args,
+                ]
+
         completed = subprocess.run(
             command,
             check=True,
@@ -214,6 +319,7 @@ def run_functracer_release_impact(
     repository: str,
     release_tag: str,
     previous_tag: str,
+    functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> bool:
     """Run functracer release impact analysis for an entry script.
@@ -223,6 +329,8 @@ def run_functracer_release_impact(
         repository (str): Source repository URL.
         release_tag (str): Candidate release tag/ref.
         previous_tag (str): Previously tracked source ref.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
             Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
@@ -237,6 +345,7 @@ def run_functracer_release_impact(
             release_tag,
             previous_tag,
         ],
+        functracer_backend=functracer_backend,
         functracer_image_tag=functracer_image_tag,
     )
     return result
@@ -245,6 +354,7 @@ def run_functracer_release_impact(
 def _script_calls_r_package(
     entry_script: pathlib.Path,
     package_dir: pathlib.Path,
+    functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> bool:
     """Evaluate whether a host entry script depends on functions from R package.
@@ -252,6 +362,8 @@ def _script_calls_r_package(
     Args:
         entry_script (pathlib.Path): Candidate host script path.
         package_dir (pathlib.Path): Local R package root path.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
             Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
@@ -261,6 +373,7 @@ def _script_calls_r_package(
     result = _run_functracer_boolean_script(
         script_name="functracer_script_calls_package.R",
         args=[str(entry_script), str(package_dir)],
+        functracer_backend=functracer_backend,
         functracer_image_tag=functracer_image_tag,
     )
     return result
@@ -367,6 +480,7 @@ def find_host_scripts_calling_source(
     host_repo_path: pathlib.Path,
     source_path: str,
     candidate_scripts: list[str] | None = None,
+    functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> list[str]:
     """Find host repository scripts that depend on functions from a source path.
@@ -376,6 +490,8 @@ def find_host_scripts_calling_source(
         source_path (str): Tracked source path in host repository.
         candidate_scripts (list[str] | None): Optional list of relative script
             paths to evaluate. When omitted, all host-side *.R scripts are tested.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
             Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
@@ -395,6 +511,7 @@ def find_host_scripts_calling_source(
             if _script_calls_r_package(
                 entry_script=entry_script,
                 package_dir=source_root,
+                functracer_backend=functracer_backend,
                 functracer_image_tag=functracer_image_tag,
             ):
                 relative_path = entry_script.relative_to(host_repo_path).as_posix()
@@ -411,6 +528,7 @@ def analyze_source_dependencies(
     release_tag: str | None,
     previous_tag: str | None,
     package_name: str | None,
+    functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> dict[str, Any]:
     """Analyze source dependencies with language-aware and extensible metadata.
@@ -424,6 +542,8 @@ def analyze_source_dependencies(
         release_tag (str | None): Optional candidate release tag/ref.
         previous_tag (str | None): Optional baseline release tag/ref.
         package_name (str | None): Optional package name override.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
             Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
@@ -457,6 +577,7 @@ def analyze_source_dependencies(
                 host_repo_path=host_repo_path,
                 source_path=source_path,
                 candidate_scripts=None,
+                functracer_backend=functracer_backend,
                 functracer_image_tag=functracer_image_tag,
             )
 
@@ -487,6 +608,7 @@ def analyze_source_dependencies(
                 repository=normalized_repository,
                 release_tag=normalized_release_tag,
                 previous_tag=normalized_previous_tag,
+                functracer_backend=functracer_backend,
                 functracer_image_tag=functracer_image_tag,
             )
             if script_affected:

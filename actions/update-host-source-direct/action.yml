@@ -234,6 +234,7 @@ runs:
           --functracer-version "${FUNCTRACER_VERSION_INPUT}" \
           --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
           --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
+          --functracer-backend "docker" \
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path

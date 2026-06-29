@@ -175,7 +175,7 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     monkeypatch.setattr(
         host_source_update,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag, functracer_image_tag=None: (
+        lambda entry_script, repository, release_tag, previous_tag, functracer_backend=None, functracer_image_tag=None: (
             False
         ),
     )
@@ -234,7 +234,12 @@ def test_select_source_paths_for_update_prefers_code_main_r(
     called_scripts: list[str] = []
 
     def _record_release_impact(
-        entry_script, repository, release_tag, previous_tag, functracer_image_tag=None
+        entry_script,
+        repository,
+        release_tag,
+        previous_tag,
+        functracer_backend=None,
+        functracer_image_tag=None,
     ):
         called_scripts.append(entry_script.relative_to(host_repo).as_posix())
         return False
@@ -303,7 +308,12 @@ def test_select_source_paths_for_update_honors_explicit_entry_script_override(
     called_scripts: list[str] = []
 
     def _record_release_impact(
-        entry_script, repository, release_tag, previous_tag, functracer_image_tag=None
+        entry_script,
+        repository,
+        release_tag,
+        previous_tag,
+        functracer_backend=None,
+        functracer_image_tag=None,
     ):
         called_scripts.append(entry_script.relative_to(host_repo).as_posix())
         return False

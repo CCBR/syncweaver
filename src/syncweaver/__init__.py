@@ -1,5 +1,17 @@
 """syncweaver: synchronize code and weave patches seamlessly."""
 
-from syncweaver.dependency_analysis import DEFAULT_FUNCTRACER_IMAGE_TAG
+from syncweaver.dependency_analysis import (
+    DEFAULT_FUNCTRACER_BACKEND,
+    DEFAULT_FUNCTRACER_IMAGE_TAG,
+    FUNCTRACER_BACKEND_DOCKER,
+    FUNCTRACER_BACKEND_LOCAL,
+    FUNCTRACER_BACKEND_SINGULARITY,
+)
 
-__all__ = ["DEFAULT_FUNCTRACER_IMAGE_TAG"]
+__all__ = [
+    "DEFAULT_FUNCTRACER_BACKEND",
+    "DEFAULT_FUNCTRACER_IMAGE_TAG",
+    "FUNCTRACER_BACKEND_DOCKER",
+    "FUNCTRACER_BACKEND_LOCAL",
+    "FUNCTRACER_BACKEND_SINGULARITY",
+]
