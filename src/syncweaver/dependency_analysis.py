@@ -142,9 +142,23 @@ def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
     """
     script_resource = resources.files("syncweaver").joinpath(f"data/{script_name}")
     with resources.as_file(script_resource) as script_path:
-        # Use functracer docker image to run the R script
-        # Mount necessary volumes: script (read-only), current directory (for data access)
-        cwd = pathlib.Path.cwd()
+        # Use functracer docker image to run the R script.
+        # Bind-mount the host repo so absolute paths passed to the helper scripts
+        # are valid inside the container.
+        cwd = pathlib.Path.cwd().resolve()
+        entry_script_path = pathlib.Path(args[0])
+        if not entry_script_path.is_absolute():
+            entry_script_path = (cwd / entry_script_path).resolve()
+
+        mount_root: pathlib.Path | None = None
+        for parent in [entry_script_path.parent, *entry_script_path.parents]:
+            has_git_dir = (parent / ".git").is_dir()
+            has_lockfile = (parent / ".syncweaver-lock.json").is_file()
+            if mount_root is None and (has_git_dir or has_lockfile):
+                mount_root = parent
+        if mount_root is None:
+            mount_root = entry_script_path.parent
+
         command = [
             "docker",
             "run",
@@ -152,9 +166,9 @@ def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
             "-v",
             f"{script_path}:/script.R:ro",
             "-v",
-            f"{cwd}:/workdir",
+            f"{mount_root}:{mount_root}",
             "-w",
-            "/workdir",
+            str(mount_root),
             "nciccbr/functracer:v0.1.0",
             "Rscript",
             "/script.R",
