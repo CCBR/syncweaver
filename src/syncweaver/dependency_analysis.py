@@ -103,6 +103,28 @@ def detect_source_type(host_repo_path: pathlib.Path, source_path: str) -> str:
     return source_type
 
 
+def _preferred_host_entry_script(
+    host_repo_path: pathlib.Path,
+    excluded_roots: set[pathlib.Path] | None = None,
+) -> pathlib.Path | None:
+    """Return the preferred default host entry script when it exists."""
+    preferred_script = host_repo_path / "code" / "main.R"
+    preferred_script_path: pathlib.Path | None = None
+    is_preferred_script = preferred_script.is_file()
+    is_excluded = False
+
+    if is_preferred_script and excluded_roots is not None:
+        resolved_script = preferred_script.resolve()
+        for excluded_root in excluded_roots:
+            if _path_is_within(resolved_script, excluded_root):
+                is_excluded = True
+
+    if is_preferred_script and not is_excluded:
+        preferred_script_path = preferred_script
+
+    return preferred_script_path
+
+
 def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
     """Execute a packaged R helper script via functracer docker image.
 
@@ -235,16 +257,25 @@ def discover_host_entry_scripts(
                 if source_root.is_dir():
                     excluded_sources.add(source_root.resolve())
 
-        for script_path in sorted(host_repo_path.rglob("*.R")):
-            resolved_script = script_path.resolve()
-            is_excluded = any(
-                _path_is_within(resolved_script, excluded_root)
-                for excluded_root in excluded_sources
+        preferred_script = _preferred_host_entry_script(
+            host_repo_path=host_repo_path,
+            excluded_roots=excluded_sources,
+        )
+        if preferred_script is not None:
+            resolved_scripts.append(
+                preferred_script.relative_to(host_repo_path).as_posix()
             )
-            if (not is_excluded) and script_path.is_file():
-                resolved_scripts.append(
-                    script_path.relative_to(host_repo_path).as_posix()
+        else:
+            for script_path in sorted(host_repo_path.rglob("*.R")):
+                resolved_script = script_path.resolve()
+                is_excluded = any(
+                    _path_is_within(resolved_script, excluded_root)
+                    for excluded_root in excluded_sources
                 )
+                if (not is_excluded) and script_path.is_file():
+                    resolved_scripts.append(
+                        script_path.relative_to(host_repo_path).as_posix()
+                    )
 
     return resolved_scripts
 
@@ -273,10 +304,17 @@ def _collect_candidate_r_scripts(
             if has_r_suffix and is_file:
                 resolved_candidates.append(candidate_path)
     else:
-        for script_path in sorted(host_repo_path.rglob("*.R")):
-            is_within_source = _path_is_within(script_path, source_root)
-            if (not is_within_source) and script_path.is_file():
-                resolved_candidates.append(script_path)
+        preferred_script = _preferred_host_entry_script(
+            host_repo_path=host_repo_path,
+            excluded_roots={source_root.resolve()},
+        )
+        if preferred_script is not None:
+            resolved_candidates.append(preferred_script)
+        else:
+            for script_path in sorted(host_repo_path.rglob("*.R")):
+                is_within_source = _path_is_within(script_path, source_root)
+                if (not is_within_source) and script_path.is_file():
+                    resolved_candidates.append(script_path)
     return resolved_candidates
 
 

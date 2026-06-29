@@ -87,10 +87,6 @@ def select_source_paths_for_update(
     source_paths_to_update: list[str] = []
     skipped_source_paths: list[str] = []
 
-    # If no valid host entry scripts exist, skip dependency gating
-    if not host_entry_scripts:
-        return source_paths, []
-
     for source_path in source_paths:
         should_update = True
         should_analyze = False
@@ -137,6 +133,10 @@ def select_source_paths_for_update(
             source_paths_to_update.append(source_path)
         else:
             skipped_source_paths.append(source_path)
+
+    if not host_entry_scripts:
+        source_paths_to_update = source_paths
+        skipped_source_paths = []
 
     result = (source_paths_to_update, skipped_source_paths)
     return result
