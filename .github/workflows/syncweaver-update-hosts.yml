@@ -50,7 +50,7 @@ jobs:
       - name: Install syncweaver and YAML parser dependencies
         run: |
           python -m pip install --upgrade pyyaml
-          python -m pip install --upgrade "syncweaver@git+https://github.com/CCBR/syncweaver.git@{{ env.SYNCWEAVER_VERSION }}"
+          python -m pip install --upgrade "git+https://github.com/CCBR/syncweaver.git@${{ env.SYNCWEAVER_VERSION }}"
 
       - name: Resolve source repository
         id: resolve_source_repository
