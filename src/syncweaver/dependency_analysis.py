@@ -104,7 +104,7 @@ def detect_source_type(host_repo_path: pathlib.Path, source_path: str) -> str:
 
 
 def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
-    """Execute a packaged R helper script and parse true/false stdout output.
+    """Execute a packaged R helper script via functracer docker image.
 
     Args:
         script_name (str): Data script filename located in syncweaver/data.
@@ -115,12 +115,29 @@ def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
 
     Raises:
         ValueError: If script output is not a boolean token.
-        FileNotFoundError: If Rscript executable is unavailable.
-        subprocess.CalledProcessError: If R process exits non-zero.
+        FileNotFoundError: If docker executable is unavailable.
+        subprocess.CalledProcessError: If docker process exits non-zero.
     """
     script_resource = resources.files("syncweaver").joinpath(f"data/{script_name}")
     with resources.as_file(script_resource) as script_path:
-        command = ["Rscript", str(script_path), *args]
+        # Use functracer docker image to run the R script
+        # Mount necessary volumes: script (read-only), current directory (for data access)
+        cwd = pathlib.Path.cwd()
+        command = [
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            f"{script_path}:/script.R:ro",
+            "-v",
+            f"{cwd}:/workdir",
+            "-w",
+            "/workdir",
+            "nciccbr/functracer:v0.1.0",
+            "Rscript",
+            "/script.R",
+            *args,
+        ]
         completed = subprocess.run(
             command,
             check=True,
@@ -180,6 +197,56 @@ def _script_calls_r_package(
         args=[str(entry_script), str(package_dir)],
     )
     return result
+
+
+def discover_host_entry_scripts(
+    host_repo_path: pathlib.Path,
+    source_paths: list[str] | None = None,
+    candidate_scripts: list[str] | None = None,
+) -> list[str]:
+    """Discover or validate host-level entry R scripts.
+
+    Args:
+        host_repo_path (pathlib.Path): Host repository root path.
+        source_paths (list[str] | None): Optional list of tracked source paths to exclude.
+        candidate_scripts (list[str] | None): Optional explicit entry script list to validate.
+
+    Returns:
+        list[str]: Relative paths to valid host entry R scripts, or empty list if none found.
+    """
+    resolved_scripts: list[str] = []
+
+    if candidate_scripts is not None:
+        # Validate explicit candidate scripts
+        for candidate_script in candidate_scripts:
+            candidate_path = host_repo_path / pathlib.Path(candidate_script)
+            has_r_suffix = candidate_path.suffix.lower() == ".r"
+            is_file = candidate_path.is_file()
+            if has_r_suffix and is_file:
+                resolved_scripts.append(
+                    candidate_path.relative_to(host_repo_path).as_posix()
+                )
+    else:
+        # Auto-discover host R scripts excluding tracked sources
+        excluded_sources: set[pathlib.Path] = set()
+        if source_paths is not None:
+            for source_path in source_paths:
+                source_root = host_repo_path / pathlib.Path(source_path)
+                if source_root.is_dir():
+                    excluded_sources.add(source_root.resolve())
+
+        for script_path in sorted(host_repo_path.rglob("*.R")):
+            resolved_script = script_path.resolve()
+            is_excluded = any(
+                _path_is_within(resolved_script, excluded_root)
+                for excluded_root in excluded_sources
+            )
+            if (not is_excluded) and script_path.is_file():
+                resolved_scripts.append(
+                    script_path.relative_to(host_repo_path).as_posix()
+                )
+
+    return resolved_scripts
 
 
 def _collect_candidate_r_scripts(
