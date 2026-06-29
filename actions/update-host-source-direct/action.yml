@@ -38,9 +38,9 @@ inputs:
     required: false
     default: main
   functracer-version:
-    description: functracer version/ref to install when dependency gating is used.
+    description: functracer version for docker image when dependency gating is used (e.g., v0.1.0).
     required: false
-    default: main
+    default: v0.1.0
   functracer-entry-scripts:
     description: Optional comma/newline-separated host entry scripts used for functracer release impact checks.
     required: false
@@ -209,6 +209,7 @@ runs:
         RESOLVE_SKIP_REASON: ${{ steps.resolve_source_paths.outputs.skipped_reason }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
+        FUNCTRACER_VERSION_INPUT: ${{ inputs.functracer-version }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
       run: |
@@ -230,6 +231,7 @@ runs:
           --lockfile "${LOCKFILE_INPUT}" \
           --source-ref "${SOURCE_REF_INPUT}" \
           --host-repo "host-repo" \
+          --functracer-version "${FUNCTRACER_VERSION_INPUT}" \
           --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
           --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
           --github-output "${GITHUB_OUTPUT}"

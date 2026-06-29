@@ -7,6 +7,21 @@ import pathlib
 import subprocess
 from typing import Any
 
+# Default functracer docker image tag used when no explicit version is provided.
+# This is the stable release version; most callers should override with a specific
+# version or the latest development build ("main").
+DEFAULT_FUNCTRACER_IMAGE_TAG = "v0.1.0"
+
+# Set module docstring dynamically to include the constant value
+__doc__ = f"""Dependency analysis helpers for host/source integration workflows.
+
+Constants:
+    DEFAULT_FUNCTRACER_IMAGE_TAG: Default functracer docker image tag used when
+        no explicit version is provided. Current value: {DEFAULT_FUNCTRACER_IMAGE_TAG}.
+        This is the stable release tag; most callers should consider overriding with
+        a specific version or the latest development build ("main").
+"""
+
 
 def parse_path_list(raw_input: str | None) -> list[str]:
     """Parse comma/newline separated path input into unique values.
@@ -125,12 +140,18 @@ def _preferred_host_entry_script(
     return preferred_script_path
 
 
-def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
+def _run_functracer_boolean_script(
+    script_name: str,
+    args: list[str],
+    functracer_image_tag: str | None = None,
+) -> bool:
     """Execute a packaged R helper script via functracer docker image.
 
     Args:
         script_name (str): Data script filename located in syncweaver/data.
         args (list[str]): Positional arguments passed to Rscript.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
+            Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         bool: Parsed boolean result emitted by helper script.
@@ -145,6 +166,7 @@ def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
         # Use functracer docker image to run the R script
         # Mount necessary volumes: script (read-only), current directory (for data access)
         cwd = pathlib.Path.cwd()
+        image_tag = functracer_image_tag or DEFAULT_FUNCTRACER_IMAGE_TAG
         command = [
             "docker",
             "run",
@@ -155,7 +177,7 @@ def _run_functracer_boolean_script(script_name: str, args: list[str]) -> bool:
             f"{cwd}:/workdir",
             "-w",
             "/workdir",
-            "nciccbr/functracer:v0.1.0",
+            f"nciccbr/functracer:{image_tag}",
             "Rscript",
             "/script.R",
             *args,
@@ -178,6 +200,7 @@ def run_functracer_release_impact(
     repository: str,
     release_tag: str,
     previous_tag: str,
+    functracer_image_tag: str | None = None,
 ) -> bool:
     """Run functracer release impact analysis for an entry script.
 
@@ -186,6 +209,8 @@ def run_functracer_release_impact(
         repository (str): Source repository URL.
         release_tag (str): Candidate release tag/ref.
         previous_tag (str): Previously tracked source ref.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
+            Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         bool: True when entry script is affected by dependency changes.
@@ -198,18 +223,23 @@ def run_functracer_release_impact(
             release_tag,
             previous_tag,
         ],
+        functracer_image_tag=functracer_image_tag,
     )
     return result
 
 
 def _script_calls_r_package(
-    entry_script: pathlib.Path, package_dir: pathlib.Path
+    entry_script: pathlib.Path,
+    package_dir: pathlib.Path,
+    functracer_image_tag: str | None = None,
 ) -> bool:
     """Evaluate whether a host entry script depends on functions from R package.
 
     Args:
         entry_script (pathlib.Path): Candidate host script path.
         package_dir (pathlib.Path): Local R package root path.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
+            Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         bool: True when functracer detects dependencies from package_dir.
@@ -217,6 +247,7 @@ def _script_calls_r_package(
     result = _run_functracer_boolean_script(
         script_name="functracer_script_calls_package.R",
         args=[str(entry_script), str(package_dir)],
+        functracer_image_tag=functracer_image_tag,
     )
     return result
 
@@ -322,6 +353,7 @@ def find_host_scripts_calling_source(
     host_repo_path: pathlib.Path,
     source_path: str,
     candidate_scripts: list[str] | None = None,
+    functracer_image_tag: str | None = None,
 ) -> list[str]:
     """Find host repository scripts that depend on functions from a source path.
 
@@ -330,6 +362,8 @@ def find_host_scripts_calling_source(
         source_path (str): Tracked source path in host repository.
         candidate_scripts (list[str] | None): Optional list of relative script
             paths to evaluate. When omitted, all host-side *.R scripts are tested.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
+            Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         list[str]: Relative script paths that call functions from source package.
@@ -345,7 +379,9 @@ def find_host_scripts_calling_source(
         )
         for entry_script in candidates:
             if _script_calls_r_package(
-                entry_script=entry_script, package_dir=source_root
+                entry_script=entry_script,
+                package_dir=source_root,
+                functracer_image_tag=functracer_image_tag,
             ):
                 relative_path = entry_script.relative_to(host_repo_path).as_posix()
                 calling_scripts.append(relative_path)
@@ -361,6 +397,7 @@ def analyze_source_dependencies(
     release_tag: str | None,
     previous_tag: str | None,
     package_name: str | None,
+    functracer_image_tag: str | None = None,
 ) -> dict[str, Any]:
     """Analyze source dependencies with language-aware and extensible metadata.
 
@@ -373,6 +410,8 @@ def analyze_source_dependencies(
         release_tag (str | None): Optional candidate release tag/ref.
         previous_tag (str | None): Optional baseline release tag/ref.
         package_name (str | None): Optional package name override.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
+            Defaults to DEFAULT_FUNCTRACER_IMAGE_TAG if not provided.
 
     Returns:
         dict[str, Any]: Analysis summary suitable for CLI JSON output.
@@ -404,6 +443,7 @@ def analyze_source_dependencies(
                 host_repo_path=host_repo_path,
                 source_path=source_path,
                 candidate_scripts=None,
+                functracer_image_tag=functracer_image_tag,
             )
 
     normalized_repository = ""
@@ -433,6 +473,7 @@ def analyze_source_dependencies(
                 repository=normalized_repository,
                 release_tag=normalized_release_tag,
                 previous_tag=normalized_previous_tag,
+                functracer_image_tag=functracer_image_tag,
             )
             if script_affected:
                 impacted_scripts.append(script_path)

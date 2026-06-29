@@ -8,7 +8,10 @@ import subprocess
 
 import click
 
-from syncweaver.dependency_analysis import analyze_source_dependencies
+from syncweaver.dependency_analysis import (
+    DEFAULT_FUNCTRACER_IMAGE_TAG,
+    analyze_source_dependencies,
+)
 from syncweaver.host_source_update import select_source_paths_for_update
 from syncweaver.util import format_subprocess_error
 
@@ -147,6 +150,12 @@ def analyze_cmd(
     help="Optional comma/newline-separated source paths to gate with functracer.",
 )
 @click.option(
+    "--functracer-version",
+    default="",
+    show_default=False,
+    help=f"Optional functracer version (e.g. {DEFAULT_FUNCTRACER_IMAGE_TAG} or any docker image tag). When omitted, falls back to {DEFAULT_FUNCTRACER_IMAGE_TAG}.",
+)
+@click.option(
     "--github-output",
     default=None,
     type=click.Path(path_type=pathlib.Path, dir_okay=False),
@@ -159,6 +168,7 @@ def select_update_paths_cmd(
     host_repo: pathlib.Path,
     functracer_entry_scripts: str,
     functracer_source_paths: str,
+    functracer_version: str,
     github_output: pathlib.Path | None,
 ) -> None:
     """Filter candidate source paths and emit selection JSON and optional outputs."""
@@ -175,6 +185,9 @@ def select_update_paths_cmd(
         source_paths.append(str(source_path))
 
     lockfile_path = host_repo / lockfile
+    normalized_functracer_version = (
+        functracer_version.strip() if functracer_version else None
+    )
     try:
         selected_source_paths, skipped_source_paths = select_source_paths_for_update(
             source_paths=source_paths,
@@ -183,6 +196,7 @@ def select_update_paths_cmd(
             host_repo_path=host_repo,
             functracer_entry_scripts_input=functracer_entry_scripts,
             functracer_source_paths_input=functracer_source_paths,
+            functracer_image_tag=normalized_functracer_version,
         )
     except (
         FileNotFoundError,

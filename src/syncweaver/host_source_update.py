@@ -44,6 +44,7 @@ def select_source_paths_for_update(
     host_repo_path: pathlib.Path,
     functracer_entry_scripts_input: str | None,
     functracer_source_paths_input: str | None,
+    functracer_image_tag: str | None = None,
 ) -> tuple[list[str], list[str]]:
     """Filter source paths for update with optional functracer impact checks.
 
@@ -61,6 +62,7 @@ def select_source_paths_for_update(
             host entry scripts to analyze.
         functracer_source_paths_input (str | None): Optional comma/newline list of
             source paths that should be functracer-gated.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
 
     Returns:
         tuple[list[str], list[str]]: Source paths to update and source paths skipped.
@@ -114,6 +116,7 @@ def select_source_paths_for_update(
                                 repository=repository,
                                 release_tag=source_ref,
                                 previous_tag=previous_tag,
+                                functracer_image_tag=functracer_image_tag,
                             )
                             impacted = impacted or script_affected
                         except (
