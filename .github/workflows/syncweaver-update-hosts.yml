@@ -199,4 +199,4 @@ jobs:
           source_ref: ${{ env.SOURCE_REF }}
           app_id: ${{ vars.CCBR_BOT_APP_ID }}
           app_private_key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          syncweaver_version: ${{ env.SYNCWEAVER_VERSION }}
+          syncweaver-version: ${{ env.SYNCWEAVER_VERSION }}
