@@ -12,6 +12,11 @@ on:
         description: Source ref to dispatch to hosts (e.g. release tag or branch name).
         required: true
         type: string
+      syncweaver-version:
+        description: The version of Syncweaver to use.
+        required: true
+        type: string
+        default: "main"
 
 permissions:
   contents: read
@@ -182,6 +187,7 @@ jobs:
     env:
       SOURCE_REPOSITORY: ${{ needs.prepare-host-matrix.outputs.source_repository }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
+      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.syncweaver_version || github.event.inputs.syncweaver_version || 'main' }}
     steps:
       - name: Update host directly
         uses: CCBR/syncweaver/actions/update-host-source-direct@main
@@ -193,3 +199,4 @@ jobs:
           source_ref: ${{ env.SOURCE_REF }}
           app_id: ${{ vars.CCBR_BOT_APP_ID }}
           app_private_key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          syncweaver_version: ${{ env.SYNCWEAVER_VERSION }}
