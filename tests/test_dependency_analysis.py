@@ -99,7 +99,9 @@ def test_find_host_scripts_calling_source_discovers_scripts(
     monkeypatch.setattr(
         dependency_analysis,
         "_script_calls_r_package",
-        lambda entry_script, package_dir: entry_script.name == "main.R",
+        lambda entry_script, package_dir, functracer_image_tag=None: (
+            entry_script.name == "main.R"
+        ),
     )
 
     detected = find_host_scripts_calling_source(
@@ -197,12 +199,16 @@ def test_analyze_source_dependencies_reports_release_impact(
     monkeypatch.setattr(
         dependency_analysis,
         "find_host_scripts_calling_source",
-        lambda host_repo_path, source_path, candidate_scripts=None: ["main.R"],
+        lambda host_repo_path, source_path, candidate_scripts=None, functracer_image_tag=None: [
+            "main.R"
+        ],
     )
     monkeypatch.setattr(
         dependency_analysis,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag: True,
+        lambda entry_script, repository, release_tag, previous_tag, functracer_image_tag=None: (
+            True
+        ),
     )
 
     result = analyze_source_dependencies(
