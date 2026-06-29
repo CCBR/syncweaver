@@ -1,6 +1,7 @@
 """Utility helpers for the syncweaver package."""
 
 import pathlib
+import subprocess
 
 from cffconvert.cli.create_citation import create_citation
 from cffconvert.cli.validate_or_write_output import validate_or_write_output
@@ -66,3 +67,24 @@ def print_citation(context, param, value) -> None:
         validate_or_write_output(None, "bibtex", False, citation)
         context.exit()
     return None
+
+
+def format_subprocess_error(exc: subprocess.CalledProcessError) -> str:
+    """Format subprocess failures with captured stdout and stderr.
+
+    Args:
+        exc (subprocess.CalledProcessError): Captured subprocess failure.
+
+    Returns:
+        str: Human-readable error message including captured output.
+    """
+    message = str(exc)
+    stderr = (exc.stderr or "").strip()
+    stdout = (exc.stdout or "").strip()
+
+    if stderr:
+        message = f"{message}\nstderr:\n{stderr}"
+    if stdout:
+        message = f"{message}\nstdout:\n{stdout}"
+
+    return message

@@ -6,6 +6,7 @@ import json
 import pathlib
 import shutil
 import tempfile
+import subprocess
 
 import click
 
@@ -13,6 +14,7 @@ from syncweaver.cli.add import _copy_checked_out_repo, _resolve_remote_source_pa
 from syncweaver.git import run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 from syncweaver.patch import create_patch
+from syncweaver.util import format_subprocess_error
 
 
 def _apply_tracked_patch(
@@ -237,10 +239,13 @@ def update_cmd(
         FileNotFoundError,
         KeyError,
         RuntimeError,
+        subprocess.CalledProcessError,
         ValueError,
         json.JSONDecodeError,
         OSError,
     ) as exc:
+        if isinstance(exc, subprocess.CalledProcessError):
+            raise click.ClickException(format_subprocess_error(exc)) from exc
         raise click.ClickException(str(exc)) from exc
 
     click.echo(f"Updated vendored repository in {dest}")

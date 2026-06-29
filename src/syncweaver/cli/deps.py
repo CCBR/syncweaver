@@ -10,6 +10,7 @@ import click
 
 from syncweaver.dependency_analysis import analyze_source_dependencies
 from syncweaver.host_source_update import select_source_paths_for_update
+from syncweaver.util import format_subprocess_error
 
 
 @click.group("deps")
@@ -101,6 +102,8 @@ def analyze_cmd(
         subprocess.CalledProcessError,
         OSError,
     ) as exc:
+        if isinstance(exc, subprocess.CalledProcessError):
+            raise click.ClickException(format_subprocess_error(exc)) from exc
         raise click.ClickException(str(exc)) from exc
 
     click.echo(json.dumps(result, indent=2, sort_keys=True))
@@ -187,6 +190,8 @@ def select_update_paths_cmd(
         subprocess.CalledProcessError,
         OSError,
     ) as exc:
+        if isinstance(exc, subprocess.CalledProcessError):
+            raise click.ClickException(format_subprocess_error(exc)) from exc
         raise click.ClickException(str(exc)) from exc
 
     payload = {

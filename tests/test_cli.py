@@ -2,6 +2,7 @@
 
 import json
 import pathlib
+import subprocess
 
 from click.testing import CliRunner
 
@@ -192,6 +193,60 @@ def test_deps_select_update_paths_writes_github_output(tmp_path):
     assert "source_count=1" in output_text
     assert "skipped_source_paths=[]" in output_text
     assert "skipped_source_count=0" in output_text
+
+
+def test_deps_select_update_paths_surfaces_subprocess_stderr(tmp_path):
+    """Verify deps select-update-paths includes child stderr in failures.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo_path = tmp_path / "host-repo"
+    host_repo_path.mkdir()
+    lockfile_path = host_repo_path / ".syncweaver-lock.json"
+    lockfile_path.write_text("{}\n", encoding="utf-8")
+
+    def _stub_select_source_paths_for_update(
+        source_paths,
+        lockfile_path,
+        source_ref_input,
+        host_repo_path,
+        functracer_entry_scripts_input,
+        functracer_source_paths_input,
+    ):
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["Rscript", "functracer_script_calls_package.R"],
+            stderr="inner R stderr: object 'foo' not found",
+        )
+
+    original = deps_cli.select_source_paths_for_update
+    deps_cli.select_source_paths_for_update = _stub_select_source_paths_for_update
+    try:
+        runner = CliRunner()
+        result = runner.invoke(
+            cli,
+            [
+                "deps",
+                "select-update-paths",
+                "--host-repo",
+                str(host_repo_path),
+                "--lockfile",
+                ".syncweaver-lock.json",
+                "--source-paths-json",
+                '["code/package1"]',
+                "--source-ref",
+                "v1.2.3",
+            ],
+        )
+    finally:
+        deps_cli.select_source_paths_for_update = original
+
+    assert result.exit_code != 0
+    assert "inner R stderr: object 'foo' not found" in result.output
 
 
 def test_update_help_includes_remote_subdir_option():
