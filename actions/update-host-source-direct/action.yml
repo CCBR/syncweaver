@@ -133,7 +133,8 @@ runs:
         fetch-depth: 0
         path: host-repo
 
-    - uses: actions/checkout@v7
+    - name: Checkout syncweaver pyproject.toml
+      uses: actions/checkout@v7
       with:
         repository: CCBR/syncweaver
         ref: ${{ inputs.syncweaver-version }}

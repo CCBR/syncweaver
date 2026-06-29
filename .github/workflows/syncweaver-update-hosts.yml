@@ -185,7 +185,7 @@ jobs:
     env:
       SOURCE_REPOSITORY: ${{ needs.prepare-host-matrix.outputs.source_repository }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
-      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.syncweaver_version || github.event.inputs.syncweaver_version || 'main' }}
+      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.syncweaver-version || github.event.inputs.syncweaver-version || 'main' }}
     steps:
       - name: Update host directly
         uses: CCBR/syncweaver/actions/update-host-source-direct@main
