@@ -1,5 +1,40 @@
+# Installation
+
+## Quick Start
+
 Install syncweaver with pip:
 
 ```sh
 pip install git+https://github.com/CCBR/syncweaver.git
 ```
+
+## System Dependencies
+
+syncweaver has minimal required system dependencies, but some features require additional tools:
+
+### Required
+
+- Python >= 3.11
+- Git – Used for all source synchronization and patching operations
+
+### Optional
+
+- Docker – Required for dependency analysis with functracer
+  - Used by: `syncweaver deps analyze`, `syncweaver deps select-update-paths` (when dependency gating is enabled)
+  - Without Docker: Core sync operations work fine, but dependency impact analysis will fail
+
+## Feature Requirements
+
+| Feature | Required System Dependencies |
+|---------|------------------------------|
+| Source synchronization (`add`, `remove`, `update`) | Git |
+| Patch contribution (`contribute-patch`) | Git |
+| Dependency analysis (`deps analyze`) | Git, Docker |
+| Dependency gating in updates | Git, Docker |
+| GitHub integration | Git, optional: GitHub CLI (`gh`) for token auto-detection |
+
+## GitHub CLI (Optional)
+
+The GitHub CLI (`gh`) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via:
+- `--token` flag
+- `GITHUB_TOKEN` environment variable

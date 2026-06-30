@@ -8,6 +8,7 @@ import subprocess
 
 from click.testing import CliRunner
 
+import syncweaver.cli.add as add_module
 from syncweaver.cli import cli
 
 
@@ -39,24 +40,34 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     Returns:
         None: Assertions validate command behavior.
     """
-    source_repo = tmp_path / "source"
-    source_repo.mkdir()
-    _init_git_repo(source_repo)
-    (source_repo / "pkg.py").write_text("VALUE = 1\n")
-    _run(["git", "add", "pkg.py"], cwd=source_repo)
-    _run(["git", "commit", "--no-verify", "-m", "add package file"], cwd=source_repo)
-    source_sha = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=source_repo,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
+    source_sha = "abc123"
 
     host_repo = tmp_path / "host-repo"
     host_repo.mkdir()
     _init_git_repo(host_repo, remote_url="https://github.com/CCBR/host-repo1.git")
     monkeypatch.chdir(host_repo)
+    original_run_git = add_module.run_git
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif len(args) >= 3 and args[0] == "-C" and args[2] in {"fetch", "checkout"}:
+            output = ""
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = source_sha
+        else:
+            output = original_run_git(
+                args,
+                cwd=cwd,
+                env=env,
+                redacted_values=redacted_values,
+            )
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
 
     runner = CliRunner()
     result = runner.invoke(
@@ -66,7 +77,7 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
             "--path",
             "code/package1",
             "--repo-url",
-            str(source_repo),
+            "https://github.com/CCBR/package1",
             "--ref",
             "main",
         ],
@@ -79,12 +90,15 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     assert lockfile["name"] == "CCBR/host-repo1"
     assert lockfile["homePage"] == "https://github.com/CCBR/host-repo1"
     source_entry = lockfile["sources"]["code/package1"]
-    assert source_entry["repo_url"] == str(source_repo)
+    assert source_entry["repo_url"] == "https://github.com/CCBR/package1"
     assert source_entry["ref"] == "main"
     assert source_entry["git_sha"] == source_sha
     assert source_entry["installed_by"] == ["syncweaver"]
     assert "patch" not in source_entry
     assert "patches" not in source_entry
+
+    gitattributes_lines = (host_repo / ".gitattributes").read_text().splitlines()
+    assert "code/package1 linguist-vendored" in gitattributes_lines
 
 
 def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):
@@ -97,10 +111,6 @@ def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):
     Returns:
         None: Assertions validate command behavior.
     """
-    source_repo = tmp_path / "source"
-    source_repo.mkdir()
-    _init_git_repo(source_repo)
-
     host_repo = tmp_path / "host-repo"
     host_repo.mkdir()
     _init_git_repo(host_repo)
@@ -117,7 +127,7 @@ def test_add_refuses_to_overwrite_existing_destination(tmp_path, monkeypatch):
             "--path",
             "code/package1",
             "--repo-url",
-            str(source_repo),
+            "https://github.com/CCBR/package1",
         ],
     )
 
@@ -137,18 +147,64 @@ def test_add_with_remote_subdir_vendors_only_subdir_and_tracks_metadata(
     Returns:
         None: Assertions validate command behavior.
     """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            (temp_repo / "subprojects/package1").mkdir(parents=True, exist_ok=True)
+            (temp_repo / "subprojects/package1/pkg.py").write_text("VALUE = 1\n")
+            (temp_repo / "root-only.txt").write_text("do not vendor\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert (host_repo / "code/package1/pkg.py").exists()
+    assert not (host_repo / "code/package1/root-only.txt").exists()
+
+    lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
+    source_entry = lockfile["sources"]["code/package1"]
+    assert source_entry["remote_subdir"] == "subprojects/package1"
+
+
+def test_add_rejects_local_repo_path(tmp_path, monkeypatch):
+    """Verify `add` rejects local filesystem paths for --repo-url.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
     source_repo = tmp_path / "source"
     source_repo.mkdir()
-    _init_git_repo(source_repo)
-
-    package_root = source_repo / "subprojects/package1"
-    package_root.mkdir(parents=True)
-    (package_root / "pkg.py").write_text("VALUE = 1\n")
-    (source_repo / "root-only.txt").write_text("do not vendor\n")
-    _run(
-        ["git", "add", "subprojects/package1/pkg.py", "root-only.txt"], cwd=source_repo
-    )
-    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
 
     host_repo = tmp_path / "host-repo"
     host_repo.mkdir()
@@ -164,17 +220,119 @@ def test_add_with_remote_subdir_vendors_only_subdir_and_tracks_metadata(
             "code/package1",
             "--repo-url",
             str(source_repo),
-            "--ref",
-            "main",
-            "--remote-subdir",
-            "subprojects/package1",
         ],
     )
 
-    assert result.exit_code == 0
-    assert (host_repo / "code/package1/pkg.py").exists()
-    assert not (host_repo / "code/package1/root-only.txt").exists()
+    assert result.exit_code != 0
+    assert "must not be a local filesystem path" in result.output
+
+
+def test_add_accepts_owner_repo_shorthand(tmp_path, monkeypatch):
+    """Verify `add --repo OWNER/REPO` resolves to a GitHub clone URL.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    (host_repo / ".syncweaver-lock.json").write_text(
+        json.dumps({"name": "host-repo", "homePage": "", "sources": {}}, indent=2)
+        + "\n"
+    )
+    monkeypatch.chdir(host_repo)
+
+    clone_url_seen = {"value": ""}
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            clone_url_seen["value"] = args[3]
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo",
+            "CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert clone_url_seen["value"] == "https://github.com/CCBR/package1.git"
 
     lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     source_entry = lockfile["sources"]["code/package1"]
-    assert source_entry["remote_subdir"] == "subprojects/package1"
+    assert source_entry["repo_url"] == "https://github.com/CCBR/package1"
+
+
+def test_add_does_not_duplicate_existing_gitattributes_entry(tmp_path, monkeypatch):
+    """Verify `add` does not duplicate an existing linguist-vendored entry.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    (host_repo / ".gitattributes").write_text(
+        "code/package1 linguist-vendored\n*.md text\n"
+    )
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    gitattributes_lines = (host_repo / ".gitattributes").read_text().splitlines()
+    assert gitattributes_lines.count("code/package1 linguist-vendored") == 1

@@ -10,6 +10,7 @@ import syncweaver.dependency_analysis as dependency_analysis
 from syncweaver.dependency_analysis import (
     analyze_source_dependencies,
     detect_source_type,
+    discover_host_entry_scripts,
     find_host_scripts_calling_source,
     is_r_package_source,
 )
@@ -98,7 +99,9 @@ def test_find_host_scripts_calling_source_discovers_scripts(
     monkeypatch.setattr(
         dependency_analysis,
         "_script_calls_r_package",
-        lambda entry_script, package_dir: entry_script.name == "main.R",
+        lambda entry_script, package_dir, functracer_backend=None, functracer_image_tag=None: (
+            entry_script.name == "main.R"
+        ),
     )
 
     detected = find_host_scripts_calling_source(
@@ -108,6 +111,66 @@ def test_find_host_scripts_calling_source_discovers_scripts(
     )
 
     assert detected == ["main.R"]
+
+
+def test_discover_host_entry_scripts_prefers_code_main_r(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Verify host entry discovery prefers code/main.R when present.
+
+    Args:
+        tmp_path (pathlib.Path): Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    host_repo_path = tmp_path / "host-repo"
+    host_repo_path.mkdir()
+
+    preferred_script = host_repo_path / "code" / "main.R"
+    preferred_script.parent.mkdir(parents=True)
+    preferred_script.write_text("run <- function() 1\n", encoding="utf-8")
+
+    fallback_script = host_repo_path / "main.R"
+    fallback_script.write_text("run <- function() 2\n", encoding="utf-8")
+
+    detected = discover_host_entry_scripts(
+        host_repo_path=host_repo_path,
+        source_paths=["code/package1"],
+        candidate_scripts=None,
+    )
+
+    assert detected == ["code/main.R"]
+
+
+def test_discover_host_entry_scripts_honors_explicit_override(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Verify host entry discovery respects explicit script overrides.
+
+    Args:
+        tmp_path (pathlib.Path): Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    host_repo_path = tmp_path / "host-repo"
+    host_repo_path.mkdir()
+
+    preferred_script = host_repo_path / "code" / "main.R"
+    preferred_script.parent.mkdir(parents=True)
+    preferred_script.write_text("run <- function() 1\n", encoding="utf-8")
+
+    override_script = host_repo_path / "custom-entry.R"
+    override_script.write_text("run <- function() 3\n", encoding="utf-8")
+
+    detected = discover_host_entry_scripts(
+        host_repo_path=host_repo_path,
+        source_paths=["code/package1"],
+        candidate_scripts=["custom-entry.R"],
+    )
+
+    assert detected == ["custom-entry.R"]
 
 
 def test_analyze_source_dependencies_reports_release_impact(
@@ -136,12 +199,16 @@ def test_analyze_source_dependencies_reports_release_impact(
     monkeypatch.setattr(
         dependency_analysis,
         "find_host_scripts_calling_source",
-        lambda host_repo_path, source_path, candidate_scripts=None: ["main.R"],
+        lambda host_repo_path, source_path, candidate_scripts=None, functracer_backend=None, functracer_image_tag=None: [
+            "main.R"
+        ],
     )
     monkeypatch.setattr(
         dependency_analysis,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag: True,
+        lambda entry_script, repository, release_tag, previous_tag, functracer_backend=None, functracer_image_tag=None: (
+            True
+        ),
     )
 
     result = analyze_source_dependencies(

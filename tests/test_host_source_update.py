@@ -16,6 +16,24 @@ from syncweaver.host_source_update import (
 import syncweaver.host_source_update as host_source_update
 
 
+@pytest.fixture(autouse=True)
+def _mock_source_ref_sha_resolution(monkeypatch) -> None:
+    """Keep host-source-update tests offline by default.
+
+    Args:
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Resolver is patched for test isolation.
+    """
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: source_ref,
+    )
+
+
 def test_resolve_app_owner_prefers_explicit_owner() -> None:
     """Verify explicit app owner input takes precedence over host repository.
 
@@ -175,7 +193,9 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     monkeypatch.setattr(
         host_source_update,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag: False,
+        lambda entry_script, repository, release_tag, previous_tag, functracer_backend=None, functracer_image_tag=None: (
+            False
+        ),
     )
 
     selected, skipped = select_source_paths_for_update(
@@ -189,6 +209,151 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
 
     assert selected == []
     assert skipped == ["code/package1"]
+
+
+def test_select_source_paths_for_update_prefers_code_main_r(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify functracer defaults to code/main.R when no override is given.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    preferred_script = host_repo / "code" / "main.R"
+    preferred_script.parent.mkdir(parents=True, exist_ok=True)
+    preferred_script.write_text("run <- function() package1_fn()\n")
+
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "v1.0.0",
+                "git_sha": "1111111111111111111111111111111111111111",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    called_scripts: list[str] = []
+
+    def _record_release_impact(
+        entry_script,
+        repository,
+        release_tag,
+        previous_tag,
+        functracer_backend=None,
+        functracer_image_tag=None,
+    ):
+        called_scripts.append(entry_script.relative_to(host_repo).as_posix())
+        return False
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _record_release_impact,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="v1.1.0",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == []
+    assert skipped == ["code/package1"]
+    assert called_scripts == ["code/main.R"]
+
+
+def test_select_source_paths_for_update_honors_explicit_entry_script_override(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify explicit functracer entry scripts override the default main.R.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    preferred_script = host_repo / "code" / "main.R"
+    preferred_script.parent.mkdir(parents=True, exist_ok=True)
+    preferred_script.write_text("run <- function() package1_fn()\n")
+
+    override_script = host_repo / "custom-entry.R"
+    override_script.write_text("run <- function() package1_fn()\n")
+
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "v1.0.0",
+                "git_sha": "1111111111111111111111111111111111111111",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    called_scripts: list[str] = []
+
+    def _record_release_impact(
+        entry_script,
+        repository,
+        release_tag,
+        previous_tag,
+        functracer_backend=None,
+        functracer_image_tag=None,
+    ):
+        called_scripts.append(entry_script.relative_to(host_repo).as_posix())
+        return False
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _record_release_impact,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="v1.1.0",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="custom-entry.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == []
+    assert skipped == ["code/package1"]
+    assert called_scripts == ["custom-entry.R"]
 
 
 def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
@@ -233,3 +398,208 @@ def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
 
     assert selected == ["code/package1"]
     assert skipped == []
+
+
+def test_select_source_paths_for_update_skips_functracer_without_host_scripts(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify host-level gating bypasses functracer when no valid entry script exists.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "v1.0.0",
+                "git_sha": "1111111111111111111111111111111111111111",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    def _raise_if_called(*args, **kwargs):
+        raise AssertionError("run_functracer_release_impact should not be called")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_if_called,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="v1.1.0",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="missing_entry.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == ["code/package1"]
+    assert skipped == []
+
+
+def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify gating analysis compares resolved and previous commit SHAs.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    entry_script = host_repo / "main.R"
+    entry_script.write_text("run <- function() package1_fn()\n")
+
+    previous_sha = "1111111111111111111111111111111111111111"
+    candidate_sha = "2222222222222222222222222222222222222222"
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": previous_sha,
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: candidate_sha,
+    )
+
+    observed_release_tag = ""
+    observed_previous_tag = ""
+
+    def _record_release_impact(
+        entry_script,
+        repository,
+        release_tag,
+        previous_tag,
+        functracer_backend=None,
+        functracer_image_tag=None,
+    ):
+        del entry_script, repository, functracer_backend, functracer_image_tag
+        nonlocal observed_release_tag, observed_previous_tag
+        observed_release_tag = release_tag
+        observed_previous_tag = previous_tag
+        return True
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _record_release_impact,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="main",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="main.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == ["code/package1"]
+    assert skipped == []
+    assert observed_release_tag == candidate_sha
+    assert observed_previous_tag == previous_sha
+
+
+def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify updates are skipped when source_ref resolves to current git_sha.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    entry_script = host_repo / "main.R"
+    entry_script.write_text("run <- function() package1_fn()\n")
+
+    unchanged_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    lock_data = {
+        "name": "NIDAP/MOSuite-create",
+        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": unchanged_sha,
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: unchanged_sha,
+    )
+
+    def _raise_if_called(*args, **kwargs):
+        raise AssertionError("run_functracer_release_impact should not be called")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_if_called,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="main",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="main.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == []
+    assert skipped == ["code/package1"]

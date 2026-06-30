@@ -38,9 +38,9 @@ inputs:
     required: false
     default: main
   functracer-version:
-    description: functracer version/ref to install when dependency gating is used.
+    description: functracer version for docker image when dependency gating is used (e.g., v0.1.0).
     required: false
-    default: main
+    default: v0.1.0
   functracer-entry-scripts:
     description: Optional comma/newline-separated host entry scripts used for functracer release impact checks.
     required: false
@@ -125,6 +125,12 @@ runs:
         private-key: ${{ inputs.app_private_key }}
         owner: ${{ steps.resolve_app_owner.outputs.app_owner }}
 
+    - name: git config
+      shell: bash
+      run: |
+        git config --global user.name "CCBR-bot"
+        git config --global user.email "258092125+ccbr-bot@users.noreply.github.com"
+
     - name: Checkout host repository
       uses: actions/checkout@v7
       with:
@@ -133,7 +139,8 @@ runs:
         fetch-depth: 0
         path: host-repo
 
-    - uses: actions/checkout@v7
+    - name: Checkout syncweaver pyproject.toml
+      uses: actions/checkout@v7
       with:
         repository: CCBR/syncweaver
         ref: ${{ inputs.syncweaver-version }}
@@ -152,17 +159,6 @@ runs:
         set -euo pipefail
         python -m pip install --upgrade pip
         python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
-
-    - name: Setup R runtime
-      uses: r-lib/actions/setup-r@v2
-
-    - name: Install functracer for dependency checks
-      if: ${{ inputs.functracer-entry-scripts != '' }}
-      shell: bash
-      run: |
-        set -euo pipefail
-        Rscript -e "install.packages('remotes', repos='https://cloud.r-project.org')"
-        Rscript -e "remotes::install_github('CCBR/functracer@${{ inputs.functracer-version }}', upgrade = 'never')"
 
     - name: Resolve source paths from host lockfile
       id: resolve_source_paths
@@ -219,6 +215,7 @@ runs:
         RESOLVE_SKIP_REASON: ${{ steps.resolve_source_paths.outputs.skipped_reason }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
+        FUNCTRACER_VERSION_INPUT: ${{ inputs.functracer-version }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
       run: |
@@ -240,8 +237,10 @@ runs:
           --lockfile "${LOCKFILE_INPUT}" \
           --source-ref "${SOURCE_REF_INPUT}" \
           --host-repo "host-repo" \
+          --functracer-version "${FUNCTRACER_VERSION_INPUT}" \
           --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
           --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
+          --functracer-backend "docker" \
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path
@@ -326,16 +325,18 @@ runs:
         path: host-repo
         branch: ${{ steps.pr_branch.outputs.branch_name }}
         delete-branch: true
+        committer: "CCBR-bot <258092125+ccbr-bot@users.noreply.github.com>"
         commit-message: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
-        title: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
+        title: "chore(syncweaver): update from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         body: |
-          Automated source update executed from CCBR/syncweaver.
+          Automated source update orchestrated by [`${{ github.repository }}`](https://github.com/${{ github.repository }}).
 
-          Inputs used:
-          - source_repository: `${{ inputs.source_repository }}`
+          ### Inputs used
+
+          - source_repository: [`${{ inputs.source_repository }}`](https://github.com/${{ inputs.source_repository }})
           - lockfile: `${{ inputs.lockfile }}`
           - ref: `${{ inputs.source_ref }}`
-          - remote_subdir: `${{ inputs.remote_subdir }}`
 
-          Updated source paths:
+          ### Updated source paths
+
           ${{ steps.source_list.outputs.source_paths_md }}

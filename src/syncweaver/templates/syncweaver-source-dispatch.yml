@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: Optional source ref to dispatch (defaults to release tag for release events, or current ref for manual runs).
+        description: Optional source ref to dispatch (tag, branch, or commit SHA). Defaults to release tag for release events, or current ref for manual runs. Downstream syncweaver workflows resolve refs to commit SHAs for comparison when possible.
         required: false
         type: string
       source_repo:

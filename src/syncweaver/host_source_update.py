@@ -8,10 +8,11 @@ import re
 import subprocess
 
 from syncweaver.dependency_analysis import (
-    find_host_scripts_calling_source,
+    discover_host_entry_scripts,
     is_r_package_source,
     run_functracer_release_impact,
 )
+from syncweaver.git import is_full_git_sha, resolve_remote_ref_to_git_sha
 from syncweaver.lockfile import resolve_source_paths_from_lockfile
 
 
@@ -44,12 +45,15 @@ def select_source_paths_for_update(
     host_repo_path: pathlib.Path,
     functracer_entry_scripts_input: str | None,
     functracer_source_paths_input: str | None,
+    functracer_backend: str | None = None,
+    functracer_image_tag: str | None = None,
 ) -> tuple[list[str], list[str]]:
     """Filter source paths for update with optional functracer impact checks.
 
     Non-R-package sources are always updated. R-package sources are analyzed with
-    functracer when entry scripts are provided. If analysis cannot be executed,
-    the source path is updated conservatively.
+    functracer when entry scripts are provided at host level. If analysis cannot be
+    executed or no valid host entry scripts exist, the source path is updated
+    conservatively.
 
     Args:
         source_paths (list[str]): Candidate source paths resolved from lockfile.
@@ -60,15 +64,25 @@ def select_source_paths_for_update(
             host entry scripts to analyze.
         functracer_source_paths_input (str | None): Optional comma/newline list of
             source paths that should be functracer-gated.
+        functracer_backend (str | None): Backend to use (local, docker, singularity).
+            Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
+        functracer_image_tag (str | None): Optional functracer docker image tag.
 
     Returns:
         tuple[list[str], list[str]]: Source paths to update and source paths skipped.
     """
-    entry_scripts = _parse_list_input(functracer_entry_scripts_input)
+    entry_scripts_input = _parse_list_input(functracer_entry_scripts_input)
     selected_source_paths = _parse_list_input(functracer_source_paths_input)
     source_ref = ""
     if source_ref_input is not None:
         source_ref = source_ref_input.strip()
+
+    # Discover or validate host-level entry R scripts
+    host_entry_scripts = discover_host_entry_scripts(
+        host_repo_path=host_repo_path,
+        source_paths=source_paths,
+        candidate_scripts=entry_scripts_input if entry_scripts_input else None,
+    )
 
     lock_data = json.loads(lockfile_path.read_text(encoding="utf-8"))
     sources = lock_data.get("sources", {})
@@ -87,44 +101,64 @@ def select_source_paths_for_update(
         else:
             should_analyze = is_r_package_source(host_repo_path, source_path)
 
-        entry_scripts_for_source = entry_scripts
-        if should_analyze and (not entry_scripts_for_source):
-            entry_scripts_for_source = find_host_scripts_calling_source(
-                host_repo_path=host_repo_path,
-                source_path=source_path,
-            )
-
-        if should_analyze and entry_scripts_for_source:
+        if should_analyze and host_entry_scripts:
             source_entry = source_entries.get(source_path, {})
             repository = str(source_entry.get("repo_url", "")).strip()
             previous_tag = str(source_entry.get("ref", "")).strip()
-            has_required_metadata = bool(repository and previous_tag and source_ref)
-            if has_required_metadata:
-                impacted = False
-                analysis_failed = False
-                for entry_script_input in entry_scripts_for_source:
-                    entry_script_path = host_repo_path / pathlib.Path(
-                        entry_script_input
+            previous_git_sha = str(source_entry.get("git_sha", "")).strip().lower()
+            resolved_source_ref = source_ref
+            if repository and source_ref:
+                try:
+                    resolved_source_ref = resolve_remote_ref_to_git_sha(
+                        repository=repository,
+                        source_ref=source_ref,
                     )
-                    if entry_script_path.is_file():
-                        try:
-                            script_affected = run_functracer_release_impact(
-                                entry_script=entry_script_path,
-                                repository=repository,
-                                release_tag=source_ref,
-                                previous_tag=previous_tag,
-                            )
-                            impacted = impacted or script_affected
-                        except (
-                            FileNotFoundError,
-                            ValueError,
-                            subprocess.CalledProcessError,
-                        ):
+                except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+                    resolved_source_ref = source_ref
+
+            baseline_ref = previous_tag
+            if previous_git_sha:
+                baseline_ref = previous_git_sha
+
+            has_required_metadata = bool(
+                repository and baseline_ref and resolved_source_ref
+            )
+            compares_equal_by_sha = False
+            if previous_git_sha and is_full_git_sha(resolved_source_ref):
+                compares_equal_by_sha = previous_git_sha == resolved_source_ref.lower()
+
+            if compares_equal_by_sha:
+                should_update = False
+
+            if has_required_metadata:
+                if should_update:
+                    impacted = False
+                    analysis_failed = False
+                    for entry_script_input in host_entry_scripts:
+                        entry_script_path = host_repo_path / pathlib.Path(
+                            entry_script_input
+                        )
+                        if entry_script_path.is_file():
+                            try:
+                                script_affected = run_functracer_release_impact(
+                                    entry_script=entry_script_path,
+                                    repository=repository,
+                                    release_tag=resolved_source_ref,
+                                    previous_tag=baseline_ref,
+                                    functracer_backend=functracer_backend,
+                                    functracer_image_tag=functracer_image_tag,
+                                )
+                                impacted = impacted or script_affected
+                            except (
+                                FileNotFoundError,
+                                ValueError,
+                                subprocess.CalledProcessError,
+                            ):
+                                analysis_failed = True
+                        else:
                             analysis_failed = True
-                    else:
-                        analysis_failed = True
-                if (not impacted) and (not analysis_failed):
-                    should_update = False
+                    if (not impacted) and (not analysis_failed):
+                        should_update = False
             else:
                 should_update = True
 
@@ -132,6 +166,10 @@ def select_source_paths_for_update(
             source_paths_to_update.append(source_path)
         else:
             skipped_source_paths.append(source_path)
+
+    if not host_entry_scripts:
+        source_paths_to_update = source_paths
+        skipped_source_paths = []
 
     result = (source_paths_to_update, skipped_source_paths)
     return result

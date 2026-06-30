@@ -29,7 +29,9 @@ def patch_group() -> None:
     help="Tracked source path in the host repository, e.g. code/package1.",
 )
 @click.option(
+    "--repo",
     "--repo-url",
+    "repo",
     required=True,
     help="Repository URL as it appears in .syncweaver-lock.json.",
 )
@@ -48,7 +50,7 @@ def patch_group() -> None:
 )
 def create_cmd(
     source_path: pathlib.Path,
-    repo_url: str,
+    repo: str,
     lockfile: pathlib.Path,
     patch_dir: pathlib.Path | None,
 ) -> None:
@@ -57,7 +59,7 @@ def create_cmd(
     tracked source path.
     """
     try:
-        patch_path = create_patch(source_path, repo_url, lockfile, patch_dir)
+        patch_path = create_patch(source_path, repo, lockfile, patch_dir)
     except (
         FileNotFoundError,
         KeyError,

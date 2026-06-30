@@ -8,6 +8,7 @@ import subprocess
 
 from click.testing import CliRunner
 
+import syncweaver.cli.add as add_module
 import syncweaver.cli.update as update_module
 from syncweaver.cli import cli
 
@@ -54,6 +55,11 @@ def test_update_refreshes_tracked_subdir_and_lockfile(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
@@ -126,6 +132,11 @@ def test_update_allows_remote_subdir_override(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
@@ -187,6 +198,11 @@ def test_update_reapplies_tracked_patch_after_refresh(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
@@ -273,6 +289,11 @@ def test_update_warn_strategy_continues_when_patch_conflicts(tmp_path, monkeypat
     host_repo.mkdir()
     _init_git_repo(host_repo)
     monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
 
     runner = CliRunner()
     add_result = runner.invoke(
@@ -326,3 +347,74 @@ def test_update_warn_strategy_continues_when_patch_conflicts(tmp_path, monkeypat
     assert update_result.exit_code == 0, update_result.output
     assert "Warning: tracked patch failed to reapply" in update_result.output
     assert (host_repo / "code/package1/pkg.py").read_text() == "VALUE = 2\n"
+
+
+def test_update_surfaces_subprocess_stderr(tmp_path, monkeypatch):
+    """Verify `update` includes child stderr in failures.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    package_root = source_repo / "subprojects/package1"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    _run(["git", "add", "subprojects/package1/pkg.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "subprojects/package1",
+        ],
+    )
+    assert add_result.exit_code == 0
+
+    def _fail_update_external_repository(*args, **kwargs):
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["git", "clone"],
+            stderr="inner update stderr: unable to fetch remote ref",
+        )
+
+    monkeypatch.setattr(
+        update_module, "update_external_repository", _fail_update_external_repository
+    )
+
+    update_result = runner.invoke(
+        cli,
+        [
+            "update",
+            "--path",
+            "code/package1",
+        ],
+    )
+
+    assert update_result.exit_code != 0
+    assert "inner update stderr: unable to fetch remote ref" in update_result.output

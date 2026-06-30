@@ -56,7 +56,7 @@ that contain a main driver script (`code/main.R`) plus vendored source repositor
 ### primary syncweaver commands
 
 - syncweaver list --lockfile .syncweaver-lock.json
-- syncweaver add --path code/package1 --repo-url ccbr/package1 --ref [tag] --lockfile .syncweaver-lock.json
+- syncweaver add --path code/package1 --repo ccbr/package1 --ref [tag] --lockfile .syncweaver-lock.json
 - syncweaver update --path code/package1 --ref [tag] --lockfile .syncweaver-lock.json
 - syncweaver remove --path code/package1 --lockfile .syncweaver-lock.json
 - syncweaver patch create --path code/package1 --lockfile .syncweaver-lock.json --patch-dir [optional-override]
