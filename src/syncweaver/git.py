@@ -5,7 +5,11 @@ from __future__ import annotations
 import base64
 import os
 import pathlib
+import re
 import subprocess
+
+
+_FULL_GIT_SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
 def _redact_text(text: str, redacted_values: list[str] | None) -> str:
@@ -87,3 +91,63 @@ def run_git(
         cmd = _redact_text(" ".join(command), redacted_values)
         raise RuntimeError(f"Git command failed: {cmd}\n{stderr}")
     return result.stdout.strip()
+
+
+def is_full_git_sha(value: str) -> bool:
+    """Check whether input is a full 40-character git commit SHA."""
+    value_input = value.strip()
+    matches_full_sha = bool(_FULL_GIT_SHA_PATTERN.match(value_input))
+    return matches_full_sha
+
+
+def resolve_remote_ref_to_git_sha(repository: str, source_ref: str) -> str:
+    """Resolve a remote source ref to a full commit SHA via git ls-remote.
+
+    Args:
+        repository (str): Source repository URL.
+        source_ref (str): Source ref input (tag/branch/ref/commit SHA).
+
+    Returns:
+        str: Resolved full 40-character commit SHA.
+
+    Raises:
+        ValueError: If inputs are empty or ref cannot be resolved to a commit SHA.
+        RuntimeError: If git ls-remote fails.
+    """
+    repository_input = repository.strip()
+    source_ref_input = source_ref.strip()
+    resolved_git_sha = ""
+
+    if (not repository_input) or (not source_ref_input):
+        raise ValueError("repository and source_ref are required for SHA resolution")
+
+    if is_full_git_sha(source_ref_input):
+        resolved_git_sha = source_ref_input.lower()
+    else:
+        command = ["git", "ls-remote", repository_input, source_ref_input]
+        completed = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if completed.returncode == 0:
+            for output_line in completed.stdout.splitlines():
+                line = output_line.strip()
+                if line:
+                    pieces = line.split()
+                    candidate_sha = pieces[0].strip().lower()
+                    if is_full_git_sha(candidate_sha):
+                        resolved_git_sha = candidate_sha
+        else:
+            raise RuntimeError(
+                "git ls-remote failed while resolving source_ref to commit SHA"
+            )
+
+        if not resolved_git_sha:
+            raise ValueError(
+                f"unable to resolve source_ref to a commit SHA: {source_ref_input}"
+            )
+
+    return resolved_git_sha

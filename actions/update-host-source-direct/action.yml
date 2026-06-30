@@ -328,7 +328,6 @@ runs:
           - source_repository: `${{ inputs.source_repository }}`
           - lockfile: `${{ inputs.lockfile }}`
           - ref: `${{ inputs.source_ref }}`
-          - remote_subdir: `${{ inputs.remote_subdir }}`
 
           Updated source paths:
           ${{ steps.source_list.outputs.source_paths_md }}
