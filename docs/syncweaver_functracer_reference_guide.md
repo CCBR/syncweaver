@@ -9,7 +9,7 @@ These two tools form the automation backbone of Approach B (per-capsule repos). 
 ### What it does
 
 - Given a capsule's entry script (`main.R`) and a package, `functracer` analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).
-- Given a new package tag (e.g. a new release version) and the previous tag, `functracer` determines whether the new tag contains changes that would affect the capsule based on the list of functions used by the capsule entry script.
+- Given a new package ref (tag, branch, or commit SHA) and the previously locked commit, `functracer` determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.
 
 ### Why it exists
 
@@ -94,7 +94,7 @@ Each source entry is **independently pinned** by both semantic version (`ref`) a
 
 - **Sync downstream** — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review
 - **Patch upstream** — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR
-- **Staleness check** — compare the locked `git_sha` against upstream HEAD to detect whether a capsule is out of date
+- **Staleness check** — compare the locked `git_sha` against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date
 - **Conflict handling** — explicit patching operations, not silent overwrites; conflicts surface for human resolution before `main` is touched
 
 ### Multi-module support

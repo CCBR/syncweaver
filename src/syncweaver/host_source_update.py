@@ -12,6 +12,7 @@ from syncweaver.dependency_analysis import (
     is_r_package_source,
     run_functracer_release_impact,
 )
+from syncweaver.git import is_full_git_sha, resolve_remote_ref_to_git_sha
 from syncweaver.lockfile import resolve_source_paths_from_lockfile
 
 
@@ -104,35 +105,60 @@ def select_source_paths_for_update(
             source_entry = source_entries.get(source_path, {})
             repository = str(source_entry.get("repo_url", "")).strip()
             previous_tag = str(source_entry.get("ref", "")).strip()
-            has_required_metadata = bool(repository and previous_tag and source_ref)
-            if has_required_metadata:
-                impacted = False
-                analysis_failed = False
-                for entry_script_input in host_entry_scripts:
-                    entry_script_path = host_repo_path / pathlib.Path(
-                        entry_script_input
+            previous_git_sha = str(source_entry.get("git_sha", "")).strip().lower()
+            resolved_source_ref = source_ref
+            if repository and source_ref:
+                try:
+                    resolved_source_ref = resolve_remote_ref_to_git_sha(
+                        repository=repository,
+                        source_ref=source_ref,
                     )
-                    if entry_script_path.is_file():
-                        try:
-                            script_affected = run_functracer_release_impact(
-                                entry_script=entry_script_path,
-                                repository=repository,
-                                release_tag=source_ref,
-                                previous_tag=previous_tag,
-                                functracer_backend=functracer_backend,
-                                functracer_image_tag=functracer_image_tag,
-                            )
-                            impacted = impacted or script_affected
-                        except (
-                            FileNotFoundError,
-                            ValueError,
-                            subprocess.CalledProcessError,
-                        ):
+                except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+                    resolved_source_ref = source_ref
+
+            baseline_ref = previous_tag
+            if previous_git_sha:
+                baseline_ref = previous_git_sha
+
+            has_required_metadata = bool(
+                repository and baseline_ref and resolved_source_ref
+            )
+            compares_equal_by_sha = False
+            if previous_git_sha and is_full_git_sha(resolved_source_ref):
+                compares_equal_by_sha = previous_git_sha == resolved_source_ref.lower()
+
+            if compares_equal_by_sha:
+                should_update = False
+
+            if has_required_metadata:
+                if should_update:
+                    impacted = False
+                    analysis_failed = False
+                    for entry_script_input in host_entry_scripts:
+                        entry_script_path = host_repo_path / pathlib.Path(
+                            entry_script_input
+                        )
+                        if entry_script_path.is_file():
+                            try:
+                                script_affected = run_functracer_release_impact(
+                                    entry_script=entry_script_path,
+                                    repository=repository,
+                                    release_tag=resolved_source_ref,
+                                    previous_tag=baseline_ref,
+                                    functracer_backend=functracer_backend,
+                                    functracer_image_tag=functracer_image_tag,
+                                )
+                                impacted = impacted or script_affected
+                            except (
+                                FileNotFoundError,
+                                ValueError,
+                                subprocess.CalledProcessError,
+                            ):
+                                analysis_failed = True
+                        else:
                             analysis_failed = True
-                    else:
-                        analysis_failed = True
-                if (not impacted) and (not analysis_failed):
-                    should_update = False
+                    if (not impacted) and (not analysis_failed):
+                        should_update = False
             else:
                 should_update = True
 
