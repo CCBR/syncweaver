@@ -125,6 +125,12 @@ runs:
         private-key: ${{ inputs.app_private_key }}
         owner: ${{ steps.resolve_app_owner.outputs.app_owner }}
 
+    - name: git config
+      shell: bash
+      run: |
+        git config --global user.name "CCBR-bot"
+        git config --global user.email "258092125+ccbr-bot@users.noreply.github.com"
+
     - name: Checkout host repository
       uses: actions/checkout@v7
       with:
@@ -319,14 +325,15 @@ runs:
         path: host-repo
         branch: ${{ steps.pr_branch.outputs.branch_name }}
         delete-branch: true
+        committer: "CCBR-bot <258092125+ccbr-bot@users.noreply.github.com>"
         commit-message: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         title: "chore(syncweaver): update from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         body: |
-          Automated source update executed by [syncweaver](https://github.com/CCBR/syncweaver).
+          Automated source update orchestrated by [`${{ github.repository }}`](https://github.com/${{ github.repository }}).
 
           ### Inputs used
 
-          - source_repository: `${{ inputs.source_repository }}`
+          - source_repository: [`${{ inputs.source_repository }}`](https://github.com/${{ inputs.source_repository }})
           - lockfile: `${{ inputs.lockfile }}`
           - ref: `${{ inputs.source_ref }}`
 
