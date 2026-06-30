@@ -320,14 +320,16 @@ runs:
         branch: ${{ steps.pr_branch.outputs.branch_name }}
         delete-branch: true
         commit-message: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
-        title: "chore(syncweaver): update tracked sources from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
+        title: "chore(syncweaver): update from ${{ inputs.source_repository }}@${{ inputs.source_ref }}"
         body: |
-          Automated source update executed from CCBR/syncweaver.
+          Automated source update executed by [syncweaver](https://github.com/CCBR/syncweaver).
 
-          Inputs used:
+          ### Inputs used
+
           - source_repository: `${{ inputs.source_repository }}`
           - lockfile: `${{ inputs.lockfile }}`
           - ref: `${{ inputs.source_ref }}`
 
-          Updated source paths:
+          ### Updated source paths
+
           ${{ steps.source_list.outputs.source_paths_md }}
