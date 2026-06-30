@@ -38,9 +38,9 @@ inputs:
     required: false
     default: main
   functracer-version:
-    description: functracer version/ref to install when dependency gating is used.
+    description: functracer version for docker image when dependency gating is used (e.g., v0.1.0).
     required: false
-    default: main
+    default: v0.1.0
   functracer-entry-scripts:
     description: Optional comma/newline-separated host entry scripts used for functracer release impact checks.
     required: false
@@ -133,7 +133,8 @@ runs:
         fetch-depth: 0
         path: host-repo
 
-    - uses: actions/checkout@v7
+    - name: Checkout syncweaver pyproject.toml
+      uses: actions/checkout@v7
       with:
         repository: CCBR/syncweaver
         ref: ${{ inputs.syncweaver-version }}
@@ -152,17 +153,6 @@ runs:
         set -euo pipefail
         python -m pip install --upgrade pip
         python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
-
-    - name: Setup R runtime
-      uses: r-lib/actions/setup-r@v2
-
-    - name: Install functracer for dependency checks
-      if: ${{ inputs.functracer-entry-scripts != '' }}
-      shell: bash
-      run: |
-        set -euo pipefail
-        Rscript -e "install.packages('remotes', repos='https://cloud.r-project.org')"
-        Rscript -e "remotes::install_github('CCBR/functracer@${{ inputs.functracer-version }}', upgrade = 'never')"
 
     - name: Resolve source paths from host lockfile
       id: resolve_source_paths
@@ -219,6 +209,7 @@ runs:
         RESOLVE_SKIP_REASON: ${{ steps.resolve_source_paths.outputs.skipped_reason }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
+        FUNCTRACER_VERSION_INPUT: ${{ inputs.functracer-version }}
         FUNCTRACER_ENTRY_SCRIPTS_INPUT: ${{ inputs.functracer-entry-scripts }}
         FUNCTRACER_SOURCE_PATHS_INPUT: ${{ inputs.functracer-source-paths }}
       run: |
@@ -240,8 +231,10 @@ runs:
           --lockfile "${LOCKFILE_INPUT}" \
           --source-ref "${SOURCE_REF_INPUT}" \
           --host-repo "host-repo" \
+          --functracer-version "${FUNCTRACER_VERSION_INPUT}" \
           --functracer-entry-scripts "${FUNCTRACER_ENTRY_SCRIPTS_INPUT}" \
           --functracer-source-paths "${FUNCTRACER_SOURCE_PATHS_INPUT}" \
+          --functracer-backend "docker" \
           --github-output "${GITHUB_OUTPUT}"
 
     - name: Run syncweaver update for each resolved source path
