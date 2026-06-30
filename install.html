@@ -315,8 +315,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a>
+  <ul class="collapse">
+  <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick Start</a></li>
+  <li><a href="#system-dependencies" id="toc-system-dependencies" class="nav-link" data-scroll-target="#system-dependencies">System Dependencies</a>
+  <ul class="collapse">
+  <li><a href="#required" id="toc-required" class="nav-link" data-scroll-target="#required">Required</a></li>
+  <li><a href="#optional" id="toc-optional" class="nav-link" data-scroll-target="#optional">Optional</a></li>
+  </ul></li>
+  <li><a href="#feature-requirements" id="toc-feature-requirements" class="nav-link" data-scroll-target="#feature-requirements">Feature Requirements</a></li>
+  <li><a href="#github-cli-optional" id="toc-github-cli-optional" class="nav-link" data-scroll-target="#github-cli-optional">GitHub CLI (Optional)</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/install.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
@@ -325,10 +341,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
+<section id="installation" class="level1">
+<h1>Installation</h1>
+<section id="quick-start" class="level2">
+<h2 class="anchored" data-anchor-id="quick-start">Quick Start</h2>
 <p>Install syncweaver with pip:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/CCBR/syncweaver.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="system-dependencies" class="level2">
+<h2 class="anchored" data-anchor-id="system-dependencies">System Dependencies</h2>
+<p>syncweaver has minimal required system dependencies, but some features require additional tools:</p>
+<section id="required" class="level3">
+<h3 class="anchored" data-anchor-id="required">Required</h3>
+<ul>
+<li>Python &gt;= 3.11</li>
+<li>Git – Used for all source synchronization and patching operations</li>
+</ul>
+</section>
+<section id="optional" class="level3">
+<h3 class="anchored" data-anchor-id="optional">Optional</h3>
+<ul>
+<li>Docker – Required for dependency analysis with functracer
+<ul>
+<li>Used by: <code>syncweaver deps analyze</code>, <code>syncweaver deps select-update-paths</code> (when dependency gating is enabled)</li>
+<li>Without Docker: Core sync operations work fine, but dependency impact analysis will fail</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="feature-requirements" class="level2">
+<h2 class="anchored" data-anchor-id="feature-requirements">Feature Requirements</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Required System Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Source synchronization (<code>add</code>, <code>remove</code>, <code>update</code>)</td>
+<td>Git</td>
+</tr>
+<tr class="even">
+<td>Patch contribution (<code>contribute-patch</code>)</td>
+<td>Git</td>
+</tr>
+<tr class="odd">
+<td>Dependency analysis (<code>deps analyze</code>)</td>
+<td>Git, Docker</td>
+</tr>
+<tr class="even">
+<td>Dependency gating in updates</td>
+<td>Git, Docker</td>
+</tr>
+<tr class="odd">
+<td>GitHub integration</td>
+<td>Git, optional: GitHub CLI (<code>gh</code>) for token auto-detection</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="github-cli-optional" class="level2">
+<h2 class="anchored" data-anchor-id="github-cli-optional">GitHub CLI (Optional)</h2>
+<p>The GitHub CLI (<code>gh</code>) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - <code>--token</code> flag - <code>GITHUB_TOKEN</code> environment variable</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -752,7 +836,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/install.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/install.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

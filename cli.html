@@ -490,6 +490,13 @@ Options:
   --functracer-source-paths TEXT  Optional comma/newline-separated source
                                   paths to gate with functracer.  [default:
                                   ""]
+  --functracer-backend [local|docker|singularity]
+                                  Optional functracer backend (local, docker,
+                                  singularity). When omitted, auto-detects
+                                  from PATH in that order.
+  --functracer-version TEXT       Optional functracer version (e.g. v0.1.0 or
+                                  any docker image tag). When omitted, falls
+                                  back to v0.1.0.
   --github-output FILE            Optional path to append GitHub Action output
                                   variables.
   -h, --help                      Show this message and exit.
