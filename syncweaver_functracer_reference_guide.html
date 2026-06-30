@@ -362,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="what-it-does">What it does</h3>
 <ul>
 <li>Given a capsule’s entry script (<code>main.R</code>) and a package, <code>functracer</code> analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).</li>
-<li>Given a new package tag (e.g.&nbsp;a new release version) and the previous tag, <code>functracer</code> determines whether the new tag contains changes that would affect the capsule based on the list of functions used by the capsule entry script.</li>
+<li>Given a new package ref (tag, branch, or commit SHA) and the previously locked commit, <code>functracer</code> determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.</li>
 </ul>
 </section>
 <section id="why-it-exists" class="level3">
@@ -439,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><strong>Sync downstream</strong> — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review</li>
 <li><strong>Patch upstream</strong> — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR</li>
-<li><strong>Staleness check</strong> — compare the locked <code>git_sha</code> against upstream HEAD to detect whether a capsule is out of date</li>
+<li><strong>Staleness check</strong> — compare the locked <code>git_sha</code> against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date</li>
 <li><strong>Conflict handling</strong> — explicit patching operations, not silent overwrites; conflicts surface for human resolution before <code>main</code> is touched</li>
 </ul>
 </section>

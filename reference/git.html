@@ -437,7 +437,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
   <li><a href="#syncweaver.git.build_github_git_env" id="toc-syncweaver.git.build_github_git_env" class="nav-link" data-scroll-target="#syncweaver.git.build_github_git_env">build_github_git_env</a></li>
+  <li><a href="#syncweaver.git.is_full_git_sha" id="toc-syncweaver.git.is_full_git_sha" class="nav-link" data-scroll-target="#syncweaver.git.is_full_git_sha">is_full_git_sha</a></li>
   <li><a href="#syncweaver.git.resolve_github_token" id="toc-syncweaver.git.resolve_github_token" class="nav-link" data-scroll-target="#syncweaver.git.resolve_github_token">resolve_github_token</a></li>
+  <li><a href="#syncweaver.git.resolve_remote_ref_to_git_sha" id="toc-syncweaver.git.resolve_remote_ref_to_git_sha" class="nav-link" data-scroll-target="#syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</a></li>
   <li><a href="#syncweaver.git.run_git" id="toc-syncweaver.git.run_git" class="nav-link" data-scroll-target="#syncweaver.git.run_git">run_git</a></li>
   </ul></li>
   </ul></li>
@@ -470,8 +472,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Build process-local GitHub auth headers for git-over-HTTPS commands.</td>
 </tr>
 <tr class="even">
+<td><a href="#syncweaver.git.is_full_git_sha">is_full_git_sha</a></td>
+<td>Check whether input is a full 40-character git commit SHA.</td>
+</tr>
+<tr class="odd">
 <td><a href="#syncweaver.git.resolve_github_token">resolve_github_token</a></td>
 <td>Resolve a GitHub token from explicit input, env var, or the gh CLI.</td>
+</tr>
+<tr class="even">
+<td><a href="#syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</a></td>
+<td>Resolve a remote source ref to a full commit SHA via git ls-remote.</td>
 </tr>
 <tr class="odd">
 <td><a href="#syncweaver.git.run_git">run_git</a></td>
@@ -484,14 +494,105 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>git.build_github_git_env(github_token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Build process-local GitHub auth headers for git-over-HTTPS commands.</p>
 </section>
+<section id="syncweaver.git.is_full_git_sha" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.git.is_full_git_sha">is_full_git_sha</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>git.is_full_git_sha(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check whether input is a full 40-character git commit SHA.</p>
+</section>
 <section id="syncweaver.git.resolve_github_token" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.resolve_github_token">resolve_github_token</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>git.resolve_github_token(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>git.resolve_github_token(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resolve a GitHub token from explicit input, env var, or the gh CLI.</p>
+</section>
+<section id="syncweaver.git.resolve_remote_ref_to_git_sha" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>git.resolve_remote_ref_to_git_sha(repository, source_ref)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resolve a remote source ref to a full commit SHA via git ls-remote.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 10%">
+<col style="width: 59%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>repository</td>
+<td>str</td>
+<td>Source repository URL.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>source_ref</td>
+<td>str</td>
+<td>Source ref input (tag/branch/ref/commit SHA).</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>str</td>
+<td>str</td>
+<td>Resolved full 40-character commit SHA.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="raises" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 16%">
+<col style="width: 74%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>ValueError</td>
+<td>If inputs are empty or ref cannot be resolved to a commit SHA.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>RuntimeError</td>
+<td>If git ls-remote fails.</td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="syncweaver.git.run_git" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.run_git">run_git</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>, env<span class="op">=</span><span class="va">None</span>, redacted_values<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>, env<span class="op">=</span><span class="va">None</span>, redacted_values<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Run a git command and return stdout, raising RuntimeError on failure.</p>
 
 
