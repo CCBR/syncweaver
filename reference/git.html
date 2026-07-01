@@ -438,6 +438,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#syncweaver.git.build_github_git_env" id="toc-syncweaver.git.build_github_git_env" class="nav-link" data-scroll-target="#syncweaver.git.build_github_git_env">build_github_git_env</a></li>
   <li><a href="#syncweaver.git.is_full_git_sha" id="toc-syncweaver.git.is_full_git_sha" class="nav-link" data-scroll-target="#syncweaver.git.is_full_git_sha">is_full_git_sha</a></li>
+  <li><a href="#syncweaver.git.remote_ref_has_path_changes" id="toc-syncweaver.git.remote_ref_has_path_changes" class="nav-link" data-scroll-target="#syncweaver.git.remote_ref_has_path_changes">remote_ref_has_path_changes</a></li>
   <li><a href="#syncweaver.git.resolve_github_token" id="toc-syncweaver.git.resolve_github_token" class="nav-link" data-scroll-target="#syncweaver.git.resolve_github_token">resolve_github_token</a></li>
   <li><a href="#syncweaver.git.resolve_remote_ref_to_git_sha" id="toc-syncweaver.git.resolve_remote_ref_to_git_sha" class="nav-link" data-scroll-target="#syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</a></li>
   <li><a href="#syncweaver.git.run_git" id="toc-syncweaver.git.run_git" class="nav-link" data-scroll-target="#syncweaver.git.run_git">run_git</a></li>
@@ -476,14 +477,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Check whether input is a full 40-character git commit SHA.</td>
 </tr>
 <tr class="odd">
+<td><a href="#syncweaver.git.remote_ref_has_path_changes">remote_ref_has_path_changes</a></td>
+<td>Check whether two source commits differ for an optional subdirectory.</td>
+</tr>
+<tr class="even">
 <td><a href="#syncweaver.git.resolve_github_token">resolve_github_token</a></td>
 <td>Resolve a GitHub token from explicit input, env var, or the gh CLI.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</a></td>
 <td>Resolve a remote source ref to a full commit SHA via git ls-remote.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#syncweaver.git.run_git">run_git</a></td>
 <td>Run a git command and return stdout, raising RuntimeError on failure.</td>
 </tr>
@@ -499,17 +504,115 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>git.is_full_git_sha(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Check whether input is a full 40-character git commit SHA.</p>
 </section>
+<section id="syncweaver.git.remote_ref_has_path_changes" class="level3">
+<h3 class="anchored" data-anchor-id="syncweaver.git.remote_ref_has_path_changes">remote_ref_has_path_changes</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>git.remote_ref_has_path_changes(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    repository,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    previous_git_sha,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    target_git_sha,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    remote_subdir<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check whether two source commits differ for an optional subdirectory.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 16%">
+<col style="width: 46%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>repository</td>
+<td>str</td>
+<td>Source repository URL.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>previous_git_sha</td>
+<td>str</td>
+<td>Previously tracked commit SHA.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>target_git_sha</td>
+<td>str</td>
+<td>Candidate commit SHA.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>remote_subdir</td>
+<td>str | None</td>
+<td>Optional tracked subdirectory path.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bool</td>
+<td>bool</td>
+<td>True when relevant files changed between SHAs.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="raises" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>ValueError</td>
+<td>If repository or SHAs are missing/invalid.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>RuntimeError</td>
+<td>If git operations fail.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="syncweaver.git.resolve_github_token" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.resolve_github_token">resolve_github_token</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>git.resolve_github_token(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>git.resolve_github_token(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resolve a GitHub token from explicit input, env var, or the gh CLI.</p>
 </section>
 <section id="syncweaver.git.resolve_remote_ref_to_git_sha" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.resolve_remote_ref_to_git_sha">resolve_remote_ref_to_git_sha</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>git.resolve_remote_ref_to_git_sha(repository, source_ref)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>git.resolve_remote_ref_to_git_sha(repository, source_ref)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resolve a remote source ref to a full commit SHA via git ls-remote.</p>
-<section id="parameters" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 15%">
@@ -541,8 +644,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="returns" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -560,8 +663,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="raises" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
+<section id="raises-1" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 9%">
@@ -592,7 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="syncweaver.git.run_git" class="level3">
 <h3 class="anchored" data-anchor-id="syncweaver.git.run_git">run_git</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>, env<span class="op">=</span><span class="va">None</span>, redacted_values<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>git.run_git(args, cwd<span class="op">=</span><span class="va">None</span>, env<span class="op">=</span><span class="va">None</span>, redacted_values<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Run a git command and return stdout, raising RuntimeError on failure.</p>
 
 
