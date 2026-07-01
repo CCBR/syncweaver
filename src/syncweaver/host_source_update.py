@@ -352,5 +352,5 @@ def build_source_update_branch_name(source_repository_input: str) -> str:
     sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", source_repository).strip("-.")
     if not sanitized:
         sanitized = "source"
-    branch_name = f"syncweaver/update-source/{sanitized}"
+    branch_name = f"syncweaver/update/{sanitized}"
     return branch_name
