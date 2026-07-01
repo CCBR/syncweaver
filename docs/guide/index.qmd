@@ -1,0 +1,211 @@
+---
+title: "Demo"
+echo: false
+---
+
+## Overview
+
+The diagram below shows how syncweaver coordinates a **source repo** and a **host repo**
+through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.
+
+```{mermaid}
+sequenceDiagram
+    actor Dev as Developer
+    participant Src as Source Repo<br/>(demo-syncweaver-source)
+    participant SW as Orchestrator<br/>(CCBR/syncweaver)
+    participant Host as Host (Capsule) Repo<br/>(demo-syncweaver-host)
+
+    Note over Src: .github/workflows/<br/>syncweaver-source-dispatch.yml
+
+    Dev->>Src: push release tag
+    Src->>SW: repository_dispatch<br/>(source_repository, ref)
+
+    Note over SW: .github/workflows/<br/>syncweaver-update-hosts.yml
+
+    SW->>SW: resolve target hosts from<br/>.github/host-repositories.yml
+    SW->>Src: fetch code at ref
+    SW->>SW: run functracer release impact<br/>for each host
+
+    SW->>Host: open pull request<br/>with updated vendored code<br/>if host is impacted by release
+
+    Note over Host,Src: If the host has local patches...
+
+    Dev->>Host: trigger contribute-patch
+    Note over Host: .github/workflows/<br/>syncweaver-host-contribute-patch.yml
+    Host->>Src: open pull request<br/>with patch applied upstream
+```
+
+## Repository layouts
+
+This view emphasizes a different question than the sequence diagram: which
+source repositories are vendored into which host capsules.
+
+```{mermaid}
+flowchart LR
+  subgraph H1[demo-syncweaver-host]
+    H1A[code/hello]
+    H1B[code/MOSuite]
+  end
+
+  subgraph H2[MOSuite-create]
+    H2A[code/MOSuite]
+  end
+
+  subgraph H3[MOSuite-clean]
+    H3A[code/MOSuite]
+  end
+
+  S1[demo-syncweaver-source<br/>modules/hello]
+  S2[CCBR/MOSuite<br/>R package source]
+
+  S1 --> H1A
+  S2 --> H1B
+  S2 --> H2A
+  S2 --> H3A
+```
+
+In these examples, one host capsule can aggregate multiple upstream sources,
+while other capsules vendor just a single shared source package.
+
+### Source repo - monorepo
+
+The source repo holds the canonical code. A single workflow template triggers
+the dispatch chain on every release.
+
+```
+demo-syncweaver-source/
+├── .github/
+│   └── workflows/
+│       └── syncweaver-source-dispatch.yml  ← notifies orchestrator on release
+└── modules/
+  ├── hello/                              ← vendored into host as code/hello
+  │ ├── DESCRIPTION
+  │ ├── NAMESPACE
+  │ ├── R/
+  │ ├── inst/
+  │ └── man/
+  └── heatmap/                            ← new module for hypothetical heatmap capsule
+    ├── DESCRIPTION
+    ├── NAMESPACE
+    ├── R/
+    ├── inst/
+    └── man/
+```
+
+### Host repo - Code Ocean capsule
+
+The host repo consumes vendored code and carries a lockfile that pins each
+dependency to a specific ref and git SHA.
+
+```
+demo-syncweaver-host/
+├── .github/
+│   └── workflows/
+│       ├── syncweaver-host-update.yml          ← receives dispatch, opens update PR
+│       └── syncweaver-host-contribute-patch.yml ← sends local patches upstream
+├── .syncweaver-lock.json                        ← pins source repos + refs
+└── code/
+  ├── main.R
+  ├── hello/           ← vendored from demo-syncweaver-source modules/hello
+  │   ├── DESCRIPTION
+  │   ├── NAMESPACE
+  │   ├── R/
+  │   └── inst/
+  └── MOSuite/         ← vendored from CCBR/MOSuite
+```
+
+### Source repo - MOSuite
+
+This is a package-style source repository. The canonical implementation lives in
+the package root, and the syncweaver source-dispatch workflow is defined under
+`.github/workflows/`.
+
+```
+multiOmicsSuite/
+├── .github/
+│   └── workflows/
+│       └── syncweaver-source-dispatch.yml  ← notifies syncweaver on release
+├── DESCRIPTION
+├── NAMESPACE
+├── R/                                      ← primary package implementation
+│   ├── cli.R
+│   ├── clean.R
+│   ├── differential.R
+│   ├── normalize.R
+│   └── ...
+├── inst/
+│   ├── extdata/
+│   └── quarto/
+├── man/
+└── tests/
+```
+
+### Host repo example - MOSuite-create capsule
+
+This host repo is a Code Ocean capsule. It vendors source code into `code/`,
+tracks upstream state in `.syncweaver-lock.json`, and keeps capsule runtime
+files alongside the vendored package.
+
+```
+MOSuite-create/
+├── .github/
+│   └── workflows/
+│       └── syncweaver-update-source.yml  ← host-side sync workflow in this repo
+├── .syncweaver-lock.json                 ← pins vendored sources to refs + SHAs
+├── code/
+│   ├── main.R
+│   ├── run/
+│   └── MOSuite/                          ← vendored from multiOmicsSuite
+├── environment/
+│   ├── Dockerfile
+│   └── postInstall
+├── metadata/
+│   └── metadata.yml
+└── tests/
+```
+
+## Repos
+
+| Role | Example repo | Key file |
+|------|-------------|----------|
+| Source | [demo-syncweaver-source](https://github.com/NIDAP-Community/demo-syncweaver-source) | `.github/workflows/syncweaver-source-dispatch.yml` |
+| Host | [demo-syncweaver-host](https://github.com/NIDAP-Community/demo-syncweaver-host) | `.syncweaver-lock.json`, `.github/workflows/syncweaver-host-update.yml` |
+| Orchestrator | [CCBR/syncweaver](https://github.com/CCBR/syncweaver) | `.github/host-repositories.yml`, `.github/workflows/syncweaver-update-hosts` |
+
+## Lockfile
+
+The host repo tracks each vendored dependency in `.syncweaver-lock.json`:
+
+```json
+{
+  "sources": {
+    "code/hello": {
+      "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source",
+      "ref": "main",
+      "remote_subdir": "modules/hello"
+    }
+  }
+}
+```
+
+When the source repo publishes a release, the dispatch chain updates the
+vendored code at `code/hello` and opens a pull request in the host repo.
+
+## dependency analysis and release impact tracing
+
+This view highlights how `functracer` narrows updates to only affected capsules
+after a source release.
+
+```{mermaid}
+flowchart TD
+  A["Source release tagged<br/> (e.g. in demo-syncweaver-source or MOSuite)"]
+  B[functracer analyzes call graph<br/>from capsule entry scripts]
+  C{Capsule affected<br/>by changed functions?}
+  D[syncweaver updates lockfile<br/>and opens update PR]
+  E[No update PR<br/>for this capsule]
+
+  A --> B
+  B --> C
+  C -->|Yes| D
+  C -->|No| E
+```
