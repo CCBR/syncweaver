@@ -206,7 +206,7 @@ def test_analyze_source_dependencies_reports_release_impact(
     monkeypatch.setattr(
         dependency_analysis,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag, functracer_backend=None, functracer_image_tag=None: (
+        lambda entry_script, repository, release_tag, previous_tag, remote_subdir=None, functracer_backend=None, functracer_image_tag=None: (
             True
         ),
     )

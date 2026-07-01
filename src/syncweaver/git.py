@@ -7,6 +7,7 @@ import os
 import pathlib
 import re
 import subprocess
+import tempfile
 
 
 _FULL_GIT_SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -151,3 +152,92 @@ def resolve_remote_ref_to_git_sha(repository: str, source_ref: str) -> str:
             )
 
     return resolved_git_sha
+
+
+def remote_ref_has_path_changes(
+    repository: str,
+    previous_git_sha: str,
+    target_git_sha: str,
+    remote_subdir: str | None = None,
+) -> bool:
+    """Check whether two source commits differ for an optional subdirectory.
+
+    Args:
+        repository (str): Source repository URL.
+        previous_git_sha (str): Previously tracked commit SHA.
+        target_git_sha (str): Candidate commit SHA.
+        remote_subdir (str | None): Optional tracked subdirectory path.
+
+    Returns:
+        bool: True when relevant files changed between SHAs.
+
+    Raises:
+        ValueError: If repository or SHAs are missing/invalid.
+        RuntimeError: If git operations fail.
+    """
+    repository_input = repository.strip()
+    previous_sha = previous_git_sha.strip().lower()
+    target_sha = target_git_sha.strip().lower()
+    normalized_remote_subdir = ""
+    has_changes = True
+
+    if remote_subdir is not None:
+        normalized_remote_subdir = remote_subdir.strip().strip("/")
+
+    if (not repository_input) or (not previous_sha) or (not target_sha):
+        raise ValueError(
+            "repository, previous_git_sha, and target_git_sha are required"
+        )
+    if not is_full_git_sha(previous_sha):
+        raise ValueError(f"previous_git_sha must be a full commit SHA: {previous_sha}")
+    if not is_full_git_sha(target_sha):
+        raise ValueError(f"target_git_sha must be a full commit SHA: {target_sha}")
+
+    if previous_sha == target_sha:
+        has_changes = False
+    else:
+        with tempfile.TemporaryDirectory(prefix="syncweaver-git-diff-") as temp_dir:
+            repo_dir = pathlib.Path(temp_dir) / "repo"
+            repo_dir.mkdir(parents=True, exist_ok=True)
+
+            run_git(["-C", str(repo_dir), "init"])
+            run_git(["-C", str(repo_dir), "remote", "add", "origin", repository_input])
+            run_git(
+                [
+                    "-C",
+                    str(repo_dir),
+                    "fetch",
+                    "--quiet",
+                    "--depth=1",
+                    "origin",
+                    previous_sha,
+                ]
+            )
+            run_git(
+                [
+                    "-C",
+                    str(repo_dir),
+                    "fetch",
+                    "--quiet",
+                    "--depth=1",
+                    "origin",
+                    target_sha,
+                ]
+            )
+
+            diff_args = [
+                "-C",
+                str(repo_dir),
+                "diff",
+                "--name-only",
+                previous_sha,
+                target_sha,
+            ]
+            if normalized_remote_subdir:
+                pathspec = pathlib.PurePosixPath(normalized_remote_subdir).as_posix()
+                diff_args.extend(["--", pathspec])
+
+            diff_output = run_git(diff_args)
+            has_changes = bool(diff_output.strip())
+
+    return has_changes

@@ -69,13 +69,63 @@ def _apply_tracked_patch(
     return patch_file, patch_applied
 
 
+def _normalize_remote_subdir(remote_subdir: str | None) -> str:
+    """Normalize optional remote_subdir to a comparable POSIX string."""
+    normalized = ""
+    if remote_subdir is not None:
+        candidate = remote_subdir.strip().strip("/")
+        if candidate:
+            normalized = pathlib.PurePosixPath(candidate).as_posix()
+    return normalized
+
+
+def _has_relevant_source_changes(
+    checkout_root: pathlib.Path,
+    previous_git_sha: str,
+    target_git_sha: str,
+    normalized_remote_subdir: str,
+) -> bool:
+    """Check whether source changes affect the tracked scope for update.
+
+    Args:
+        checkout_root (pathlib.Path): Temporary local clone path.
+        previous_git_sha (str): Previously tracked commit SHA.
+        target_git_sha (str): Candidate commit SHA.
+        normalized_remote_subdir (str): Normalized tracked subdirectory.
+
+    Returns:
+        bool: True when relevant files changed between commits.
+    """
+    previous_sha = previous_git_sha.strip().lower()
+    target_sha = target_git_sha.strip().lower()
+    has_changes = True
+
+    if previous_sha and (previous_sha == target_sha):
+        has_changes = False
+    elif previous_sha:
+        diff_args = [
+            "-C",
+            str(checkout_root),
+            "diff",
+            "--name-only",
+            previous_sha,
+            target_sha,
+        ]
+        if normalized_remote_subdir:
+            diff_args.extend(["--", normalized_remote_subdir])
+        diff_output = run_git(diff_args)
+        has_changes = bool(diff_output.strip())
+
+    return has_changes
+
+
 def update_external_repository(
     destination_path: pathlib.Path,
     ref: str | None,
     remote_subdir: str | None,
     patch_conflict_strategy: str,
     lockfile_path: pathlib.Path,
-) -> tuple[pathlib.Path, pathlib.Path, str, str, bool]:
+) -> tuple[pathlib.Path, pathlib.Path, str, str, bool, bool]:
     """Update a tracked external repository and refresh lockfile metadata."""
     cwd = pathlib.Path.cwd()
     destination = cwd / destination_path
@@ -114,10 +164,15 @@ def update_external_repository(
     selected_remote_subdir = remote_subdir
     if selected_remote_subdir is None:
         selected_remote_subdir = source_entry.get("remote_subdir")
+    normalized_selected_subdir = _normalize_remote_subdir(selected_remote_subdir)
+    normalized_previous_subdir = _normalize_remote_subdir(
+        str(source_entry.get("remote_subdir", "")).strip()
+    )
 
-    if destination.exists():
-        shutil.rmtree(destination)
-    destination.parent.mkdir(parents=True, exist_ok=True)
+    previous_git_sha = str(source_entry.get("git_sha", "")).strip().lower()
+    has_relevant_changes = True
+    no_changes_detected = False
+    should_refresh = True
 
     with tempfile.TemporaryDirectory(prefix="syncweaver-update-") as temp_dir:
         temp_repo = pathlib.Path(temp_dir) / "repo"
@@ -134,21 +189,38 @@ def update_external_repository(
         run_git(["-C", str(temp_repo), "checkout", "--quiet", "FETCH_HEAD"])
 
         git_sha = run_git(["-C", str(temp_repo), "rev-parse", "HEAD"])
-        source_root = _resolve_remote_source_path(temp_repo, selected_remote_subdir)
-        try:
-            _apply_tracked_patch(
-                source_entry=source_entry,
-                checkout_root=temp_repo,
-                remote_subdir=selected_remote_subdir,
-                host_root=cwd,
-                patch_text_backup=tracked_patch_text,
-            )
-        except RuntimeError:
-            if patch_conflict_strategy == "warn":
-                patch_apply_warning = True
-            else:
-                raise
-        _copy_checked_out_repo(source_root, destination)
+        has_relevant_changes = _has_relevant_source_changes(
+            checkout_root=temp_repo,
+            previous_git_sha=previous_git_sha,
+            target_git_sha=git_sha,
+            normalized_remote_subdir=normalized_selected_subdir,
+        )
+        should_refresh = has_relevant_changes or (
+            normalized_selected_subdir != normalized_previous_subdir
+        )
+
+        if should_refresh:
+            if destination.exists():
+                shutil.rmtree(destination)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+
+            source_root = _resolve_remote_source_path(temp_repo, selected_remote_subdir)
+            try:
+                _apply_tracked_patch(
+                    source_entry=source_entry,
+                    checkout_root=temp_repo,
+                    remote_subdir=selected_remote_subdir,
+                    host_root=cwd,
+                    patch_text_backup=tracked_patch_text,
+                )
+            except RuntimeError:
+                if patch_conflict_strategy == "warn":
+                    patch_apply_warning = True
+                else:
+                    raise
+            _copy_checked_out_repo(source_root, destination)
+        else:
+            no_changes_detected = True
 
     if tracked_patch_value and tracked_patch_text:
         tracked_patch_file = (cwd / pathlib.Path(tracked_patch_value)).resolve()
@@ -156,27 +228,32 @@ def update_external_repository(
             tracked_patch_file.parent.mkdir(parents=True, exist_ok=True)
             tracked_patch_file.write_text(tracked_patch_text)
 
-    source_entry["ref"] = selected_ref
-    source_entry["git_sha"] = git_sha
-    if selected_remote_subdir:
-        normalized_subdir = pathlib.PurePosixPath(
-            selected_remote_subdir.strip("/")
-        ).as_posix()
-        source_entry["remote_subdir"] = normalized_subdir
-    else:
-        source_entry.pop("remote_subdir", None)
-    write_lockfile(lockfile, lock_data)
+    if should_refresh:
+        source_entry["ref"] = selected_ref
+        source_entry["git_sha"] = git_sha
+        if normalized_selected_subdir:
+            source_entry["remote_subdir"] = normalized_selected_subdir
+        else:
+            source_entry.pop("remote_subdir", None)
+        write_lockfile(lockfile, lock_data)
 
-    if tracked_patch_value and not patch_apply_warning:
-        tracked_patch_dir = pathlib.Path(tracked_patch_value).parent
-        create_patch(
-            source_path=destination_path,
-            repo_url=repo_url,
-            lockfile_path=lockfile_path,
-            patch_dir_override=tracked_patch_dir,
-        )
+        if tracked_patch_value and not patch_apply_warning:
+            tracked_patch_dir = pathlib.Path(tracked_patch_value).parent
+            create_patch(
+                source_path=destination_path,
+                repo_url=repo_url,
+                lockfile_path=lockfile_path,
+                patch_dir_override=tracked_patch_dir,
+            )
 
-    return destination, lockfile, selected_ref, git_sha, patch_apply_warning
+    return (
+        destination,
+        lockfile,
+        selected_ref,
+        git_sha,
+        patch_apply_warning,
+        no_changes_detected,
+    )
 
 
 @click.command("update")
@@ -226,7 +303,7 @@ def update_cmd(
 ) -> None:
     """Update a tracked external repository in the current host repository."""
     try:
-        dest, lock_path, selected_ref, git_sha, patch_apply_warning = (
+        dest, lock_path, selected_ref, git_sha, patch_apply_warning, no_changes = (
             update_external_repository(
                 destination_path=destination_path,
                 ref=ref,
@@ -248,10 +325,16 @@ def update_cmd(
             raise click.ClickException(format_subprocess_error(exc)) from exc
         raise click.ClickException(str(exc)) from exc
 
-    click.echo(f"Updated vendored repository in {dest}")
-    click.echo(f"Updated {lock_path} with ref {selected_ref} at {git_sha}")
-    if patch_apply_warning:
+    if no_changes:
         click.echo(
-            "Warning: tracked patch failed to reapply; continued update with "
-            "unpatched upstream files."
+            "No changes detected for tracked path; leaving vendored files and "
+            "lock metadata unchanged."
         )
+    else:
+        click.echo(f"Updated vendored repository in {dest}")
+        click.echo(f"Updated {lock_path} with ref {selected_ref} at {git_sha}")
+        if patch_apply_warning:
+            click.echo(
+                "Warning: tracked patch failed to reapply; continued update with "
+                "unpatched upstream files."
+            )
