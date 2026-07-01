@@ -19,7 +19,7 @@ _FUNCTRACER_BACKEND_PRECEDENCE = (
     FUNCTRACER_BACKEND_SINGULARITY,
 )
 _FUNCTRACER_BACKEND_EXECUTABLES = {
-    FUNCTRACER_BACKEND_LOCAL: "functracer",
+    FUNCTRACER_BACKEND_LOCAL: "Rscript",
     FUNCTRACER_BACKEND_DOCKER: "docker",
     FUNCTRACER_BACKEND_SINGULARITY: "singularity",
 }
@@ -71,21 +71,21 @@ def _resolve_functracer_backend(requested: str | None) -> str:
 
     raise FileNotFoundError(
         "No functracer backend is available. Install one of: "
-        "functracer (local), docker, or singularity."
+        "Rscript (local), docker, or singularity."
     )
 
 
 __doc__ = f"""Dependency analysis helpers for host/source integration workflows.
 
 Constants:
-    FUNCTRACER_BACKEND_LOCAL: Execute functracer via locally installed binary.
+    FUNCTRACER_BACKEND_LOCAL: Execute helper scripts via local Rscript.
     FUNCTRACER_BACKEND_DOCKER: Execute functracer via Docker.
     FUNCTRACER_BACKEND_SINGULARITY: Execute functracer via Singularity.
     DEFAULT_FUNCTRACER_IMAGE_TAG: Default functracer docker/singularity image tag.
         Current value: {DEFAULT_FUNCTRACER_IMAGE_TAG}.
 
 Backend auto-detection order (when --functracer-backend is omitted):
-    1. local  — uses installed ``functracer`` binary
+    1. local  — uses installed ``Rscript`` binary
     2. docker — uses ``docker`` CLI
     3. singularity — uses ``singularity`` CLI
     Raises FileNotFoundError if none are found on PATH.
@@ -247,10 +247,10 @@ def _run_functracer_boolean_script(
             entry_script_path = (cwd / entry_script_path).resolve()
 
         if backend == FUNCTRACER_BACKEND_LOCAL:
-            # Execute via local functracer installation
+            # Execute helper script with local R installation. The helper script
+            # validates that the functracer R package is installed.
             command = [
-                "functracer",
-                "run",
+                "Rscript",
                 script_path,
                 *args,
             ]
@@ -319,6 +319,7 @@ def run_functracer_release_impact(
     repository: str,
     release_tag: str,
     previous_tag: str,
+    remote_subdir: str | None = None,
     functracer_backend: str | None = None,
     functracer_image_tag: str | None = None,
 ) -> bool:
@@ -329,6 +330,8 @@ def run_functracer_release_impact(
         repository (str): Source repository URL.
         release_tag (str): Candidate release tag/ref.
         previous_tag (str): Previously tracked source ref.
+        remote_subdir (str | None): Optional tracked repository subdirectory
+            containing the package root used for release-impact analysis.
         functracer_backend (str | None): Backend to use (local, docker, singularity).
             Defaults to DEFAULT_FUNCTRACER_BACKEND if not provided.
         functracer_image_tag (str | None): Optional functracer docker image tag.
@@ -337,14 +340,22 @@ def run_functracer_release_impact(
     Returns:
         bool: True when entry script is affected by dependency changes.
     """
+    normalized_remote_subdir = ""
+    if remote_subdir is not None:
+        normalized_remote_subdir = remote_subdir.strip()
+
+    script_args = [
+        str(entry_script),
+        repository,
+        release_tag,
+        previous_tag,
+    ]
+    if normalized_remote_subdir:
+        script_args.append(normalized_remote_subdir)
+
     result = _run_functracer_boolean_script(
         script_name="functracer_release_impact.R",
-        args=[
-            str(entry_script),
-            repository,
-            release_tag,
-            previous_tag,
-        ],
+        args=script_args,
         functracer_backend=functracer_backend,
         functracer_image_tag=functracer_image_tag,
     )

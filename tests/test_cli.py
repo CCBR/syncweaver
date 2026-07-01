@@ -8,6 +8,7 @@ from click.testing import CliRunner
 
 import syncweaver.cli.deps as deps_cli
 from syncweaver.cli import cli
+import syncweaver.host_source_update as host_source_update
 from syncweaver.templates import list_templates
 
 
@@ -255,6 +256,105 @@ def test_deps_select_update_paths_surfaces_subprocess_stderr(tmp_path):
 
     assert result.exit_code != 0
     assert "inner R stderr: object 'foo' not found" in result.output
+
+
+def test_deps_select_update_paths_emits_warning_and_keeps_path_on_analysis_failure(
+    tmp_path, monkeypatch
+):
+    """Verify CLI shows warning annotation and keeps selected path on failures.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo_path = tmp_path / "host-repo"
+    host_repo_path.mkdir()
+    source_root = host_repo_path / "code" / "hello"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: hello\n", encoding="utf-8")
+    (source_root / "R").mkdir()
+    entry_script = host_repo_path / "code" / "main.R"
+    entry_script.parent.mkdir(parents=True, exist_ok=True)
+    entry_script.write_text("hello::hello_message('world')\n", encoding="utf-8")
+
+    lock_data = {
+        "name": "demo-syncweaver-host-capsule",
+        "homePage": "",
+        "sources": {
+            "code/hello": {
+                "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source-monorepo",
+                "ref": "v0.2.0",
+                "git_sha": "",
+                "remote_subdir": "modules/hello",
+            }
+        },
+    }
+    lockfile_path = host_repo_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: source_ref,
+    )
+
+    def _raise_analysis_failure(*args, **kwargs):
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["Rscript", "functracer_release_impact.R"],
+            stderr="functracer failed in analysis",
+        )
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_analysis_failure,
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "deps",
+            "select-update-paths",
+            "--host-repo",
+            str(host_repo_path),
+            "--lockfile",
+            ".syncweaver-lock.json",
+            "--source-paths-json",
+            '["code/hello"]',
+            "--source-ref",
+            "plot-heatmap",
+            "--functracer-backend",
+            "local",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "::warning::functracer analysis failed for source_path=code/hello" in (
+        result.output
+    )
+    assert "functracer failed in analysis" in result.output
+    payload = json.loads(
+        result.output.splitlines()[-6]
+        + "\n"
+        + result.output.splitlines()[-5]
+        + "\n"
+        + result.output.splitlines()[-4]
+        + "\n"
+        + result.output.splitlines()[-3]
+        + "\n"
+        + result.output.splitlines()[-2]
+        + "\n"
+        + result.output.splitlines()[-1]
+    )
+    assert payload["source_paths"] == ["code/hello"]
+    assert payload["source_count"] == 1
+    assert payload["skipped_source_paths"] == []
+    assert payload["skipped_source_count"] == 0
 
 
 def test_update_help_includes_remote_subdir_option():
