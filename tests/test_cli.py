@@ -2,6 +2,7 @@
 
 import json
 import pathlib
+import re
 import subprocess
 
 from click.testing import CliRunner
@@ -338,19 +339,9 @@ def test_deps_select_update_paths_emits_warning_and_keeps_path_on_analysis_failu
         result.output
     )
     assert "functracer failed in analysis" in result.output
-    payload = json.loads(
-        result.output.splitlines()[-6]
-        + "\n"
-        + result.output.splitlines()[-5]
-        + "\n"
-        + result.output.splitlines()[-4]
-        + "\n"
-        + result.output.splitlines()[-3]
-        + "\n"
-        + result.output.splitlines()[-2]
-        + "\n"
-        + result.output.splitlines()[-1]
-    )
+    match = re.search(r"\{[\s\S]*\}", result.output)
+    assert match is not None
+    payload = json.loads(match.group(0))
     assert payload["source_paths"] == ["code/hello"]
     assert payload["source_count"] == 1
     assert payload["skipped_source_paths"] == []
