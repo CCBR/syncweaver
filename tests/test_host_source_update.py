@@ -151,7 +151,7 @@ def test_build_source_update_branch_name_sanitizes_repository() -> None:
     """
     branch_name = build_source_update_branch_name("https://github.com/CCBR/package1")
 
-    assert branch_name == "syncweaver/update-source/https-github.com-CCBR-package1"
+    assert branch_name == "syncweaver/update/https-github.com-CCBR-package1"
 
 
 def test_select_source_paths_for_update_skips_unaffected_r_package(
