@@ -26,7 +26,7 @@ _FUNCTRACER_BACKEND_EXECUTABLES = {
 
 # Default docker image tag used when not explicitly provided.
 DEFAULT_FUNCTRACER_BACKEND = FUNCTRACER_BACKEND_DOCKER
-DEFAULT_FUNCTRACER_IMAGE_TAG = "v0.1.0"
+DEFAULT_FUNCTRACER_IMAGE_TAG = "latest"
 
 
 def _resolve_functracer_backend(requested: str | None) -> str:
