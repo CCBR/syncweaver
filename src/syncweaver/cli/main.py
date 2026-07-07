@@ -5,6 +5,7 @@ import click
 from syncweaver.cli.add import add_cmd
 from syncweaver.cli.contribute import contribute_cmd
 from syncweaver.cli.deps import deps_group
+from syncweaver.cli.init import init_group
 from syncweaver.cli.patch import patch_group
 from syncweaver.cli.remove import remove_cmd
 from syncweaver.cli.templates import templates_group
@@ -29,6 +30,7 @@ def cli():
 
 
 cli.add_command(templates_group)
+cli.add_command(init_group)
 cli.add_command(add_cmd)
 cli.add_command(contribute_cmd)
 cli.add_command(update_cmd)

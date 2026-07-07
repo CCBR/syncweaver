@@ -26,6 +26,7 @@ def test_cli_help():
     assert "update" in result.output
     assert "remove" in result.output
     assert "contribute" in result.output
+    assert "init" in result.output
     assert "deps" in result.output
 
 

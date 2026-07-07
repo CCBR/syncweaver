@@ -66,7 +66,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 [tool.setuptools.package-data]
 "syncweaver" = ["CITATION.cff", "VERSION", "data/*.R"]
 "syncweaver.schemas" = ["*.json"]
-"syncweaver.templates" = ["*.yml"]
+"syncweaver.templates" = ["*.yml", "orchestrator/*"]
 
 [tool.coverage.run]
 source = ["syncweaver"]
