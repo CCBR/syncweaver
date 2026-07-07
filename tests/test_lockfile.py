@@ -58,7 +58,7 @@ def test_resolve_source_path_fails_when_no_sources(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {},
     }
@@ -83,7 +83,7 @@ def test_resolve_source_path_uses_single_tracked_source(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -112,7 +112,7 @@ def test_resolve_source_path_fails_when_multiple_sources(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -148,7 +148,7 @@ def test_resolve_source_path_uses_repo_url_match(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -186,7 +186,7 @@ def test_resolve_source_path_uses_owner_repo_match(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -224,7 +224,7 @@ def test_resolve_source_path_fails_when_repo_url_has_no_matches(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -259,7 +259,7 @@ def test_resolve_source_path_fails_when_repo_url_matches_multiple(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -299,7 +299,7 @@ def test_resolve_source_paths_returns_all_repo_url_matches(tmp_path):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {

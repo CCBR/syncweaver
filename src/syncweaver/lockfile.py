@@ -9,7 +9,24 @@ from urllib.parse import urlparse
 from syncweaver.util import get_version
 
 
-DEFAULT_ORCHESTRATOR_REPO = "CCBR/syncweaver"
+DEFAULT_ORCHESTRATOR_NAME = "syncweaver-orchestrator"
+
+
+def _derive_orchestrator_repo(
+    host_repo: str, default_repo_name=DEFAULT_ORCHESTRATOR_NAME
+) -> str:
+    """Build default orchestrator repo as ORG/syncweaver-orchestrator."""
+    host_repo_stripped = host_repo.strip()
+    if "/" in host_repo_stripped:
+        candidate_org = host_repo_stripped.split("/", 1)[0].strip()
+        if candidate_org:
+            host_org = candidate_org
+    else:
+        raise ValueError(
+            "Invalid host repository format: cannot determine organization name"
+        )
+    orchestrator_repo = f"{host_org}/{default_repo_name}"
+    return orchestrator_repo
 
 
 def _normalize_remote_url(url: str) -> str:
@@ -38,7 +55,7 @@ def _normalize_remote_url(url: str) -> str:
 def _detect_host_repo_metadata(cwd: pathlib.Path, run_git) -> tuple[str, str, str]:
     """Detect host metadata defaults from git origin and syncweaver runtime."""
     host_repo = f"unknown/{cwd.name}"
-    orchestrator_repo = DEFAULT_ORCHESTRATOR_REPO
+    orchestrator_repo = _derive_orchestrator_repo(host_repo)
     syncweaver_version = get_version()
     try:
         remote_url = run_git(["config", "--get", "remote.origin.url"], cwd=cwd)
@@ -50,6 +67,7 @@ def _detect_host_repo_metadata(cwd: pathlib.Path, run_git) -> tuple[str, str, st
         parsed = urlparse(normalized_remote)
         if parsed.scheme in {"http", "https"} and parsed.path.strip("/"):
             host_repo = parsed.path.strip("/")
+            orchestrator_repo = _derive_orchestrator_repo(host_repo)
     return host_repo, orchestrator_repo, syncweaver_version
 
 
@@ -84,7 +102,8 @@ def _upgrade_legacy_lockfile_shape(lock_data: dict) -> dict:
         upgraded["host"] = upgraded["name"]
 
     if "orchestrator" not in upgraded:
-        upgraded["orchestrator"] = DEFAULT_ORCHESTRATOR_REPO
+        host_repo = str(upgraded.get("host", "")).strip()
+        upgraded["orchestrator"] = _derive_orchestrator_repo(host_repo)
 
     if "syncweaver_version" not in upgraded:
         upgraded["syncweaver_version"] = get_version()

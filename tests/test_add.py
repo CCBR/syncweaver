@@ -88,7 +88,7 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
 
     lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     assert lockfile["host"] == "CCBR/host-repo1"
-    assert lockfile["orchestrator"] == "CCBR/syncweaver"
+    assert lockfile["orchestrator"] == "CCBR/syncweaver-orchestrator"
     assert lockfile["syncweaver_version"] == "0.0.1-dev"
     source_entry = lockfile["sources"]["code/package1"]
     assert source_entry["repo_url"] == "https://github.com/CCBR/package1"
@@ -244,7 +244,7 @@ def test_add_accepts_owner_repo_shorthand(tmp_path, monkeypatch):
         json.dumps(
             {
                 "host": "NIDAP/host-repo",
-                "orchestrator": "CCBR/syncweaver",
+                "orchestrator": "CCBR/syncweaver-orchestrator",
                 "syncweaver_version": "0.0.1-dev",
                 "sources": {},
             },

@@ -78,7 +78,7 @@ def test_resolve_source_paths_for_host_update_matches_repo_url(tmp_path) -> None
     """
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -180,7 +180,7 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
 
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -240,7 +240,7 @@ def test_select_source_paths_for_update_prefers_code_main_r(
 
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -317,7 +317,7 @@ def test_select_source_paths_for_update_honors_explicit_entry_script_override(
 
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -384,7 +384,7 @@ def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
 
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -432,7 +432,7 @@ def test_select_source_paths_for_update_skips_functracer_without_host_scripts(
 
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -494,7 +494,7 @@ def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
     candidate_sha = "2222222222222222222222222222222222222222"
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -589,7 +589,7 @@ def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
     unchanged_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -657,7 +657,7 @@ def test_select_source_paths_for_update_skips_when_tracked_subdir_unchanged(
     candidate_sha = "2222222222222222222222222222222222222222"
     lock_data = {
         "host": "NIDAP/MOSuite-create",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -733,7 +733,7 @@ def test_select_source_paths_for_update_warns_and_keeps_path_on_analysis_failure
     candidate_sha = "1" * 40
     lock_data = {
         "host": "demo-syncweaver-host-capsule",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/hello": {

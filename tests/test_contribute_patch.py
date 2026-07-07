@@ -95,7 +95,7 @@ def _default_lock_data() -> dict:
     """Build a minimal valid lockfile payload with one tracked source."""
     lock_data = {
         "host": "CCBR/host-repo",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
@@ -201,7 +201,7 @@ def test_resolve_contribute_patch_uses_repo_selector_for_source_resolution(tmp_p
     """Verify source_repository input can disambiguate source_path resolution."""
     lock_data = {
         "host": "CCBR/host-repo",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg1": {

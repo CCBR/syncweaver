@@ -21,7 +21,7 @@ def test_validate_accepts_new_lockfile_shape(tmp_path, monkeypatch):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
@@ -56,7 +56,7 @@ def test_validate_rejects_legacy_lockfile_shape(tmp_path, monkeypatch):
     """
     lock_data = {
         "host": "CCBR/host-repo1",
-        "orchestrator": "CCBR/syncweaver",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
         "syncweaver_version": "0.0.1-dev",
         "repos": {
             "https://github.com/CCBR/package1": {
