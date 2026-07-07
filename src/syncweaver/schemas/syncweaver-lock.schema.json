@@ -3,14 +3,19 @@
   "$id": "https://ccbr.github.io/syncweaver/schemas/syncweaver-lock.schema.json",
   "title": "syncweaver lockfile",
   "type": "object",
-  "required": ["name", "homePage", "sources"],
+  "required": ["host", "orchestrator", "syncweaver_version", "sources"],
   "properties": {
-    "name": {
+    "host": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "orchestrator": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "syncweaver_version": {
       "type": "string",
       "minLength": 1
-    },
-    "homePage": {
-      "type": "string"
     },
     "sources": {
       "type": "object",
@@ -43,14 +48,6 @@
         "remote_subdir": {
           "type": "string",
           "minLength": 1
-        },
-        "installed_by": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
         },
         "patch": {
           "type": "string",

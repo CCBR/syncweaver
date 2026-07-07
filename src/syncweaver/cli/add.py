@@ -165,7 +165,6 @@ def add_external_repository(
         "repo_url": tracked_repo_url,
         "ref": selected_ref,
         "git_sha": git_sha,
-        "installed_by": ["syncweaver"],
     }
     if remote_subdir:
         normalized_subdir = pathlib.PurePosixPath(remote_subdir.strip("/")).as_posix()

@@ -87,13 +87,13 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     assert (host_repo / "code/package1/pkg.py").exists()
 
     lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
-    assert lockfile["name"] == "CCBR/host-repo1"
-    assert lockfile["homePage"] == "https://github.com/CCBR/host-repo1"
+    assert lockfile["host"] == "CCBR/host-repo1"
+    assert lockfile["orchestrator"] == "CCBR/syncweaver"
+    assert lockfile["syncweaver_version"] == "0.0.1-dev"
     source_entry = lockfile["sources"]["code/package1"]
     assert source_entry["repo_url"] == "https://github.com/CCBR/package1"
     assert source_entry["ref"] == "main"
     assert source_entry["git_sha"] == source_sha
-    assert source_entry["installed_by"] == ["syncweaver"]
     assert "patch" not in source_entry
     assert "patches" not in source_entry
 
@@ -241,7 +241,15 @@ def test_add_accepts_owner_repo_shorthand(tmp_path, monkeypatch):
     host_repo.mkdir()
     _init_git_repo(host_repo)
     (host_repo / ".syncweaver-lock.json").write_text(
-        json.dumps({"name": "host-repo", "homePage": "", "sources": {}}, indent=2)
+        json.dumps(
+            {
+                "host": "NIDAP/host-repo",
+                "orchestrator": "CCBR/syncweaver",
+                "syncweaver_version": "0.0.1-dev",
+                "sources": {},
+            },
+            indent=2,
+        )
         + "\n"
     )
     monkeypatch.chdir(host_repo)

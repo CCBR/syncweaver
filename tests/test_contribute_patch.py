@@ -94,8 +94,9 @@ def _write_lockfile(tmp_path, lock_data: dict) -> None:
 def _default_lock_data() -> dict:
     """Build a minimal valid lockfile payload with one tracked source."""
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -199,8 +200,9 @@ def test_resolve_contribute_patch_fails_when_patch_missing_on_disk(tmp_path):
 def test_resolve_contribute_patch_uses_repo_selector_for_source_resolution(tmp_path):
     """Verify source_repository input can disambiguate source_path resolution."""
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg1": {
                 "repo_url": "https://github.com/CCBR/package1",
