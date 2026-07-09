@@ -323,6 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#add" id="toc-add" class="nav-link active" data-scroll-target="#add"><code>add</code></a></li>
   <li><a href="#contribute" id="toc-contribute" class="nav-link" data-scroll-target="#contribute"><code>contribute</code></a></li>
   <li><a href="#deps" id="toc-deps" class="nav-link" data-scroll-target="#deps"><code>deps</code></a></li>
+  <li><a href="#init" id="toc-init" class="nav-link" data-scroll-target="#init"><code>init</code></a></li>
   <li><a href="#patch" id="toc-patch" class="nav-link" data-scroll-target="#patch"><code>patch</code></a></li>
   <li><a href="#remove" id="toc-remove" class="nav-link" data-scroll-target="#remove"><code>remove</code></a></li>
   <li><a href="#templates" id="toc-templates" class="nav-link" data-scroll-target="#templates"><code>templates</code></a></li>
@@ -368,6 +369,7 @@ Commands:
   add         Add an external repository to the current host repository.
   contribute  Contribute a tracked host patch back to the source repository.
   deps        Analyze source dependencies for host repository integration.
+  init        Initialize syncweaver starter content in local or remote...
   patch       Create, mark, and list source patch artifacts.
   remove      Remove a tracked external repository from the current host...
   templates   List and add workflow templates to a repo.
@@ -499,6 +501,96 @@ Options:
                                   back to latest.
   --github-output FILE            Optional path to append GitHub Action output
                                   variables.
+  -h, --help                      Show this message and exit.
+</code></pre>
+</section>
+</section>
+<section id="init" class="level3">
+<h3 class="anchored" data-anchor-id="init"><code>init</code></h3>
+<pre><code>Usage: syncweaver init [OPTIONS] COMMAND [ARGS]...
+
+  Initialize syncweaver starter content in local or remote repositories.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  host  Initialize host repository boilerplate and orchestrator...
+  orch  Initialize orchestrator repository files from packaged templates.
+</code></pre>
+<section id="init-host" class="level4">
+<h4 class="anchored" data-anchor-id="init-host"><code>init host</code></h4>
+<pre><code>Usage: syncweaver init host [OPTIONS]
+
+  Initialize host repository boilerplate and orchestrator registration.
+
+  This command creates or refreshes a host lockfile and syncweaver host GitHub
+  Actions workflows in the current repository. By default, it also opens a
+  pull request in the orchestrator repository to add this host to host
+  registry metadata.
+
+Options:
+  --host-repo TEXT            Optional host repository override in OWNER/REPO
+                              format. When omitted, syncweaver infers host
+                              metadata from git origin.
+  --orchestrator-repo TEXT    Optional orchestrator repository override in
+                              OWNER/REPO format. When omitted, syncweaver
+                              derives it from host metadata.
+  --lockfile PATH             Path to lockfile in the host repository.
+                              [default: .syncweaver-lock.json]
+  --overwrite                 Overwrite existing lockfile and workflow
+                              templates when present.
+  --register / --no-register  Open a PR in orchestrator repo to add this host
+                              to host-repositories.yml.
+  --token TEXT                GitHub token used to register the host in
+                              orchestrator repo. May also be set via
+                              GITHUB_TOKEN or resolved from gh auth.
+  --registry-path PATH        Path to host registry inside the orchestrator
+                              repository.  [default: .github/host-
+                              repositories.yml]
+  --branch TEXT               Optional branch name for orchestrator
+                              registration pull request.
+  --base-ref TEXT             Optional base branch for orchestrator
+                              registration pull request.
+  --title TEXT                Optional orchestrator registration pull request
+                              title.
+  --body TEXT                 Optional orchestrator registration pull request
+                              body.
+  -h, --help                  Show this message and exit.
+</code></pre>
+</section>
+<section id="init-orch" class="level4">
+<h4 class="anchored" data-anchor-id="init-orch"><code>init orch</code></h4>
+<pre><code>Usage: syncweaver init orch [OPTIONS]
+
+  Initialize orchestrator repository files from packaged templates.
+
+  Without --repo, copies template files from
+  src/syncweaver/templates/orchestrator/ into the current working directory.
+  With --repo, applies the same files in a branch on the target repository and
+  opens a pull request.
+
+Options:
+  --repo TEXT                     Optional GitHub repository in OWNER/REPO
+                                  format. When set, syncweaver opens a pull
+                                  request with orchestrator templates.
+  --overwrite                     Overwrite existing files when copying
+                                  templates.
+  --token TEXT                    GitHub token used when --repo is set. May
+                                  also be set via GITHUB_TOKEN or resolved
+                                  from gh auth.
+  --create-repo / --no-create-repo
+                                  Create the target repository when it does
+                                  not exist.
+  --private / --public            Privacy setting when creating a missing
+                                  repository.
+  --base-ref TEXT                 Optional PR base branch. Defaults to
+                                  repository default branch.
+  --branch TEXT                   Branch name for the orchestrator template
+                                  commit.  [default: syncweaver/init-
+                                  orchestrator]
+  --title TEXT                    Optional pull request title.
+  --body TEXT                     Optional pull request body.
   -h, --help                      Show this message and exit.
 </code></pre>
 </section>
