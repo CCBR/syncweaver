@@ -6,6 +6,28 @@ import json
 import pathlib
 from urllib.parse import urlparse
 
+from syncweaver.util import get_version
+
+
+DEFAULT_ORCHESTRATOR_NAME = "syncweaver-orchestrator"
+
+
+def _derive_orchestrator_repo(
+    host_repo: str, default_repo_name=DEFAULT_ORCHESTRATOR_NAME
+) -> str:
+    """Build default orchestrator repo as ORG/syncweaver-orchestrator."""
+    host_repo_stripped = host_repo.strip()
+    if "/" in host_repo_stripped:
+        candidate_org = host_repo_stripped.split("/", 1)[0].strip()
+        if candidate_org:
+            host_org = candidate_org
+    else:
+        raise ValueError(
+            "Invalid host repository format: cannot determine organization name"
+        )
+    orchestrator_repo = f"{host_org}/{default_repo_name}"
+    return orchestrator_repo
+
 
 def _normalize_remote_url(url: str) -> str:
     """Normalize a git remote URL to an https URL when possible."""
@@ -30,22 +52,23 @@ def _normalize_remote_url(url: str) -> str:
     return normalized
 
 
-def _detect_host_repo_metadata(cwd: pathlib.Path, run_git) -> tuple[str, str]:
-    """Detect host repository name and homepage from git origin."""
-    default_name = cwd.name
-    repo_name = default_name
-    home_page = ""
+def _detect_host_repo_metadata(cwd: pathlib.Path, run_git) -> tuple[str, str, str]:
+    """Detect host metadata defaults from git origin and syncweaver runtime."""
+    host_repo = f"unknown/{cwd.name}"
+    orchestrator_repo = _derive_orchestrator_repo(host_repo)
+    syncweaver_version = get_version()
     try:
         remote_url = run_git(["config", "--get", "remote.origin.url"], cwd=cwd)
     except RuntimeError:
         remote_url = ""
 
     if remote_url:
-        home_page = _normalize_remote_url(remote_url)
-        parsed = urlparse(home_page)
+        normalized_remote = _normalize_remote_url(remote_url)
+        parsed = urlparse(normalized_remote)
         if parsed.scheme in {"http", "https"} and parsed.path.strip("/"):
-            repo_name = parsed.path.strip("/")
-    return repo_name, home_page
+            host_repo = parsed.path.strip("/")
+            orchestrator_repo = _derive_orchestrator_repo(host_repo)
+    return host_repo, orchestrator_repo, syncweaver_version
 
 
 def _upgrade_legacy_lockfile_shape(lock_data: dict) -> dict:
@@ -74,6 +97,25 @@ def _upgrade_legacy_lockfile_shape(lock_data: dict) -> dict:
 
         upgraded["sources"] = sources
         upgraded.pop("repos", None)
+
+    if "host" not in upgraded and "name" in upgraded:
+        upgraded["host"] = upgraded["name"]
+
+    if "orchestrator" not in upgraded:
+        host_repo = str(upgraded.get("host", "")).strip()
+        upgraded["orchestrator"] = _derive_orchestrator_repo(host_repo)
+
+    if "syncweaver_version" not in upgraded:
+        upgraded["syncweaver_version"] = get_version()
+
+    upgraded.pop("name", None)
+    upgraded.pop("homePage", None)
+
+    sources = upgraded.get("sources", {})
+    if isinstance(sources, dict):
+        for source_entry in sources.values():
+            if isinstance(source_entry, dict):
+                source_entry.pop("installed_by", None)
     return upgraded
 
 
@@ -84,10 +126,13 @@ def read_lockfile(lockfile: pathlib.Path, cwd: pathlib.Path, run_git) -> dict:
         lock_data = json.loads(lockfile.read_text())
         lock_data = _upgrade_legacy_lockfile_shape(lock_data)
     else:
-        repo_name, home_page = _detect_host_repo_metadata(cwd, run_git)
+        host_repo, orchestrator_repo, syncweaver_version = _detect_host_repo_metadata(
+            cwd, run_git
+        )
         lock_data = {
-            "name": repo_name,
-            "homePage": home_page,
+            "host": host_repo,
+            "orchestrator": orchestrator_repo,
+            "syncweaver_version": syncweaver_version,
             "sources": {},
         }
     return lock_data

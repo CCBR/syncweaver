@@ -26,6 +26,7 @@ def test_cli_help():
     assert "update" in result.output
     assert "remove" in result.output
     assert "contribute" in result.output
+    assert "init" in result.output
     assert "deps" in result.output
 
 
@@ -282,8 +283,9 @@ def test_deps_select_update_paths_emits_warning_and_keeps_path_on_analysis_failu
     entry_script.write_text("hello::hello_message('world')\n", encoding="utf-8")
 
     lock_data = {
-        "name": "demo-syncweaver-host-capsule",
-        "homePage": "",
+        "host": "demo-syncweaver-host-capsule",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/hello": {
                 "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source-monorepo",
@@ -472,8 +474,9 @@ def test_contribute_opens_pr(tmp_path, monkeypatch):
     import syncweaver.contribute_patch as contribute_patch_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -539,8 +542,9 @@ def test_contribute_marks_relevant_patch_path(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -607,8 +611,9 @@ def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -681,8 +686,9 @@ def test_contribute_fails_when_patch_not_tracked(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",

@@ -77,8 +77,9 @@ def test_resolve_source_paths_for_host_update_matches_repo_url(tmp_path) -> None
         None: Assertions validate function behavior.
     """
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -178,8 +179,9 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     entry_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -237,8 +239,9 @@ def test_select_source_paths_for_update_prefers_code_main_r(
     preferred_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -313,8 +316,9 @@ def test_select_source_paths_for_update_honors_explicit_entry_script_override(
     override_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -379,8 +383,9 @@ def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
     (source_root / "README.md").write_text("not an R package\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -426,8 +431,9 @@ def test_select_source_paths_for_update_skips_functracer_without_host_scripts(
     (source_root / "R").mkdir()
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -487,8 +493,9 @@ def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
     previous_sha = "1111111111111111111111111111111111111111"
     candidate_sha = "2222222222222222222222222222222222222222"
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -581,8 +588,9 @@ def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
 
     unchanged_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -648,8 +656,9 @@ def test_select_source_paths_for_update_skips_when_tracked_subdir_unchanged(
     previous_sha = "1111111111111111111111111111111111111111"
     candidate_sha = "2222222222222222222222222222222222222222"
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -723,8 +732,9 @@ def test_select_source_paths_for_update_warns_and_keeps_path_on_analysis_failure
     previous_sha = "0" * 40
     candidate_sha = "1" * 40
     lock_data = {
-        "name": "demo-syncweaver-host-capsule",
-        "homePage": "",
+        "host": "demo-syncweaver-host-capsule",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/hello": {
                 "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source-monorepo",
