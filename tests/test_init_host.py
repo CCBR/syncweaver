@@ -9,6 +9,7 @@ import subprocess
 from click.testing import CliRunner
 
 from syncweaver.cli import cli
+from syncweaver.init_host import _upsert_host_registry_entry
 
 
 def _run(command: list[str], cwd: pathlib.Path) -> None:
@@ -145,3 +146,55 @@ def test_init_host_cli_registers_host_in_orchestrator(monkeypatch, tmp_path):
     assert observed["orchestrator_repo"] == "NIDAP-Community/syncweaver-orchestrator"
     assert observed["lockfile_path"] == ".syncweaver-lock.json"
     assert "Pull request:" in result.output
+
+
+def test_upsert_host_registry_omits_default_lockfile_for_new_host() -> None:
+    """Verify new host entries omit lockfile when path is default."""
+    host_entries: list[dict[str, str]] = []
+
+    changed = _upsert_host_registry_entry(
+        host_entries=host_entries,
+        host_repo="NIDAP-Community/host-repo",
+        lockfile_path=".syncweaver-lock.json",
+    )
+
+    assert changed is True
+    assert host_entries == [{"repository": "NIDAP-Community/host-repo"}]
+
+
+def test_upsert_host_registry_keeps_non_default_lockfile_for_new_host() -> None:
+    """Verify new host entries preserve explicit non-default lockfile path."""
+    host_entries: list[dict[str, str]] = []
+
+    changed = _upsert_host_registry_entry(
+        host_entries=host_entries,
+        host_repo="NIDAP-Community/host-repo",
+        lockfile_path="config/lock.json",
+    )
+
+    assert changed is True
+    assert host_entries == [
+        {
+            "repository": "NIDAP-Community/host-repo",
+            "lockfile": "config/lock.json",
+        }
+    ]
+
+
+def test_upsert_host_registry_removes_redundant_default_lockfile() -> None:
+    """Verify existing entries drop explicit default lockfile values."""
+    host_entries: list[dict[str, str]] = [
+        {
+            "repository": "NIDAP-Community/host-repo",
+            "lockfile": ".syncweaver-lock.json",
+        }
+    ]
+
+    changed = _upsert_host_registry_entry(
+        host_entries=host_entries,
+        host_repo="NIDAP-Community/host-repo",
+        lockfile_path=".syncweaver-lock.json",
+    )
+
+    assert changed is True
+    assert host_entries == [{"repository": "NIDAP-Community/host-repo"}]

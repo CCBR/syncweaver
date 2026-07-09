@@ -6,6 +6,7 @@ import pathlib
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import resolve_github_token
 from syncweaver.init_host import (
     init_host_in_directory,
@@ -157,7 +158,7 @@ def init_orch_cmd(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to lockfile in the host repository.",

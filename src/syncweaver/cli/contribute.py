@@ -7,6 +7,7 @@ import pathlib
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.contribute_patch import (
     contribute_patch,
     resolve_contribute_patch_metadata,
@@ -68,7 +69,7 @@ from syncweaver.patch import mark_patch_status
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",

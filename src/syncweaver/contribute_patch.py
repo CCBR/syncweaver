@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 import requests
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import build_github_git_env, run_git
 from syncweaver.lockfile import (
     load_existing_lockfile,
@@ -331,7 +332,7 @@ def write_github_output(outputs: dict[str, str], output_path: pathlib.Path) -> N
 
 def main() -> int:
     """Resolve metadata from workflow environment and emit GitHub outputs."""
-    lockfile = pathlib.Path(os.environ.get("LOCKFILE_PATH", ".syncweaver-lock.json"))
+    lockfile = pathlib.Path(os.environ.get("LOCKFILE_PATH", DEFAULT_LOCKFILE_PATH))
     host_cwd = pathlib.Path(os.environ.get("SYNCWEAVER_HOST_CWD", ".")).resolve()
     source_path = os.environ.get("SOURCE_PATH_INPUT", "")
     repo_url = os.environ.get("REPO_URL_INPUT", "")

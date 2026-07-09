@@ -8,6 +8,7 @@ import tempfile
 import requests
 import yaml
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import build_github_git_env, run_git
 from syncweaver.lockfile import read_lockfile, write_lockfile
 from syncweaver.templates import use_template
@@ -95,6 +96,9 @@ def _upsert_host_registry_entry(
     lockfile_path: str,
 ) -> bool:
     """Insert or update the host entry in orchestrator registry data."""
+    normalized_lockfile = lockfile_path.strip()
+    lockfile_is_default = normalized_lockfile == DEFAULT_LOCKFILE_PATH
+
     has_match = False
     changed = False
 
@@ -102,13 +106,24 @@ def _upsert_host_registry_entry(
         repository = str(host_entry.get("repository", "")).strip()
         if repository == host_repo:
             has_match = True
-            existing_lockfile = str(host_entry.get("lockfile", "")).strip()
-            if existing_lockfile != lockfile_path:
-                host_entry["lockfile"] = lockfile_path
+            existing_lockfile = str(
+                host_entry.get("lockfile", DEFAULT_LOCKFILE_PATH)
+            ).strip()
+
+            if lockfile_is_default:
+                has_explicit_lockfile = "lockfile" in host_entry
+                if has_explicit_lockfile:
+                    del host_entry["lockfile"]
+                    changed = True
+            elif existing_lockfile != normalized_lockfile:
+                host_entry["lockfile"] = normalized_lockfile
                 changed = True
 
     if not has_match:
-        host_entries.append({"repository": host_repo, "lockfile": lockfile_path})
+        entry: dict[str, str] = {"repository": host_repo}
+        if not lockfile_is_default:
+            entry["lockfile"] = normalized_lockfile
+        host_entries.append(entry)
         changed = True
 
     return changed
@@ -117,7 +132,7 @@ def _upsert_host_registry_entry(
 def init_host_in_directory(
     destination_dir: pathlib.Path,
     *,
-    lockfile_path: pathlib.Path = pathlib.Path(".syncweaver-lock.json"),
+    lockfile_path: pathlib.Path = pathlib.Path(DEFAULT_LOCKFILE_PATH),
     overwrite: bool = False,
     host_repo: str = "",
     orchestrator_repo: str = "",
@@ -269,11 +284,13 @@ def register_host_with_orchestrator_repository(
     resolved_pr_title = (
         pr_title.strip() or f"chore(syncweaver): register host {host_repo_input}"
     )
-    resolved_pr_body = pr_body.strip() or (
+    default_pr_body = (
         "Register a new syncweaver host repository in orchestrator registry.\n\n"
-        f"- host repository: {host_repo_input}\n"
-        f"- lockfile: {lockfile_path_input}"
+        f"- host repository: {host_repo_input}"
     )
+    if lockfile_path_input != DEFAULT_LOCKFILE_PATH:
+        default_pr_body = f"{default_pr_body}\n- lockfile: {lockfile_path_input}"
+    resolved_pr_body = pr_body.strip() or default_pr_body
 
     has_registry_changes = False
     git_env = build_github_git_env(github_token)

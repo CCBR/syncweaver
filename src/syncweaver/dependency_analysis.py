@@ -8,6 +8,8 @@ import shutil
 import subprocess
 from typing import Any
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
+
 # Backend types for functracer execution
 FUNCTRACER_BACKEND_LOCAL = "local"
 FUNCTRACER_BACKEND_DOCKER = "docker"
@@ -259,7 +261,7 @@ def _run_functracer_boolean_script(
             mount_root: pathlib.Path | None = None
             for parent in [entry_script_path.parent, *entry_script_path.parents]:
                 has_git_dir = (parent / ".git").is_dir()
-                has_lockfile = (parent / ".syncweaver-lock.json").is_file()
+                has_lockfile = (parent / DEFAULT_LOCKFILE_PATH).is_file()
                 if mount_root is None and (has_git_dir or has_lockfile):
                     mount_root = parent
             if mount_root is None:

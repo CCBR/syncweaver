@@ -9,6 +9,8 @@ import click
 import jsonschema
 from jsonschema import ValidationError
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
+
 
 def _load_schema_from_file(schema_path: pathlib.Path) -> dict:
     """Load a JSON schema from disk."""
@@ -45,7 +47,7 @@ def _validate_lockfile_against_schema(lock_data: dict, schema_data: dict) -> Non
 @click.command("validate")
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",

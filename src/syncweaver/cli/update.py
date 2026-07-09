@@ -10,6 +10,7 @@ import subprocess
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.cli.add import _copy_checked_out_repo, _resolve_remote_source_path
 from syncweaver.git import run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
@@ -289,7 +290,7 @@ def update_external_repository(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",
