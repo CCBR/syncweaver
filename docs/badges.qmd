@@ -1,3 +1,4 @@
 [![build](https://github.com/CCBR/syncweaver/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/syncweaver/actions/workflows/build-python.yml)
 [![docs](https://github.com/CCBR/syncweaver/actions/workflows/docs-quartodoc.yml/badge.svg)](https://ccbr.github.io/syncweaver)
 [![codecov](https://codecov.io/gh/CCBR/syncweaver/graph/badge.svg?token=V4BSDLIEyi)](https://codecov.io/gh/CCBR/syncweaver)
+[![docker](https://img.shields.io/docker/v/nciccbr/syncweaver?logo=docker&label=docker&color=blue)](https://hub.docker.com/r/nciccbr/syncweaver)
