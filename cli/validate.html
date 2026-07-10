@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>cli.templates – syncweaver</title>
+<title>syncweaver validate – syncweaver</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -68,8 +68,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../reference/templates.html" rel="next">
-<link href="../reference/cli.patch.html" rel="prev">
+<link href="../cli/templates/list.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -347,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/cli.main.html">CLI commands</a></li><li class="breadcrumb-item"><a href="../reference/cli.templates.html">cli.templates</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../cli/validate.html">validate</a></li><li class="breadcrumb-item"><a href="../cli/validate.html"><code>syncweaver validate</code></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -361,14 +360,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Function reference</span></a>
+  <a href="../cli/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Command-line interface</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Modules</span></a>
+ <span class="menu-text">init</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -376,26 +375,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/git.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">git</span></a>
+  <a href="../cli/init/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver init</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/lockfile.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">lockfile</span></a>
+  <a href="../cli/init/host.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver init host</code></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/patch.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">patch</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reference/util.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">util</span></a>
+  <a href="../cli/init/orch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver init orch</code></span></a>
   </div>
 </li>
       </ul>
@@ -403,7 +396,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">CLI commands</span></a>
+ <span class="menu-text">add</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -411,26 +404,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/cli.main.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">cli.main</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reference/cli.add.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">cli.add</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reference/cli.patch.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">cli.patch</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../reference/cli.templates.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">cli.templates</span></a>
+  <a href="../cli/add.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver add</code></span></a>
   </div>
 </li>
       </ul>
@@ -438,7 +413,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Templates</span></a>
+ <span class="menu-text">update</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -446,8 +421,152 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/templates.html" class="sidebar-item-text sidebar-link">
+  <a href="../cli/update.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver update</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">remove</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/remove.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver remove</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">patch</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/patch/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver patch</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/patch/create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver patch create</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/patch/list.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver patch list</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/patch/mark-status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver patch mark-status</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">contribute</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/contribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver contribute</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">deps</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/deps/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver deps</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/deps/analyze.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver deps analyze</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/deps/select-update-paths.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver deps select-update-paths</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">templates</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/templates/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver templates</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/templates/add.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver templates add</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/templates/list.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><code>syncweaver templates list</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">validate</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../cli/validate.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><code>syncweaver validate</code></span></a>
   </div>
 </li>
       </ul>
@@ -462,72 +581,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#syncweaver.cli.templates" id="toc-syncweaver.cli.templates" class="nav-link active" data-scroll-target="#syncweaver.cli.templates">cli.templates</a>
-  <ul class="collapse">
-  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
-  <ul class="collapse">
-  <li><a href="#syncweaver.cli.templates.add_cmd" id="toc-syncweaver.cli.templates.add_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.templates.add_cmd">add_cmd</a></li>
-  <li><a href="#syncweaver.cli.templates.list_cmd" id="toc-syncweaver.cli.templates.list_cmd" class="nav-link" data-scroll-target="#syncweaver.cli.templates.list_cmd">list_cmd</a></li>
-  <li><a href="#syncweaver.cli.templates.templates_group" id="toc-syncweaver.cli.templates.templates_group" class="nav-link" data-scroll-target="#syncweaver.cli.templates.templates_group">templates_group</a></li>
-  </ul></li>
-  </ul></li>
+  <li><a href="#usage" id="toc-usage" class="nav-link active" data-scroll-target="#usage">Usage</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/reference/cli.templates.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/cli/validate.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../reference/cli.main.html">CLI commands</a></li><li class="breadcrumb-item"><a href="../reference/cli.templates.html">cli.templates</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../cli/validate.html">validate</a></li><li class="breadcrumb-item"><a href="../cli/validate.html"><code>syncweaver validate</code></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><code>syncweaver validate</code></h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="syncweaver.cli.templates" class="level1">
-<h1>cli.templates</h1>
-<p><code>cli.templates</code></p>
-<p>CLI commands for managing workflow templates.</p>
-<section id="functions" class="level2">
-<h2 class="anchored" data-anchor-id="functions">Functions</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="#syncweaver.cli.templates.add_cmd">add_cmd</a></td>
-<td>Copy TEMPLATE_NAME into the output directory.</td>
-</tr>
-<tr class="even">
-<td><a href="#syncweaver.cli.templates.list_cmd">list_cmd</a></td>
-<td>List available workflow templates.</td>
-</tr>
-<tr class="odd">
-<td><a href="#syncweaver.cli.templates.templates_group">templates_group</a></td>
-<td>List and add workflow templates to a repo.</td>
-</tr>
-</tbody>
-</table>
-<section id="syncweaver.cli.templates.add_cmd" class="level3">
-<h3 class="anchored" data-anchor-id="syncweaver.cli.templates.add_cmd">add_cmd</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cli.templates.add_cmd(template_name, output, overwrite)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Copy TEMPLATE_NAME into the output directory.</p>
-<p>TEMPLATE_NAME may omit the .yml extension.</p>
+</header>
+
+
+<p>Validate a lockfile against the syncweaver JSON schema. Useful as a pre-commit or CI sanity check to catch hand-edited lockfiles that have drifted from the expected structure.</p>
+<section id="usage" class="level2">
+<h2 class="anchored" data-anchor-id="usage">Usage</h2>
+<pre><code>Usage: syncweaver validate [OPTIONS]
+
+  Validate a lockfile against the syncweaver lockfile JSON schema.
+
+Options:
+  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.
+                   [default: .syncweaver-lock.json]
+  --schema PATH    Optional path to a JSON schema file. Defaults to bundled
+                   schema.
+  -h, --help       Show this message and exit.
+</code></pre>
 </section>
-<section id="syncweaver.cli.templates.list_cmd" class="level3">
-<h3 class="anchored" data-anchor-id="syncweaver.cli.templates.list_cmd">list_cmd</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cli.templates.list_cmd()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>List available workflow templates.</p>
-</section>
-<section id="syncweaver.cli.templates.templates_group" class="level3">
-<h3 class="anchored" data-anchor-id="syncweaver.cli.templates.templates_group">templates_group</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cli.templates.templates_group()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>List and add workflow templates to a repo.</p>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate the default lockfile in the current directory</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> validate</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate a custom lockfile path</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> validate <span class="at">--lockfile</span> path/to/custom-lock.json</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate against a local schema (for development)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">syncweaver</span> validate <span class="at">--schema</span> path/to/schema.json</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -946,14 +1054,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reference/cli.patch.html" class="pagination-link" aria-label="cli.patch">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">cli.patch</span>
+      <a href="../cli/templates/list.html" class="pagination-link" aria-label="`syncweaver templates list`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><code>syncweaver templates list</code></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reference/templates.html" class="pagination-link" aria-label="templates">
-        <span class="nav-page-text">templates</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -964,7 +1069,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/reference/cli.templates.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/syncweaver/edit/main/cli/validate.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/syncweaver/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

@@ -1,5 +1,712 @@
 [
   {
+    "objectID": "cli/remove.html",
+    "href": "cli/remove.html",
+    "title": "syncweaver remove",
+    "section": "",
+    "text": "Remove a tracked external repository from the current host repository. The vendored files are deleted and the corresponding entry is removed from the lockfile.",
+    "crumbs": [
+      "remove",
+      "`syncweaver remove`"
+    ]
+  },
+  {
+    "objectID": "cli/remove.html#usage",
+    "href": "cli/remove.html#usage",
+    "title": "syncweaver remove",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver remove [OPTIONS]\n\n  Remove a tracked external repository from the current host repository.\n\nOptions:\n  --path PATH      Tracked destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.",
+    "crumbs": [
+      "remove",
+      "`syncweaver remove`"
+    ]
+  },
+  {
+    "objectID": "cli/remove.html#examples",
+    "href": "cli/remove.html#examples",
+    "title": "syncweaver remove",
+    "section": "Examples",
+    "text": "Examples\n# Remove a tracked path\nsyncweaver remove --path code/mypackage\n\n# Remove using a non-default lockfile\nsyncweaver remove --path code/mypackage --lockfile config/syncweaver-lock.json",
+    "crumbs": [
+      "remove",
+      "`syncweaver remove`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/index.html",
+    "href": "cli/deps/index.html",
+    "title": "syncweaver deps",
+    "section": "",
+    "text": "Analyze source-repository dependencies and surface information needed when integrating source changes into a host repository.",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/index.html#usage",
+    "href": "cli/deps/index.html#usage",
+    "title": "syncweaver deps",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver deps [OPTIONS] COMMAND [ARGS]...\n\n  Analyze source dependencies for host repository integration.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  analyze              Analyze source usage and optional release impact...\n  select-update-paths  Filter candidate source paths and emit selection...",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/analyze.html",
+    "href": "cli/deps/analyze.html",
+    "title": "syncweaver deps analyze",
+    "section": "",
+    "text": "Analyze how host repositories use source packages, and optionally assess the impact of a new release.",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps analyze`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/analyze.html#usage",
+    "href": "cli/deps/analyze.html#usage",
+    "title": "syncweaver deps analyze",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver deps analyze [OPTIONS]\n\n  Analyze source usage and optional release impact in host scripts.\n\nOptions:\n  --source-path PATH              Tracked source path in host repository, e.g.\n                                  code/package1.  [required]\n  --host-repo DIRECTORY           Path to host repository root.  [default: .]\n  --source-type [auto|r_package|python_package]\n                                  Dependency analyzer source type routing.\n                                  [default: auto]\n  --entry-script PATH             Optional host script to analyze\n                                  (repeatable).\n  --repository TEXT               Optional source repository URL for release\n                                  impact analysis.  [default: \"\"]\n  --release-tag TEXT              Optional candidate release tag/ref for\n                                  impact analysis.  [default: \"\"]\n  --previous-tag TEXT             Optional baseline release tag/ref for impact\n                                  analysis.  [default: \"\"]\n  --package-name TEXT             Optional package name override for\n                                  functracer.  [default: \"\"]\n  -h, --help                      Show this message and exit.",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps analyze`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/analyze.html#examples",
+    "href": "cli/deps/analyze.html#examples",
+    "title": "syncweaver deps analyze",
+    "section": "Examples",
+    "text": "Examples\n# Analyze dependencies for a tracked path\nsyncweaver deps analyze --path code/mypackage",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps analyze`"
+    ]
+  },
+  {
+    "objectID": "cli/templates/index.html",
+    "href": "cli/templates/index.html",
+    "title": "syncweaver templates",
+    "section": "",
+    "text": "List and copy the bundled GitHub Actions workflow templates into a repository.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates`"
+    ]
+  },
+  {
+    "objectID": "cli/templates/index.html#usage",
+    "href": "cli/templates/index.html#usage",
+    "title": "syncweaver templates",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates`"
+    ]
+  },
+  {
+    "objectID": "cli/templates/list.html",
+    "href": "cli/templates/list.html",
+    "title": "syncweaver templates list",
+    "section": "",
+    "text": "Print all workflow templates bundled with this version of syncweaver that can be installed with syncweaver templates add.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates list`"
+    ]
+  },
+  {
+    "objectID": "cli/templates/list.html#usage",
+    "href": "cli/templates/list.html#usage",
+    "title": "syncweaver templates list",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates list`"
+    ]
+  },
+  {
+    "objectID": "cli/templates/list.html#examples",
+    "href": "cli/templates/list.html#examples",
+    "title": "syncweaver templates list",
+    "section": "Examples",
+    "text": "Examples\nsyncweaver templates list",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates list`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/create.html",
+    "href": "cli/patch/create.html",
+    "title": "syncweaver patch create",
+    "section": "",
+    "text": "Generate or refresh a canonical patch file that captures the diff between the vendored source snapshot and the current host-modified files.",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch create`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/create.html#usage",
+    "href": "cli/patch/create.html#usage",
+    "title": "syncweaver patch create",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH              Tracked source path in the host repository, e.g.\n                           code/package1.  [required]\n  --repo, --repo-url TEXT  Repository URL as it appears in .syncweaver-\n                           lock.json.  [required]\n  --lockfile PATH          Path to .syncweaver-lock.json in the host\n                           repository.  [default: .syncweaver-lock.json]\n  --patch-dir PATH         Optional directory for the generated patch file.\n  -h, --help               Show this message and exit.",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch create`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/create.html#examples",
+    "href": "cli/patch/create.html#examples",
+    "title": "syncweaver patch create",
+    "section": "Examples",
+    "text": "Examples\n# Create a patch for a tracked path\nsyncweaver patch create --path code/mypackage\n\n# Write the patch to a custom location\nsyncweaver patch create --path code/mypackage --output patches/mypackage.patch",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch create`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/list.html",
+    "href": "cli/patch/list.html",
+    "title": "syncweaver patch list",
+    "section": "",
+    "text": "List the patch file records stored in the lockfile for a given tracked source path.",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch list`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/list.html#usage",
+    "href": "cli/patch/list.html#usage",
+    "title": "syncweaver patch list",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch list`"
+    ]
+  },
+  {
+    "objectID": "cli/patch/list.html#examples",
+    "href": "cli/patch/list.html#examples",
+    "title": "syncweaver patch list",
+    "section": "Examples",
+    "text": "Examples\n# List patches for a tracked path\nsyncweaver patch list --path code/mypackage",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch list`"
+    ]
+  },
+  {
+    "objectID": "cli/init/orch.html",
+    "href": "cli/init/orch.html",
+    "title": "syncweaver init orch",
+    "section": "",
+    "text": "Initialize an orchestrator repository with the packaged syncweaver orchestrator templates (dashboard, index page, and workflow files).",
+    "crumbs": [
+      "init",
+      "`syncweaver init orch`"
+    ]
+  },
+  {
+    "objectID": "cli/init/orch.html#usage",
+    "href": "cli/init/orch.html#usage",
+    "title": "syncweaver init orch",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver init orch [OPTIONS]\n\n  Initialize orchestrator repository files from packaged templates.\n\n  Without --repo, copies template files from\n  src/syncweaver/templates/orchestrator/ into the current working directory.\n  With --repo, applies the same files in a branch on the target repository and\n  opens a pull request.\n\nOptions:\n  --repo TEXT                     Optional GitHub repository in OWNER/REPO\n                                  format. When set, syncweaver opens a pull\n                                  request with orchestrator templates.\n  --overwrite                     Overwrite existing files when copying\n                                  templates.\n  --token TEXT                    GitHub token used when --repo is set. May\n                                  also be set via GITHUB_TOKEN or resolved\n                                  from gh auth.\n  --create-repo / --no-create-repo\n                                  Create the target repository when it does\n                                  not exist.\n  --private / --public            Privacy setting when creating a missing\n                                  repository.\n  --base-ref TEXT                 Optional PR base branch. Defaults to\n                                  repository default branch.\n  --branch TEXT                   Branch name for the orchestrator template\n                                  commit.  [default: syncweaver/init-\n                                  orchestrator]\n  --title TEXT                    Optional pull request title.\n  --body TEXT                     Optional pull request body.\n  -h, --help                      Show this message and exit.",
+    "crumbs": [
+      "init",
+      "`syncweaver init orch`"
+    ]
+  },
+  {
+    "objectID": "cli/init/orch.html#examples",
+    "href": "cli/init/orch.html#examples",
+    "title": "syncweaver init orch",
+    "section": "Examples",
+    "text": "Examples\n# Initialize orchestrator content in the current directory\nsyncweaver init orch",
+    "crumbs": [
+      "init",
+      "`syncweaver init orch`"
+    ]
+  },
+  {
+    "objectID": "cli/init/host.html",
+    "href": "cli/init/host.html",
+    "title": "syncweaver init host",
+    "section": "",
+    "text": "Initialize a host repository with syncweaver boilerplate: workflow templates, lockfile stubs, and optional orchestrator registration.",
+    "crumbs": [
+      "init",
+      "`syncweaver init host`"
+    ]
+  },
+  {
+    "objectID": "cli/init/host.html#usage",
+    "href": "cli/init/host.html#usage",
+    "title": "syncweaver init host",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver init host [OPTIONS]\n\n  Initialize host repository boilerplate and orchestrator registration.\n\n  This command creates or refreshes a host lockfile and syncweaver host GitHub\n  Actions workflows in the current repository. By default, it also opens a\n  pull request in the orchestrator repository to add this host to host\n  registry metadata.\n\nOptions:\n  --host-repo TEXT            Optional host repository override in OWNER/REPO\n                              format. When omitted, syncweaver infers host\n                              metadata from git origin.\n  --orchestrator-repo TEXT    Optional orchestrator repository override in\n                              OWNER/REPO format. When omitted, syncweaver\n                              derives it from host metadata.\n  --lockfile PATH             Path to lockfile in the host repository.\n                              [default: .syncweaver-lock.json]\n  --overwrite                 Overwrite existing lockfile and workflow\n                              templates when present.\n  --register / --no-register  Open a PR in orchestrator repo to add this host\n                              to host-repositories.yml.\n  --token TEXT                GitHub token used to register the host in\n                              orchestrator repo. May also be set via\n                              GITHUB_TOKEN or resolved from gh auth.\n  --registry-path PATH        Path to host registry inside the orchestrator\n                              repository.  [default: .github/host-\n                              repositories.yml]\n  --branch TEXT               Optional branch name for orchestrator\n                              registration pull request.\n  --base-ref TEXT             Optional base branch for orchestrator\n                              registration pull request.\n  --title TEXT                Optional orchestrator registration pull request\n                              title.\n  --body TEXT                 Optional orchestrator registration pull request\n                              body.\n  -h, --help                  Show this message and exit.",
+    "crumbs": [
+      "init",
+      "`syncweaver init host`"
+    ]
+  },
+  {
+    "objectID": "cli/init/host.html#examples",
+    "href": "cli/init/host.html#examples",
+    "title": "syncweaver init host",
+    "section": "Examples",
+    "text": "Examples\n# Initialize the current directory as a host repository\nsyncweaver init host\n\n# Initialize and register with an orchestrator\nsyncweaver init host --orchestrator OWNER/syncweaver-orchestrator",
+    "crumbs": [
+      "init",
+      "`syncweaver init host`"
+    ]
+  },
+  {
+    "objectID": "cli/update.html",
+    "href": "cli/update.html",
+    "title": "syncweaver update",
+    "section": "",
+    "text": "Update a tracked external repository to a new ref, re-vendoring content and re-applying any tracked patches. Use --patch-conflict-strategy to control behaviour when patch re-application fails.",
+    "crumbs": [
+      "update",
+      "`syncweaver update`"
+    ]
+  },
+  {
+    "objectID": "cli/update.html#usage",
+    "href": "cli/update.html#usage",
+    "title": "syncweaver update",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver update [OPTIONS]\n\n  Update a tracked external repository in the current host repository.\n\nOptions:\n  --path PATH                     Tracked destination path in the host\n                                  repository, e.g. code/package1.  [required]\n  --ref TEXT                      Git ref to vendor (branch, tag, or commit).\n                                  Defaults to lockfile ref.\n  --remote-subdir TEXT            Optional repository subdirectory to vendor,\n                                  e.g. src/package1. Defaults to lockfile\n                                  remote_subdir when present.\n  --patch-conflict-strategy [fail|warn]\n                                  Behavior when tracked patch reapply fails\n                                  during update. Use 'fail' to abort update or\n                                  'warn' to continue with unpatched files.\n                                  [default: fail]\n  --lockfile PATH                 Path to .syncweaver-lock.json in the host\n                                  repository.  [default: .syncweaver-\n                                  lock.json]\n  -h, --help                      Show this message and exit.",
+    "crumbs": [
+      "update",
+      "`syncweaver update`"
+    ]
+  },
+  {
+    "objectID": "cli/update.html#examples",
+    "href": "cli/update.html#examples",
+    "title": "syncweaver update",
+    "section": "Examples",
+    "text": "Examples\n# Update to latest HEAD for the tracked ref\nsyncweaver update --path code/mypackage\n\n# Pin to a new tag\nsyncweaver update --path code/mypackage --ref v2.0.0\n\n# Continue past patch conflicts instead of failing\nsyncweaver update --path code/mypackage --patch-conflict-strategy warn",
+    "crumbs": [
+      "update",
+      "`syncweaver update`"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html",
+    "href": "reference/patch.html",
+    "title": "patch",
+    "section": "",
+    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\nmark_patch_status\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.\n\n\n\npatch.mark_patch_status(\n    patch_path,\n    status,\n    lockfile_path,\n    *,\n    pr_url='',\n    reason='',\n)\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\npatch_path\npathlib.Path\nRelative patch path tracked in the lockfile.\nrequired\n\n\nstatus\nstr\nPatch lifecycle state: local, open, accepted, or rejected.\nrequired\n\n\nlockfile_path\npathlib.Path\nPath to the host repository lockfile.\nrequired\n\n\npr_url\nstr\nOptional upstream pull request URL for open or reviewed patches.\n''\n\n\nreason\nstr\nOptional free-text note, required for rejected patches.\n''\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\ntuple[str, str]\ntuple[str, str]: The tracked patch key and the lockfile path written.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nKeyError\nIf the patch path is not tracked in the lockfile.\n\n\n\nValueError\nIf the requested status metadata is invalid.",
+    "crumbs": [
+      "Modules",
+      "patch"
+    ]
+  },
+  {
+    "objectID": "reference/patch.html#functions",
+    "href": "reference/patch.html#functions",
+    "title": "patch",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\nmark_patch_status\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.\n\n\n\npatch.mark_patch_status(\n    patch_path,\n    status,\n    lockfile_path,\n    *,\n    pr_url='',\n    reason='',\n)\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\npatch_path\npathlib.Path\nRelative patch path tracked in the lockfile.\nrequired\n\n\nstatus\nstr\nPatch lifecycle state: local, open, accepted, or rejected.\nrequired\n\n\nlockfile_path\npathlib.Path\nPath to the host repository lockfile.\nrequired\n\n\npr_url\nstr\nOptional upstream pull request URL for open or reviewed patches.\n''\n\n\nreason\nstr\nOptional free-text note, required for rejected patches.\n''\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\ntuple[str, str]\ntuple[str, str]: The tracked patch key and the lockfile path written.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nKeyError\nIf the patch path is not tracked in the lockfile.\n\n\n\nValueError\nIf the requested status metadata is invalid.",
+    "crumbs": [
+      "Modules",
+      "patch"
+    ]
+  },
+  {
+    "objectID": "reference/cli.templates.html",
+    "href": "reference/cli.templates.html",
+    "title": "cli.templates",
+    "section": "",
+    "text": "cli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
+    "crumbs": [
+      "CLI commands",
+      "cli.templates"
+    ]
+  },
+  {
+    "objectID": "reference/cli.templates.html#functions",
+    "href": "reference/cli.templates.html#functions",
+    "title": "cli.templates",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
+    "crumbs": [
+      "CLI commands",
+      "cli.templates"
+    ]
+  },
+  {
+    "objectID": "reference/cli.main.html",
+    "href": "reference/cli.main.html",
+    "title": "cli.main",
+    "section": "",
+    "text": "cli.main\nTop-level Click CLI for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
+    "crumbs": [
+      "CLI commands",
+      "cli.main"
+    ]
+  },
+  {
+    "objectID": "reference/cli.main.html#functions",
+    "href": "reference/cli.main.html#functions",
+    "title": "cli.main",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
+    "crumbs": [
+      "CLI commands",
+      "cli.main"
+    ]
+  },
+  {
+    "objectID": "reference/lockfile.html",
+    "href": "reference/lockfile.html",
+    "title": "lockfile",
+    "section": "",
+    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nresolve_source_path_from_lockfile\nResolve the tracked source path for a sync operation.\n\n\nresolve_source_paths_from_lockfile\nResolve one or more tracked source paths for a sync operation.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.resolve_source_path_from_lockfile(lockfile, source_path, repo_url=None)\nResolve the tracked source path for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select a matching source path when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved source path to update.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine a single tracked source path.\n\n\n\n\n\n\n\nlockfile.resolve_source_paths_from_lockfile(\n    lockfile,\n    source_path,\n    repo_url=None,\n)\nResolve one or more tracked source paths for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select matching source paths when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Resolved source path list.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine matching tracked source paths.\n\n\n\n\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/lockfile.html#functions",
+    "href": "reference/lockfile.html#functions",
+    "title": "lockfile",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nresolve_source_path_from_lockfile\nResolve the tracked source path for a sync operation.\n\n\nresolve_source_paths_from_lockfile\nResolve one or more tracked source paths for a sync operation.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.resolve_source_path_from_lockfile(lockfile, source_path, repo_url=None)\nResolve the tracked source path for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select a matching source path when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved source path to update.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine a single tracked source path.\n\n\n\n\n\n\n\nlockfile.resolve_source_paths_from_lockfile(\n    lockfile,\n    source_path,\n    repo_url=None,\n)\nResolve one or more tracked source paths for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select matching source paths when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Resolved source path list.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine matching tracked source paths.\n\n\n\n\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
+    "crumbs": [
+      "Modules",
+      "lockfile"
+    ]
+  },
+  {
+    "objectID": "reference/cli.add.html",
+    "href": "reference/cli.add.html",
+    "title": "cli.add",
+    "section": "",
+    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo, ref, remote_subdir, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
+    "objectID": "reference/cli.add.html#functions",
+    "href": "reference/cli.add.html#functions",
+    "title": "cli.add",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo, ref, remote_subdir, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "crumbs": [
+      "CLI commands",
+      "cli.add"
+    ]
+  },
+  {
+    "objectID": "contributors.html",
+    "href": "contributors.html",
+    "title": "Contributors",
+    "section": "",
+    "text": "#| echo: false #| output: asis from ccbr_tools.github import print_contributor_images print_contributor_images(repo=‘syncweaver’, org=‘CCBR’)\n\n\n\nView the contributors graph on GitHub for more details."
+  },
+  {
+    "objectID": "syncweaver_functracer_reference_guide.html",
+    "href": "syncweaver_functracer_reference_guide.html",
+    "title": "syncweaver & functracer — Tool Reference",
+    "section": "",
+    "text": "These two tools form the automation backbone of Approach B (per-capsule repos). They are purpose-built for the OMIX/NIDAP architecture and are not part of Approach A.\n\n\n\n\n\n\nGiven a capsule’s entry script (main.R) and a package, functracer analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).\nGiven a new package ref (tag, branch, or commit SHA) and the previously locked commit, functracer determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.\n\n\n\n\nWhen a new version of the OMIX monorepo or MOSuite is released, not every capsule needs to be updated. A change to a volcano-specific plotting function is irrelevant to the heatmap capsule. But the reverse is equally important: a change made inside the volcano module might touch a shared core function that other capsules also depend on — and those capsules need to be updated too, even though the change originated in volcano. functracer answers both questions: “Does this upstream change affect my capsule?” and “Does this change in one module ripple out to other capsules that share the same underlying functions?”\n\n\n\nfunctracer::analyze_dependencies(entry_script, package)\nReturns a table of every function dependency with:\n\nfunction — the function name\nsource — which package it comes from (e.g. MOSuite)\ndep_type — direct (called by main.R) or indirect (called transitively)\ncall_path — the full chain, e.g. main.R -&gt; batch_correct_counts -&gt; plot_corr_heatmap\n\n\n\n\nfunctracer builds a complete dependency map across all capsules. Once built, it can be queried in either direction:\nForward — upstream change → which capsules are affected? A new version of MOSuite or OMIX is released → functracer checks each capsule’s dependency graph against the changed functions → only capsules that call those functions (directly or transitively) are updated. A change to a volcano-specific plotting function leaves the heatmap capsule untouched.\nReverse — a module change → which other capsules are also affected? A developer edits a function inside the volcano module. If that function is shared with core, or is called transitively by other capsules, functracer identifies all capsules that depend on it — not just the volcano capsule. This prevents a scenario where a change to one module silently breaks another capsule that happened to share the same underlying function.\nBecause functracer traces transitive dependencies (the full call chain, not just direct calls), it catches indirect coupling that a manual review would likely miss. For example: volcano calls plot_corr_heatmap, which calls extract_counts from core. If extract_counts changes, functracer flags every capsule whose call graph passes through it — even if that capsule never explicitly references extract_counts in its own main.R.\n\n\n\nWhen any function changes — whether from an upstream release or an edit within a module:\n\nIdentify which functions changed\nQuery the full cross-capsule dependency map for those functions\nIf a capsule’s call graph includes the changed function → update that capsule’s lockfile and cut a new release\nIf no capsule depends on the changed function → do nothing\n\n\n\n\nA silent false negative — functracer incorrectly marking a capsule as unaffected when it is — would cause the capsule to ship stale code with no warning. This tool must have thorough test coverage before the system goes to production.\n\n\n\n\n\n\n\nA command-line interface (CLI) for synchronizing code between upstream sources (the OMIX monorepo, MOSuite R package) and individual capsule repos. It handles both directions: pulling upstream changes down into a capsule repo, and contributing capsule edits back upstream.\n\n\n\nCapsule repos need to stay in sync with upstream sources, but the relationship is not a simple git pull. The monorepo has a different directory layout than the capsule repo, versions must be pinned independently, and changes from analysts working in Code Ocean need a structured path back to the upstream source — with conflict handling and patch management that GitHub Actions alone cannot reliably provide.\n\n\n\nEach capsule repo contains a .syncweaver-lock.json that specifies every upstream source the capsule depends on:\n{\n  \"sources\": {\n    \"code/OMIX-core\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"core/\",\n      \"ref\": \"v1.0.0\",\n      \"git_sha\": \"c09ee39\"\n    },\n    \"code/OMIX-module-volcano\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"modules/volcano\",\n      \"ref\": \"v1.3.2\",\n      \"git_sha\": \"e2b4fa7\"\n    }\n  }\n}\nEach source entry is independently pinned by both semantic version (ref) and exact commit (git_sha). A capsule can upgrade one source while holding another stable.\n\n\n\n\nSync downstream — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review\nPatch upstream — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR\nStaleness check — compare the locked git_sha against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date\nConflict handling — explicit patching operations, not silent overwrites; conflicts surface for human resolution before main is touched\n\n\n\n\nBecause the lockfile is a list of source entries, a capsule that needs code from multiple monorepo modules simply declares multiple entries. syncweaver pulls each independently and places them in the correct subdirectory of the capsule repo. There is no combinatorial complexity — adding a module dependency is adding one JSON entry.\n\n\n\nsyncweaver and functracer work in tandem:\n\nNew upstream release is tagged\nfunctracer determines which capsules are affected\nsyncweaver updates only those capsules’ lockfiles and opens PRs\nGitHub Actions orchestrates the entire sequence automatically\n\n\n\n\n\n\nNew release tagged in OMIX monorepo\n         │\n         ▼\nfunctracer: which capsules depend on changed functions?\n         │\n         ├─ Capsule A: affected → syncweaver updates lockfile → PR opened → CI passes → maintainer merges → new capsule release\n         │\n         └─ Capsule B: unaffected → no action taken"
+  },
+  {
+    "objectID": "syncweaver_functracer_reference_guide.html#functracer",
+    "href": "syncweaver_functracer_reference_guide.html#functracer",
+    "title": "syncweaver & functracer — Tool Reference",
+    "section": "",
+    "text": "Given a capsule’s entry script (main.R) and a package, functracer analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).\nGiven a new package ref (tag, branch, or commit SHA) and the previously locked commit, functracer determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.\n\n\n\n\nWhen a new version of the OMIX monorepo or MOSuite is released, not every capsule needs to be updated. A change to a volcano-specific plotting function is irrelevant to the heatmap capsule. But the reverse is equally important: a change made inside the volcano module might touch a shared core function that other capsules also depend on — and those capsules need to be updated too, even though the change originated in volcano. functracer answers both questions: “Does this upstream change affect my capsule?” and “Does this change in one module ripple out to other capsules that share the same underlying functions?”\n\n\n\nfunctracer::analyze_dependencies(entry_script, package)\nReturns a table of every function dependency with:\n\nfunction — the function name\nsource — which package it comes from (e.g. MOSuite)\ndep_type — direct (called by main.R) or indirect (called transitively)\ncall_path — the full chain, e.g. main.R -&gt; batch_correct_counts -&gt; plot_corr_heatmap\n\n\n\n\nfunctracer builds a complete dependency map across all capsules. Once built, it can be queried in either direction:\nForward — upstream change → which capsules are affected? A new version of MOSuite or OMIX is released → functracer checks each capsule’s dependency graph against the changed functions → only capsules that call those functions (directly or transitively) are updated. A change to a volcano-specific plotting function leaves the heatmap capsule untouched.\nReverse — a module change → which other capsules are also affected? A developer edits a function inside the volcano module. If that function is shared with core, or is called transitively by other capsules, functracer identifies all capsules that depend on it — not just the volcano capsule. This prevents a scenario where a change to one module silently breaks another capsule that happened to share the same underlying function.\nBecause functracer traces transitive dependencies (the full call chain, not just direct calls), it catches indirect coupling that a manual review would likely miss. For example: volcano calls plot_corr_heatmap, which calls extract_counts from core. If extract_counts changes, functracer flags every capsule whose call graph passes through it — even if that capsule never explicitly references extract_counts in its own main.R.\n\n\n\nWhen any function changes — whether from an upstream release or an edit within a module:\n\nIdentify which functions changed\nQuery the full cross-capsule dependency map for those functions\nIf a capsule’s call graph includes the changed function → update that capsule’s lockfile and cut a new release\nIf no capsule depends on the changed function → do nothing\n\n\n\n\nA silent false negative — functracer incorrectly marking a capsule as unaffected when it is — would cause the capsule to ship stale code with no warning. This tool must have thorough test coverage before the system goes to production."
+  },
+  {
+    "objectID": "syncweaver_functracer_reference_guide.html#syncweaver",
+    "href": "syncweaver_functracer_reference_guide.html#syncweaver",
+    "title": "syncweaver & functracer — Tool Reference",
+    "section": "",
+    "text": "A command-line interface (CLI) for synchronizing code between upstream sources (the OMIX monorepo, MOSuite R package) and individual capsule repos. It handles both directions: pulling upstream changes down into a capsule repo, and contributing capsule edits back upstream.\n\n\n\nCapsule repos need to stay in sync with upstream sources, but the relationship is not a simple git pull. The monorepo has a different directory layout than the capsule repo, versions must be pinned independently, and changes from analysts working in Code Ocean need a structured path back to the upstream source — with conflict handling and patch management that GitHub Actions alone cannot reliably provide.\n\n\n\nEach capsule repo contains a .syncweaver-lock.json that specifies every upstream source the capsule depends on:\n{\n  \"sources\": {\n    \"code/OMIX-core\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"core/\",\n      \"ref\": \"v1.0.0\",\n      \"git_sha\": \"c09ee39\"\n    },\n    \"code/OMIX-module-volcano\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"modules/volcano\",\n      \"ref\": \"v1.3.2\",\n      \"git_sha\": \"e2b4fa7\"\n    }\n  }\n}\nEach source entry is independently pinned by both semantic version (ref) and exact commit (git_sha). A capsule can upgrade one source while holding another stable.\n\n\n\n\nSync downstream — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review\nPatch upstream — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR\nStaleness check — compare the locked git_sha against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date\nConflict handling — explicit patching operations, not silent overwrites; conflicts surface for human resolution before main is touched\n\n\n\n\nBecause the lockfile is a list of source entries, a capsule that needs code from multiple monorepo modules simply declares multiple entries. syncweaver pulls each independently and places them in the correct subdirectory of the capsule repo. There is no combinatorial complexity — adding a module dependency is adding one JSON entry.\n\n\n\nsyncweaver and functracer work in tandem:\n\nNew upstream release is tagged\nfunctracer determines which capsules are affected\nsyncweaver updates only those capsules’ lockfiles and opens PRs\nGitHub Actions orchestrates the entire sequence automatically"
+  },
+  {
+    "objectID": "syncweaver_functracer_reference_guide.html#how-they-fit-into-the-release-pipeline",
+    "href": "syncweaver_functracer_reference_guide.html#how-they-fit-into-the-release-pipeline",
+    "title": "syncweaver & functracer — Tool Reference",
+    "section": "",
+    "text": "New release tagged in OMIX monorepo\n         │\n         ▼\nfunctracer: which capsules depend on changed functions?\n         │\n         ├─ Capsule A: affected → syncweaver updates lockfile → PR opened → CI passes → maintainer merges → new capsule release\n         │\n         └─ Capsule B: unaffected → no action taken"
+  },
+  {
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "MIT License\nCopyright (c) 2026 CCR Collaborative Bioinformatics Resource\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+  },
+  {
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "Installation",
+    "section": "",
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\n\n\n\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail\n\n\n\n\n\n\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection\n\n\n\n\n\n\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
+  },
+  {
+    "objectID": "install.html#quick-start",
+    "href": "install.html#quick-start",
+    "title": "Installation",
+    "section": "",
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
+  },
+  {
+    "objectID": "install.html#system-dependencies",
+    "href": "install.html#system-dependencies",
+    "title": "Installation",
+    "section": "",
+    "text": "syncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail"
+  },
+  {
+    "objectID": "install.html#feature-requirements",
+    "href": "install.html#feature-requirements",
+    "title": "Installation",
+    "section": "",
+    "text": "Feature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection"
+  },
+  {
+    "objectID": "install.html#github-cli-optional",
+    "href": "install.html#github-cli-optional",
+    "title": "Installation",
+    "section": "",
+    "text": "The GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
+  },
+  {
+    "objectID": "guide/index.html",
+    "href": "guide/index.html",
+    "title": "Demo",
+    "section": "",
+    "text": "The diagram below shows how syncweaver coordinates a source repo and a host repo through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.\n\n\n\n\n\nsequenceDiagram\n    actor Dev as Developer\n    participant Src as Source Repo&lt;br/&gt;(demo-syncweaver-source)\n    participant SW as Orchestrator&lt;br/&gt;(CCBR/syncweaver)\n    participant Host as Host (Capsule) Repo&lt;br/&gt;(demo-syncweaver-host)\n\n    Note over Src: .github/workflows/&lt;br/&gt;syncweaver-source-dispatch.yml\n\n    Dev-&gt;&gt;Src: push release tag\n    Src-&gt;&gt;SW: repository_dispatch&lt;br/&gt;(source_repository, ref)\n\n    Note over SW: .github/workflows/&lt;br/&gt;syncweaver-update-hosts.yml\n\n    SW-&gt;&gt;SW: resolve target hosts from&lt;br/&gt;.github/host-repositories.yml\n    SW-&gt;&gt;Src: fetch code at ref\n    SW-&gt;&gt;SW: run functracer release impact&lt;br/&gt;for each host\n\n    SW-&gt;&gt;Host: open pull request&lt;br/&gt;with updated vendored code&lt;br/&gt;if host is impacted by release\n\n    Note over Host,Src: If the host has local patches...\n\n    Dev-&gt;&gt;Host: trigger contribute-patch\n    Note over Host: .github/workflows/&lt;br/&gt;syncweaver-host-contribute-patch.yml\n    Host-&gt;&gt;Src: open pull request&lt;br/&gt;with patch applied upstream"
+  },
+  {
+    "objectID": "guide/index.html#overview",
+    "href": "guide/index.html#overview",
+    "title": "Demo",
+    "section": "",
+    "text": "The diagram below shows how syncweaver coordinates a source repo and a host repo through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.\n\n\n\n\n\nsequenceDiagram\n    actor Dev as Developer\n    participant Src as Source Repo&lt;br/&gt;(demo-syncweaver-source)\n    participant SW as Orchestrator&lt;br/&gt;(CCBR/syncweaver)\n    participant Host as Host (Capsule) Repo&lt;br/&gt;(demo-syncweaver-host)\n\n    Note over Src: .github/workflows/&lt;br/&gt;syncweaver-source-dispatch.yml\n\n    Dev-&gt;&gt;Src: push release tag\n    Src-&gt;&gt;SW: repository_dispatch&lt;br/&gt;(source_repository, ref)\n\n    Note over SW: .github/workflows/&lt;br/&gt;syncweaver-update-hosts.yml\n\n    SW-&gt;&gt;SW: resolve target hosts from&lt;br/&gt;.github/host-repositories.yml\n    SW-&gt;&gt;Src: fetch code at ref\n    SW-&gt;&gt;SW: run functracer release impact&lt;br/&gt;for each host\n\n    SW-&gt;&gt;Host: open pull request&lt;br/&gt;with updated vendored code&lt;br/&gt;if host is impacted by release\n\n    Note over Host,Src: If the host has local patches...\n\n    Dev-&gt;&gt;Host: trigger contribute-patch\n    Note over Host: .github/workflows/&lt;br/&gt;syncweaver-host-contribute-patch.yml\n    Host-&gt;&gt;Src: open pull request&lt;br/&gt;with patch applied upstream"
+  },
+  {
+    "objectID": "guide/index.html#repository-layouts",
+    "href": "guide/index.html#repository-layouts",
+    "title": "Demo",
+    "section": "Repository layouts",
+    "text": "Repository layouts\nThis view emphasizes a different question than the sequence diagram: which source repositories are vendored into which host capsules.\n\n\n\n\n\nflowchart LR\n  subgraph H1[demo-syncweaver-host]\n    H1A[code/hello]\n    H1B[code/MOSuite]\n  end\n\n  subgraph H2[MOSuite-create]\n    H2A[code/MOSuite]\n  end\n\n  subgraph H3[MOSuite-clean]\n    H3A[code/MOSuite]\n  end\n\n  S1[demo-syncweaver-source&lt;br/&gt;modules/hello]\n  S2[CCBR/MOSuite&lt;br/&gt;R package source]\n\n  S1 --&gt; H1A\n  S2 --&gt; H1B\n  S2 --&gt; H2A\n  S2 --&gt; H3A\n\n\n\n\n\n\nIn these examples, one host capsule can aggregate multiple upstream sources, while other capsules vendor just a single shared source package.\n\nSource repo - monorepo\nThe source repo holds the canonical code. A single workflow template triggers the dispatch chain on every release.\ndemo-syncweaver-source/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-source-dispatch.yml  ← notifies orchestrator on release\n└── modules/\n  ├── hello/                              ← vendored into host as code/hello\n  │ ├── DESCRIPTION\n  │ ├── NAMESPACE\n  │ ├── R/\n  │ ├── inst/\n  │ └── man/\n  └── heatmap/                            ← new module for hypothetical heatmap capsule\n    ├── DESCRIPTION\n    ├── NAMESPACE\n    ├── R/\n    ├── inst/\n    └── man/\n\n\nHost repo - Code Ocean capsule\nThe host repo consumes vendored code and carries a lockfile that pins each dependency to a specific ref and git SHA.\ndemo-syncweaver-host/\n├── .github/\n│   └── workflows/\n│       ├── syncweaver-host-update.yml          ← receives dispatch, opens update PR\n│       └── syncweaver-host-contribute-patch.yml ← sends local patches upstream\n├── .syncweaver-lock.json                        ← pins source repos + refs\n└── code/\n  ├── main.R\n  ├── hello/           ← vendored from demo-syncweaver-source modules/hello\n  │   ├── DESCRIPTION\n  │   ├── NAMESPACE\n  │   ├── R/\n  │   └── inst/\n  └── MOSuite/         ← vendored from CCBR/MOSuite\n\n\nSource repo - MOSuite\nThis is a package-style source repository. The canonical implementation lives in the package root, and the syncweaver source-dispatch workflow is defined under .github/workflows/.\nmultiOmicsSuite/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-source-dispatch.yml  ← notifies syncweaver on release\n├── DESCRIPTION\n├── NAMESPACE\n├── R/                                      ← primary package implementation\n│   ├── cli.R\n│   ├── clean.R\n│   ├── differential.R\n│   ├── normalize.R\n│   └── ...\n├── inst/\n│   ├── extdata/\n│   └── quarto/\n├── man/\n└── tests/\n\n\nHost repo example - MOSuite-create capsule\nThis host repo is a Code Ocean capsule. It vendors source code into code/, tracks upstream state in .syncweaver-lock.json, and keeps capsule runtime files alongside the vendored package.\nMOSuite-create/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-update-source.yml  ← host-side sync workflow in this repo\n├── .syncweaver-lock.json                 ← pins vendored sources to refs + SHAs\n├── code/\n│   ├── main.R\n│   ├── run/\n│   └── MOSuite/                          ← vendored from multiOmicsSuite\n├── environment/\n│   ├── Dockerfile\n│   └── postInstall\n├── metadata/\n│   └── metadata.yml\n└── tests/"
+  },
+  {
+    "objectID": "guide/index.html#repos",
+    "href": "guide/index.html#repos",
+    "title": "Demo",
+    "section": "Repos",
+    "text": "Repos\n\n\n\nRole\nExample repo\nKey file\n\n\n\n\nSource\ndemo-syncweaver-source\n.github/workflows/syncweaver-source-dispatch.yml\n\n\nHost\ndemo-syncweaver-host\n.syncweaver-lock.json, .github/workflows/syncweaver-host-update.yml\n\n\nOrchestrator\nCCBR/syncweaver\n.github/host-repositories.yml, .github/workflows/syncweaver-update-hosts"
+  },
+  {
+    "objectID": "guide/index.html#lockfile",
+    "href": "guide/index.html#lockfile",
+    "title": "Demo",
+    "section": "Lockfile",
+    "text": "Lockfile\nThe host repo tracks each vendored dependency in .syncweaver-lock.json:\n{\n  \"sources\": {\n    \"code/hello\": {\n      \"repo_url\": \"https://github.com/NIDAP-Community/demo-syncweaver-source\",\n      \"ref\": \"main\",\n      \"remote_subdir\": \"modules/hello\"\n    }\n  }\n}\nWhen the source repo publishes a release, the dispatch chain updates the vendored code at code/hello and opens a pull request in the host repo."
+  },
+  {
+    "objectID": "guide/index.html#dependency-analysis-and-release-impact-tracing",
+    "href": "guide/index.html#dependency-analysis-and-release-impact-tracing",
+    "title": "Demo",
+    "section": "dependency analysis and release impact tracing",
+    "text": "dependency analysis and release impact tracing\nThis view highlights how functracer narrows updates to only affected capsules after a source release.\n\n\n\n\n\nflowchart TD\n  A[\"Source release tagged&lt;br/&gt; (e.g. in demo-syncweaver-source or MOSuite)\"]\n  B[functracer analyzes call graph&lt;br/&gt;from capsule entry scripts]\n  C{Capsule affected&lt;br/&gt;by changed functions?}\n  D[syncweaver updates lockfile&lt;br/&gt;and opens update PR]\n  E[No update PR&lt;br/&gt;for this capsule]\n\n  A --&gt; B\n  B --&gt; C\n  C --&gt;|Yes| D\n  C --&gt;|No| E"
+  },
+  {
+    "objectID": "usage.html",
+    "href": "usage.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
+  },
+  {
+    "objectID": "CONTRIBUTING.html",
+    "href": "CONTRIBUTING.html",
+    "title": "Contributing to syncweaver",
+    "section": "",
+    "text": "If you want to make a change, it’s a good idea to first open an issue and make sure someone from the team agrees that it’s needed.\nIf you’ve decided to work on an issue, assign yourself to the issue so others will know you’re working on it.\n\n\n\nWe use GitHub Flow as our collaboration process.\n\n\nCommit messages must follow Conventional Commits. The conventional-pre-commit hook enforces this on commit.\n\n\n\ngit clone https://github.com/CCBR/syncweaver\ncd syncweaver\npip install -e \".[dev,test,docs]\"\npre-commit install\n\n\n\npytest\n\n\n\nPython code is formatted with ruff. Run ruff format src/ tests/ before committing, or let the pre-commit hook handle it."
+  },
+  {
+    "objectID": "CONTRIBUTING.html#proposing-changes-with-issues",
+    "href": "CONTRIBUTING.html#proposing-changes-with-issues",
+    "title": "Contributing to syncweaver",
+    "section": "",
+    "text": "If you want to make a change, it’s a good idea to first open an issue and make sure someone from the team agrees that it’s needed.\nIf you’ve decided to work on an issue, assign yourself to the issue so others will know you’re working on it."
+  },
+  {
+    "objectID": "CONTRIBUTING.html#pull-request-process",
+    "href": "CONTRIBUTING.html#pull-request-process",
+    "title": "Contributing to syncweaver",
+    "section": "",
+    "text": "We use GitHub Flow as our collaboration process.\n\n\nCommit messages must follow Conventional Commits. The conventional-pre-commit hook enforces this on commit.\n\n\n\ngit clone https://github.com/CCBR/syncweaver\ncd syncweaver\npip install -e \".[dev,test,docs]\"\npre-commit install\n\n\n\npytest\n\n\n\nPython code is formatted with ruff. Run ruff format src/ tests/ before committing, or let the pre-commit hook handle it."
+  },
+  {
+    "objectID": "cite.html",
+    "href": "cite.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\nFull citation metadata is available in CITATION.cff."
+  },
+  {
+    "objectID": "help.html",
+    "href": "help.html",
+    "title": "syncweaver",
+    "section": "",
+    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
+  },
+  {
+    "objectID": "reference/git.html",
+    "href": "reference/git.html",
+    "title": "git",
+    "section": "",
+    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\n\n\n\nName\nDescription\n\n\n\n\nbuild_github_git_env\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\nis_full_git_sha\nCheck whether input is a full 40-character git commit SHA.\n\n\nremote_ref_has_path_changes\nCheck whether two source commits differ for an optional subdirectory.\n\n\nresolve_github_token\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\nresolve_remote_ref_to_git_sha\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.build_github_git_env(github_token)\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\n\ngit.is_full_git_sha(value)\nCheck whether input is a full 40-character git commit SHA.\n\n\n\ngit.remote_ref_has_path_changes(\n    repository,\n    previous_git_sha,\n    target_git_sha,\n    remote_subdir=None,\n)\nCheck whether two source commits differ for an optional subdirectory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nprevious_git_sha\nstr\nPreviously tracked commit SHA.\nrequired\n\n\ntarget_git_sha\nstr\nCandidate commit SHA.\nrequired\n\n\nremote_subdir\nstr | None\nOptional tracked subdirectory path.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nbool\nbool\nTrue when relevant files changed between SHAs.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf repository or SHAs are missing/invalid.\n\n\n\nRuntimeError\nIf git operations fail.\n\n\n\n\n\n\n\ngit.resolve_github_token(token)\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\n\ngit.resolve_remote_ref_to_git_sha(repository, source_ref)\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nsource_ref\nstr\nSource ref input (tag/branch/ref/commit SHA).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved full 40-character commit SHA.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf inputs are empty or ref cannot be resolved to a commit SHA.\n\n\n\nRuntimeError\nIf git ls-remote fails.\n\n\n\n\n\n\n\ngit.run_git(args, cwd=None, env=None, redacted_values=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "crumbs": [
+      "Modules",
+      "git"
+    ]
+  },
+  {
+    "objectID": "reference/git.html#functions",
+    "href": "reference/git.html#functions",
+    "title": "git",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nbuild_github_git_env\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\nis_full_git_sha\nCheck whether input is a full 40-character git commit SHA.\n\n\nremote_ref_has_path_changes\nCheck whether two source commits differ for an optional subdirectory.\n\n\nresolve_github_token\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\nresolve_remote_ref_to_git_sha\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.build_github_git_env(github_token)\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\n\ngit.is_full_git_sha(value)\nCheck whether input is a full 40-character git commit SHA.\n\n\n\ngit.remote_ref_has_path_changes(\n    repository,\n    previous_git_sha,\n    target_git_sha,\n    remote_subdir=None,\n)\nCheck whether two source commits differ for an optional subdirectory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nprevious_git_sha\nstr\nPreviously tracked commit SHA.\nrequired\n\n\ntarget_git_sha\nstr\nCandidate commit SHA.\nrequired\n\n\nremote_subdir\nstr | None\nOptional tracked subdirectory path.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nbool\nbool\nTrue when relevant files changed between SHAs.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf repository or SHAs are missing/invalid.\n\n\n\nRuntimeError\nIf git operations fail.\n\n\n\n\n\n\n\ngit.resolve_github_token(token)\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\n\ngit.resolve_remote_ref_to_git_sha(repository, source_ref)\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nsource_ref\nstr\nSource ref input (tag/branch/ref/commit SHA).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved full 40-character commit SHA.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf inputs are empty or ref cannot be resolved to a commit SHA.\n\n\n\nRuntimeError\nIf git ls-remote fails.\n\n\n\n\n\n\n\ngit.run_git(args, cwd=None, env=None, redacted_values=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "crumbs": [
+      "Modules",
+      "git"
+    ]
+  },
+  {
+    "objectID": "reference/templates.html",
+    "href": "reference/templates.html",
+    "title": "templates",
+    "section": "",
+    "text": "templates\nWorkflow template files for syncweaver.\nTemplates can be listed and copied into downstream host repository or package repos using the helper functions below or via the CLI:\nsyncweaver templates list\nsyncweaver templates add syncweaver-host-update --output .github/workflows/\nsyncweaver templates add syncweaver-host-contribute-patch --output .github/workflows/\nsyncweaver templates add syncweaver-source-dispatch --output .github/workflows/\nUse available_templates_markdown() to render the current template inventory.\n\n\n\n\n\nName\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "crumbs": [
+      "Templates",
+      "templates"
+    ]
+  },
+  {
+    "objectID": "reference/templates.html#functions",
+    "href": "reference/templates.html#functions",
+    "title": "templates",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "crumbs": [
+      "Templates",
+      "templates"
+    ]
+  },
+  {
+    "objectID": "reference/util.html",
+    "href": "reference/util.html",
+    "title": "util",
+    "section": "",
+    "text": "util\nUtility helpers for the syncweaver package.\n\n\n\n\n\nName\nDescription\n\n\n\n\nformat_subprocess_error\nFormat subprocess failures with captured stdout and stderr.\n\n\nget_version\nReturn the installed package version.\n\n\nprint_citation\nPrint the project citation and exit when the citation flag is enabled.\n\n\nrepo_base\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nutil.format_subprocess_error(exc)\nFormat subprocess failures with captured stdout and stderr.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nexc\nsubprocess.CalledProcessError\nCaptured subprocess failure.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nHuman-readable error message including captured output.\n\n\n\n\n\n\n\nutil.get_version()\nReturn the installed package version.\nReads from the VERSION file bundled with the package, falling back to importlib.metadata if unavailable.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nVersion string.\n\n\n\n\n\n\n&gt;&gt;&gt; get_version()\n\n\n\n\nutil.print_citation(context, param, value)\nPrint the project citation and exit when the citation flag is enabled.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncontext\n\nClick context.\nrequired\n\n\nparam\n\nClick option parameter (unused callback argument).\nrequired\n\n\nvalue\n\nCitation flag value.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nNone\nNone\nAlways returns None.\n\n\n\n\n\n\n&gt;&gt;&gt; # Used as a Click callback and not called directly.\n\n\n\n\nutil.repo_base(*paths)\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\n*paths\nstr\nAdditional path segments to join.\n()\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Resolved path.\n\n\n\n\n\n\n&gt;&gt;&gt; repo_base(\"CITATION.cff\")",
+    "crumbs": [
+      "Modules",
+      "util"
+    ]
+  },
+  {
+    "objectID": "reference/util.html#functions",
+    "href": "reference/util.html#functions",
+    "title": "util",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nformat_subprocess_error\nFormat subprocess failures with captured stdout and stderr.\n\n\nget_version\nReturn the installed package version.\n\n\nprint_citation\nPrint the project citation and exit when the citation flag is enabled.\n\n\nrepo_base\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nutil.format_subprocess_error(exc)\nFormat subprocess failures with captured stdout and stderr.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nexc\nsubprocess.CalledProcessError\nCaptured subprocess failure.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nHuman-readable error message including captured output.\n\n\n\n\n\n\n\nutil.get_version()\nReturn the installed package version.\nReads from the VERSION file bundled with the package, falling back to importlib.metadata if unavailable.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nVersion string.\n\n\n\n\n\n\n&gt;&gt;&gt; get_version()\n\n\n\n\nutil.print_citation(context, param, value)\nPrint the project citation and exit when the citation flag is enabled.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncontext\n\nClick context.\nrequired\n\n\nparam\n\nClick option parameter (unused callback argument).\nrequired\n\n\nvalue\n\nCitation flag value.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nNone\nNone\nAlways returns None.\n\n\n\n\n\n\n&gt;&gt;&gt; # Used as a Click callback and not called directly.\n\n\n\n\nutil.repo_base(*paths)\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\n*paths\nstr\nAdditional path segments to join.\n()\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Resolved path.\n\n\n\n\n\n\n&gt;&gt;&gt; repo_base(\"CITATION.cff\")",
+    "crumbs": [
+      "Modules",
+      "util"
+    ]
+  },
+  {
+    "objectID": "reference/cli.patch.html",
+    "href": "reference/cli.patch.html",
+    "title": "cli.patch",
+    "section": "",
+    "text": "cli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\nmark_status_cmd\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\npatch_group\nCreate, mark, and list source patch artifacts.\n\n\n\n\n\ncli.patch.create_cmd(source_path, repo, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.mark_status_cmd(patch_path, status, pr_url, reason, lockfile)\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\n\ncli.patch.patch_group()\nCreate, mark, and list source patch artifacts.",
+    "crumbs": [
+      "CLI commands",
+      "cli.patch"
+    ]
+  },
+  {
+    "objectID": "reference/cli.patch.html#functions",
+    "href": "reference/cli.patch.html#functions",
+    "title": "cli.patch",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\nmark_status_cmd\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\npatch_group\nCreate, mark, and list source patch artifacts.\n\n\n\n\n\ncli.patch.create_cmd(source_path, repo, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.mark_status_cmd(patch_path, status, pr_url, reason, lockfile)\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\n\ncli.patch.patch_group()\nCreate, mark, and list source patch artifacts.",
+    "crumbs": [
+      "CLI commands",
+      "cli.patch"
+    ]
+  },
+  {
+    "objectID": "reference/index.html",
+    "href": "reference/index.html",
+    "title": "Function reference",
+    "section": "",
+    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\nlockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\npatch\nPatch lifecycle logic for syncweaver.\n\n\nutil\nUtility helpers for the syncweaver package.\n\n\n\n\n\n\nCommand-line interface\n\n\n\ncli.main\nTop-level Click CLI for syncweaver.\n\n\ncli.add\nCLI command for adding an external repository to a host repository.\n\n\ncli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\ncli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\n\nTemplate files\n\n\n\ntemplates\nWorkflow template files for syncweaver.",
+    "crumbs": [
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "reference/index.html#modules",
+    "href": "reference/index.html#modules",
+    "title": "Function reference",
+    "section": "",
+    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\nlockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\npatch\nPatch lifecycle logic for syncweaver.\n\n\nutil\nUtility helpers for the syncweaver package.",
+    "crumbs": [
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "reference/index.html#cli-commands",
+    "href": "reference/index.html#cli-commands",
+    "title": "Function reference",
+    "section": "",
+    "text": "Command-line interface\n\n\n\ncli.main\nTop-level Click CLI for syncweaver.\n\n\ncli.add\nCLI command for adding an external repository to a host repository.\n\n\ncli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\ncli.templates\nCLI commands for managing workflow templates.",
+    "crumbs": [
+      "Function reference"
+    ]
+  },
+  {
+    "objectID": "reference/index.html#templates",
+    "href": "reference/index.html#templates",
+    "title": "Function reference",
+    "section": "",
+    "text": "Template files\n\n\n\ntemplates\nWorkflow template files for syncweaver.",
+    "crumbs": [
+      "Function reference"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "syncweaver",
@@ -56,396 +763,255 @@
     "text": "Help and Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
   },
   {
-    "objectID": "reference/index.html",
-    "href": "reference/index.html",
-    "title": "Function reference",
+    "objectID": "cli/validate.html",
+    "href": "cli/validate.html",
+    "title": "syncweaver validate",
     "section": "",
-    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\nlockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\npatch\nPatch lifecycle logic for syncweaver.\n\n\nutil\nUtility helpers for the syncweaver package.\n\n\n\n\n\n\nCommand-line interface\n\n\n\ncli.main\nTop-level Click CLI for syncweaver.\n\n\ncli.add\nCLI command for adding an external repository to a host repository.\n\n\ncli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\ncli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\n\nTemplate files\n\n\n\ntemplates\nWorkflow template files for syncweaver.",
+    "text": "Validate a lockfile against the syncweaver JSON schema. Useful as a pre-commit or CI sanity check to catch hand-edited lockfiles that have drifted from the expected structure.",
     "crumbs": [
-      "API",
-      "Function reference"
+      "validate",
+      "`syncweaver validate`"
     ]
   },
   {
-    "objectID": "reference/index.html#modules",
-    "href": "reference/index.html#modules",
-    "title": "Function reference",
-    "section": "",
-    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\nlockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\npatch\nPatch lifecycle logic for syncweaver.\n\n\nutil\nUtility helpers for the syncweaver package.",
+    "objectID": "cli/validate.html#usage",
+    "href": "cli/validate.html#usage",
+    "title": "syncweaver validate",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver validate [OPTIONS]\n\n  Validate a lockfile against the syncweaver lockfile JSON schema.\n\nOptions:\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --schema PATH    Optional path to a JSON schema file. Defaults to bundled\n                   schema.\n  -h, --help       Show this message and exit.",
     "crumbs": [
-      "API",
-      "Function reference"
+      "validate",
+      "`syncweaver validate`"
     ]
   },
   {
-    "objectID": "reference/index.html#cli-commands",
-    "href": "reference/index.html#cli-commands",
-    "title": "Function reference",
-    "section": "",
-    "text": "Command-line interface\n\n\n\ncli.main\nTop-level Click CLI for syncweaver.\n\n\ncli.add\nCLI command for adding an external repository to a host repository.\n\n\ncli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\ncli.templates\nCLI commands for managing workflow templates.",
+    "objectID": "cli/validate.html#examples",
+    "href": "cli/validate.html#examples",
+    "title": "syncweaver validate",
+    "section": "Examples",
+    "text": "Examples\n# Validate the default lockfile in the current directory\nsyncweaver validate\n\n# Validate a custom lockfile path\nsyncweaver validate --lockfile path/to/custom-lock.json\n\n# Validate against a local schema (for development)\nsyncweaver validate --schema path/to/schema.json",
     "crumbs": [
-      "API",
-      "Function reference"
+      "validate",
+      "`syncweaver validate`"
     ]
   },
   {
-    "objectID": "reference/index.html#templates",
-    "href": "reference/index.html#templates",
-    "title": "Function reference",
+    "objectID": "cli/init/index.html",
+    "href": "cli/init/index.html",
+    "title": "syncweaver init",
     "section": "",
-    "text": "Template files\n\n\n\ntemplates\nWorkflow template files for syncweaver.",
+    "text": "Initialize syncweaver boilerplate and starter content in local or remote repositories.",
     "crumbs": [
-      "API",
-      "Function reference"
+      "init",
+      "`syncweaver init`"
     ]
   },
   {
-    "objectID": "reference/cli.patch.html",
-    "href": "reference/cli.patch.html",
-    "title": "cli.patch",
-    "section": "",
-    "text": "cli.patch\nCLI commands for syncweaver patch lifecycle operations.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\nmark_status_cmd\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\npatch_group\nCreate, mark, and list source patch artifacts.\n\n\n\n\n\ncli.patch.create_cmd(source_path, repo, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.mark_status_cmd(patch_path, status, pr_url, reason, lockfile)\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\n\ncli.patch.patch_group()\nCreate, mark, and list source patch artifacts.",
+    "objectID": "cli/init/index.html#usage",
+    "href": "cli/init/index.html#usage",
+    "title": "syncweaver init",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver init [OPTIONS] COMMAND [ARGS]...\n\n  Initialize syncweaver starter content in local or remote repositories.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  host  Initialize host repository boilerplate and orchestrator...\n  orch  Initialize orchestrator repository files from packaged templates.",
     "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.patch"
+      "init",
+      "`syncweaver init`"
     ]
   },
   {
-    "objectID": "reference/cli.patch.html#functions",
-    "href": "reference/cli.patch.html#functions",
-    "title": "cli.patch",
+    "objectID": "cli/contribute.html",
+    "href": "cli/contribute.html",
+    "title": "syncweaver contribute",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\ncreate_cmd\nCreate or update a canonical patch file for a\n\n\nlist_cmd\nList tracked patch file records for a source path.\n\n\nmark_status_cmd\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\npatch_group\nCreate, mark, and list source patch artifacts.\n\n\n\n\n\ncli.patch.create_cmd(source_path, repo, lockfile, patch_dir)\nCreate or update a canonical patch file for a tracked source path.\n\n\n\ncli.patch.list_cmd(source_path, lockfile)\nList tracked patch file records for a source path.\n\n\n\ncli.patch.mark_status_cmd(patch_path, status, pr_url, reason, lockfile)\nRecord patch lifecycle status metadata in lockfile extension fields.\n\n\n\ncli.patch.patch_group()\nCreate, mark, and list source patch artifacts.",
+    "text": "Contribute a patch that was created in a host repository back to the upstream source repository as a pull request. The command clones the source, applies the patch to a new branch, pushes it, and opens a PR — all without leaving the host repository directory.",
     "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.patch"
+      "contribute",
+      "`syncweaver contribute`"
     ]
   },
   {
-    "objectID": "reference/util.html",
-    "href": "reference/util.html",
-    "title": "util",
-    "section": "",
-    "text": "util\nUtility helpers for the syncweaver package.\n\n\n\n\n\nName\nDescription\n\n\n\n\nformat_subprocess_error\nFormat subprocess failures with captured stdout and stderr.\n\n\nget_version\nReturn the installed package version.\n\n\nprint_citation\nPrint the project citation and exit when the citation flag is enabled.\n\n\nrepo_base\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nutil.format_subprocess_error(exc)\nFormat subprocess failures with captured stdout and stderr.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nexc\nsubprocess.CalledProcessError\nCaptured subprocess failure.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nHuman-readable error message including captured output.\n\n\n\n\n\n\n\nutil.get_version()\nReturn the installed package version.\nReads from the VERSION file bundled with the package, falling back to importlib.metadata if unavailable.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nVersion string.\n\n\n\n\n\n\n&gt;&gt;&gt; get_version()\n\n\n\n\nutil.print_citation(context, param, value)\nPrint the project citation and exit when the citation flag is enabled.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncontext\n\nClick context.\nrequired\n\n\nparam\n\nClick option parameter (unused callback argument).\nrequired\n\n\nvalue\n\nCitation flag value.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nNone\nNone\nAlways returns None.\n\n\n\n\n\n\n&gt;&gt;&gt; # Used as a Click callback and not called directly.\n\n\n\n\nutil.repo_base(*paths)\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\n*paths\nstr\nAdditional path segments to join.\n()\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Resolved path.\n\n\n\n\n\n\n&gt;&gt;&gt; repo_base(\"CITATION.cff\")",
+    "objectID": "cli/contribute.html#usage",
+    "href": "cli/contribute.html#usage",
+    "title": "syncweaver contribute",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver contribute [OPTIONS]\n\n  Contribute a tracked host patch back to the source repository.\n\n  Clones the source repository, applies the patch to a new branch, pushes it,\n  and opens a pull request.  Runs from the host repository directory.\n\nOptions:\n  --path TEXT               Tracked source path in the host repository, e.g.\n                            code/package1. Resolved automatically from\n                            lockfile when not provided.\n  --repo-url TEXT           Source repository URL or OWNER/REPO shorthand.\n                            Used to disambiguate when multiple sources are\n                            tracked.\n  --source-repository TEXT  Source repository in OWNER/REPO format. Derived\n                            from lockfile repo_url when not provided.\n  --patch PATH              Path to the patch file to contribute. Resolved\n                            from lockfile patch entry when not provided.\n  --base-ref TEXT           Base branch or ref in the source repository to\n                            target. Defaults to lockfile ref when not\n                            provided.\n  --lockfile PATH           Path to .syncweaver-lock.json in the host\n                            repository.  [default: .syncweaver-lock.json]\n  --token TEXT              GitHub token with push access to the source\n                            repository. May also be set via the GITHUB_TOKEN\n                            environment variable or resolved from `gh auth\n                            token` when not provided.\n  --run-id TEXT             Optional identifier appended to the branch name\n                            for uniqueness.\n  --debug                   Print resolved metadata and verbose git output.\n  -h, --help                Show this message and exit.",
     "crumbs": [
-      "API",
-      "Modules",
-      "util"
+      "contribute",
+      "`syncweaver contribute`"
     ]
   },
   {
-    "objectID": "reference/util.html#functions",
-    "href": "reference/util.html#functions",
-    "title": "util",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nformat_subprocess_error\nFormat subprocess failures with captured stdout and stderr.\n\n\nget_version\nReturn the installed package version.\n\n\nprint_citation\nPrint the project citation and exit when the citation flag is enabled.\n\n\nrepo_base\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nutil.format_subprocess_error(exc)\nFormat subprocess failures with captured stdout and stderr.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nexc\nsubprocess.CalledProcessError\nCaptured subprocess failure.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nHuman-readable error message including captured output.\n\n\n\n\n\n\n\nutil.get_version()\nReturn the installed package version.\nReads from the VERSION file bundled with the package, falling back to importlib.metadata if unavailable.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nVersion string.\n\n\n\n\n\n\n&gt;&gt;&gt; get_version()\n\n\n\n\nutil.print_citation(context, param, value)\nPrint the project citation and exit when the citation flag is enabled.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncontext\n\nClick context.\nrequired\n\n\nparam\n\nClick option parameter (unused callback argument).\nrequired\n\n\nvalue\n\nCitation flag value.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nNone\nNone\nAlways returns None.\n\n\n\n\n\n\n&gt;&gt;&gt; # Used as a Click callback and not called directly.\n\n\n\n\nutil.repo_base(*paths)\nReturn an absolute path rooted at the syncweaver package directory.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\n*paths\nstr\nAdditional path segments to join.\n()\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Resolved path.\n\n\n\n\n\n\n&gt;&gt;&gt; repo_base(\"CITATION.cff\")",
+    "objectID": "cli/contribute.html#examples",
+    "href": "cli/contribute.html#examples",
+    "title": "syncweaver contribute",
+    "section": "Examples",
+    "text": "Examples\n# Contribute the patch for a tracked path (lockfile auto-resolved)\nsyncweaver contribute --path code/mypackage\n\n# Specify source repo and patch file explicitly\nsyncweaver contribute \\\n  --path code/mypackage \\\n  --source-repository OWNER/mypackage \\\n  --patch patches/mypackage.patch \\\n  --base-ref main\n\n# Pass a token directly (or set GITHUB_TOKEN in env)\nsyncweaver contribute \\\n  --path code/mypackage \\\n  --token \"$GITHUB_TOKEN\"",
     "crumbs": [
-      "API",
-      "Modules",
-      "util"
+      "contribute",
+      "`syncweaver contribute`"
     ]
   },
   {
-    "objectID": "reference/templates.html",
-    "href": "reference/templates.html",
-    "title": "templates",
+    "objectID": "cli/patch/mark-status.html",
+    "href": "cli/patch/mark-status.html",
+    "title": "syncweaver patch mark-status",
     "section": "",
-    "text": "templates\nWorkflow template files for syncweaver.\nTemplates can be listed and copied into downstream host repository or package repos using the helper functions below or via the CLI:\nsyncweaver templates list\nsyncweaver templates add syncweaver-host-update --output .github/workflows/\nsyncweaver templates add syncweaver-host-contribute-patch --output .github/workflows/\nsyncweaver templates add syncweaver-source-dispatch --output .github/workflows/\nUse available_templates_markdown() to render the current template inventory.\n\n\n\n\n\nName\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "text": "Record a lifecycle status tag (e.g. pending, contributed, merged) for a patch entry in the lockfile, enabling automated workflows to track contribution state.",
     "crumbs": [
-      "API",
-      "Templates",
-      "templates"
+      "patch",
+      "`syncweaver patch mark-status`"
     ]
   },
   {
-    "objectID": "reference/templates.html#functions",
-    "href": "reference/templates.html#functions",
-    "title": "templates",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\navailable_templates_markdown\nBuild a markdown bullet list of currently available template files.\n\n\nlist_templates\nList available workflow templates.\n\n\nread_template\nRead a template file’s contents.\n\n\nuse_template\nCopy a workflow template into the specified output directory.\n\n\n\n\n\ntemplates.available_templates_markdown()\nBuild a markdown bullet list of currently available template files.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nMarkdown-formatted bullet list.\n\n\n\n\n\n\n&gt;&gt;&gt; available_templates_markdown()\n\n\n\n\ntemplates.list_templates()\nList available workflow templates.\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Template file names.\n\n\n\n\n\n\n&gt;&gt;&gt; list_templates()\n\n\n\n\ntemplates.read_template(template_name)\nRead a template file’s contents.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nContents of the template file.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template file does not exist.\n\n\n\n\n\n\n&gt;&gt;&gt; read_template(\"host-repo-pattern1-outbound.yml\")\n\n\n\n\ntemplates.use_template(\n    template_name,\n    output_dir='.github/workflows',\n    overwrite=False,\n)\nCopy a workflow template into the specified output directory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ntemplate_name\nstr\nName of the template file (with or without .yml extension).\nrequired\n\n\noutput_dir\nstr | pathlib.Path\nDirectory to write the template. Defaults to .github/workflows.\n'.github/workflows'\n\n\noverwrite\nbool\nIf True, overwrite an existing file. Defaults to False.\nFalse\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\npathlib.Path\npathlib.Path: Path to the written file.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the template does not exist.\n\n\n\nFileExistsError\nIf the destination file already exists and overwrite is False.\n\n\n\n\n\n\n&gt;&gt;&gt; use_template(\"host-repo-pattern1-outbound.yml\")",
+    "objectID": "cli/patch/mark-status.html#usage",
+    "href": "cli/patch/mark-status.html#usage",
+    "title": "syncweaver patch mark-status",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver patch mark-status [OPTIONS]\n\n  Record patch lifecycle status metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH                    Relative patch path, e.g.\n                                  code/package1/.syncweaver/package1.diff.\n                                  [required]\n  --status [local|open|accepted|rejected]\n                                  Patch lifecycle status to record in the\n                                  lockfile.  [required]\n  --pr-url TEXT                   Optional upstream pull request URL\n                                  associated with this patch.\n  --reason TEXT                   Optional free-text note, required for\n                                  rejected patches.\n  --lockfile PATH                 Path to .syncweaver-lock.json in the host\n                                  repository.  [default: .syncweaver-\n                                  lock.json]\n  -h, --help                      Show this message and exit.",
     "crumbs": [
-      "API",
-      "Templates",
-      "templates"
+      "patch",
+      "`syncweaver patch mark-status`"
     ]
   },
   {
-    "objectID": "reference/git.html",
-    "href": "reference/git.html",
-    "title": "git",
-    "section": "",
-    "text": "git\nGit command helpers shared across syncweaver modules.\n\n\n\n\n\nName\nDescription\n\n\n\n\nbuild_github_git_env\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\nis_full_git_sha\nCheck whether input is a full 40-character git commit SHA.\n\n\nremote_ref_has_path_changes\nCheck whether two source commits differ for an optional subdirectory.\n\n\nresolve_github_token\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\nresolve_remote_ref_to_git_sha\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.build_github_git_env(github_token)\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\n\ngit.is_full_git_sha(value)\nCheck whether input is a full 40-character git commit SHA.\n\n\n\ngit.remote_ref_has_path_changes(\n    repository,\n    previous_git_sha,\n    target_git_sha,\n    remote_subdir=None,\n)\nCheck whether two source commits differ for an optional subdirectory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nprevious_git_sha\nstr\nPreviously tracked commit SHA.\nrequired\n\n\ntarget_git_sha\nstr\nCandidate commit SHA.\nrequired\n\n\nremote_subdir\nstr | None\nOptional tracked subdirectory path.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nbool\nbool\nTrue when relevant files changed between SHAs.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf repository or SHAs are missing/invalid.\n\n\n\nRuntimeError\nIf git operations fail.\n\n\n\n\n\n\n\ngit.resolve_github_token(token)\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\n\ngit.resolve_remote_ref_to_git_sha(repository, source_ref)\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nsource_ref\nstr\nSource ref input (tag/branch/ref/commit SHA).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved full 40-character commit SHA.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf inputs are empty or ref cannot be resolved to a commit SHA.\n\n\n\nRuntimeError\nIf git ls-remote fails.\n\n\n\n\n\n\n\ngit.run_git(args, cwd=None, env=None, redacted_values=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "objectID": "cli/patch/mark-status.html#examples",
+    "href": "cli/patch/mark-status.html#examples",
+    "title": "syncweaver patch mark-status",
+    "section": "Examples",
+    "text": "Examples\n# Mark a patch as contributed upstream\nsyncweaver patch mark-status --path code/mypackage --status contributed\n\n# Mark with a specific patch file reference\nsyncweaver patch mark-status \\\n  --path code/mypackage \\\n  --patch patches/mypackage.patch \\\n  --status merged",
     "crumbs": [
-      "API",
-      "Modules",
-      "git"
+      "patch",
+      "`syncweaver patch mark-status`"
     ]
   },
   {
-    "objectID": "reference/git.html#functions",
-    "href": "reference/git.html#functions",
-    "title": "git",
+    "objectID": "cli/patch/index.html",
+    "href": "cli/patch/index.html",
+    "title": "syncweaver patch",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nbuild_github_git_env\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\nis_full_git_sha\nCheck whether input is a full 40-character git commit SHA.\n\n\nremote_ref_has_path_changes\nCheck whether two source commits differ for an optional subdirectory.\n\n\nresolve_github_token\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\nresolve_remote_ref_to_git_sha\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\nrun_git\nRun a git command and return stdout, raising RuntimeError on failure.\n\n\n\n\n\ngit.build_github_git_env(github_token)\nBuild process-local GitHub auth headers for git-over-HTTPS commands.\n\n\n\ngit.is_full_git_sha(value)\nCheck whether input is a full 40-character git commit SHA.\n\n\n\ngit.remote_ref_has_path_changes(\n    repository,\n    previous_git_sha,\n    target_git_sha,\n    remote_subdir=None,\n)\nCheck whether two source commits differ for an optional subdirectory.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nprevious_git_sha\nstr\nPreviously tracked commit SHA.\nrequired\n\n\ntarget_git_sha\nstr\nCandidate commit SHA.\nrequired\n\n\nremote_subdir\nstr | None\nOptional tracked subdirectory path.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nbool\nbool\nTrue when relevant files changed between SHAs.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf repository or SHAs are missing/invalid.\n\n\n\nRuntimeError\nIf git operations fail.\n\n\n\n\n\n\n\ngit.resolve_github_token(token)\nResolve a GitHub token from explicit input, env var, or the gh CLI.\n\n\n\ngit.resolve_remote_ref_to_git_sha(repository, source_ref)\nResolve a remote source ref to a full commit SHA via git ls-remote.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepository\nstr\nSource repository URL.\nrequired\n\n\nsource_ref\nstr\nSource ref input (tag/branch/ref/commit SHA).\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved full 40-character commit SHA.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf inputs are empty or ref cannot be resolved to a commit SHA.\n\n\n\nRuntimeError\nIf git ls-remote fails.\n\n\n\n\n\n\n\ngit.run_git(args, cwd=None, env=None, redacted_values=None)\nRun a git command and return stdout, raising RuntimeError on failure.",
+    "text": "Create, mark, and list canonical patch artifacts that record host-side customisations to vendored source content.",
     "crumbs": [
-      "API",
-      "Modules",
-      "git"
+      "patch",
+      "`syncweaver patch`"
     ]
   },
   {
-    "objectID": "syncweaver_functracer_reference_guide.html",
-    "href": "syncweaver_functracer_reference_guide.html",
-    "title": "syncweaver & functracer — Tool Reference",
-    "section": "",
-    "text": "These two tools form the automation backbone of Approach B (per-capsule repos). They are purpose-built for the OMIX/NIDAP architecture and are not part of Approach A.\n\n\n\n\n\n\nGiven a capsule’s entry script (main.R) and a package, functracer analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).\nGiven a new package ref (tag, branch, or commit SHA) and the previously locked commit, functracer determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.\n\n\n\n\nWhen a new version of the OMIX monorepo or MOSuite is released, not every capsule needs to be updated. A change to a volcano-specific plotting function is irrelevant to the heatmap capsule. But the reverse is equally important: a change made inside the volcano module might touch a shared core function that other capsules also depend on — and those capsules need to be updated too, even though the change originated in volcano. functracer answers both questions: “Does this upstream change affect my capsule?” and “Does this change in one module ripple out to other capsules that share the same underlying functions?”\n\n\n\nfunctracer::analyze_dependencies(entry_script, package)\nReturns a table of every function dependency with:\n\nfunction — the function name\nsource — which package it comes from (e.g. MOSuite)\ndep_type — direct (called by main.R) or indirect (called transitively)\ncall_path — the full chain, e.g. main.R -&gt; batch_correct_counts -&gt; plot_corr_heatmap\n\n\n\n\nfunctracer builds a complete dependency map across all capsules. Once built, it can be queried in either direction:\nForward — upstream change → which capsules are affected? A new version of MOSuite or OMIX is released → functracer checks each capsule’s dependency graph against the changed functions → only capsules that call those functions (directly or transitively) are updated. A change to a volcano-specific plotting function leaves the heatmap capsule untouched.\nReverse — a module change → which other capsules are also affected? A developer edits a function inside the volcano module. If that function is shared with core, or is called transitively by other capsules, functracer identifies all capsules that depend on it — not just the volcano capsule. This prevents a scenario where a change to one module silently breaks another capsule that happened to share the same underlying function.\nBecause functracer traces transitive dependencies (the full call chain, not just direct calls), it catches indirect coupling that a manual review would likely miss. For example: volcano calls plot_corr_heatmap, which calls extract_counts from core. If extract_counts changes, functracer flags every capsule whose call graph passes through it — even if that capsule never explicitly references extract_counts in its own main.R.\n\n\n\nWhen any function changes — whether from an upstream release or an edit within a module:\n\nIdentify which functions changed\nQuery the full cross-capsule dependency map for those functions\nIf a capsule’s call graph includes the changed function → update that capsule’s lockfile and cut a new release\nIf no capsule depends on the changed function → do nothing\n\n\n\n\nA silent false negative — functracer incorrectly marking a capsule as unaffected when it is — would cause the capsule to ship stale code with no warning. This tool must have thorough test coverage before the system goes to production.\n\n\n\n\n\n\n\nA command-line interface (CLI) for synchronizing code between upstream sources (the OMIX monorepo, MOSuite R package) and individual capsule repos. It handles both directions: pulling upstream changes down into a capsule repo, and contributing capsule edits back upstream.\n\n\n\nCapsule repos need to stay in sync with upstream sources, but the relationship is not a simple git pull. The monorepo has a different directory layout than the capsule repo, versions must be pinned independently, and changes from analysts working in Code Ocean need a structured path back to the upstream source — with conflict handling and patch management that GitHub Actions alone cannot reliably provide.\n\n\n\nEach capsule repo contains a .syncweaver-lock.json that specifies every upstream source the capsule depends on:\n{\n  \"sources\": {\n    \"code/OMIX-core\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"core/\",\n      \"ref\": \"v1.0.0\",\n      \"git_sha\": \"c09ee39\"\n    },\n    \"code/OMIX-module-volcano\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"modules/volcano\",\n      \"ref\": \"v1.3.2\",\n      \"git_sha\": \"e2b4fa7\"\n    }\n  }\n}\nEach source entry is independently pinned by both semantic version (ref) and exact commit (git_sha). A capsule can upgrade one source while holding another stable.\n\n\n\n\nSync downstream — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review\nPatch upstream — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR\nStaleness check — compare the locked git_sha against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date\nConflict handling — explicit patching operations, not silent overwrites; conflicts surface for human resolution before main is touched\n\n\n\n\nBecause the lockfile is a list of source entries, a capsule that needs code from multiple monorepo modules simply declares multiple entries. syncweaver pulls each independently and places them in the correct subdirectory of the capsule repo. There is no combinatorial complexity — adding a module dependency is adding one JSON entry.\n\n\n\nsyncweaver and functracer work in tandem:\n\nNew upstream release is tagged\nfunctracer determines which capsules are affected\nsyncweaver updates only those capsules’ lockfiles and opens PRs\nGitHub Actions orchestrates the entire sequence automatically\n\n\n\n\n\n\nNew release tagged in OMIX monorepo\n         │\n         ▼\nfunctracer: which capsules depend on changed functions?\n         │\n         ├─ Capsule A: affected → syncweaver updates lockfile → PR opened → CI passes → maintainer merges → new capsule release\n         │\n         └─ Capsule B: unaffected → no action taken"
+    "objectID": "cli/patch/index.html#usage",
+    "href": "cli/patch/index.html#usage",
+    "title": "syncweaver patch",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, mark, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  create       Create or update a canonical patch file for a tracked...\n  list         List tracked patch file records for a source path.\n  mark-status  Record patch lifecycle status metadata in lockfile...",
+    "crumbs": [
+      "patch",
+      "`syncweaver patch`"
+    ]
   },
   {
-    "objectID": "syncweaver_functracer_reference_guide.html#functracer",
-    "href": "syncweaver_functracer_reference_guide.html#functracer",
-    "title": "syncweaver & functracer — Tool Reference",
+    "objectID": "cli/templates/add.html",
+    "href": "cli/templates/add.html",
+    "title": "syncweaver templates add",
     "section": "",
-    "text": "Given a capsule’s entry script (main.R) and a package, functracer analyzes the call graph and returns every function the capsule depends on — both direct calls and transitive calls (functions called by functions).\nGiven a new package ref (tag, branch, or commit SHA) and the previously locked commit, functracer determines whether the new version contains changes that would affect the capsule based on the list of functions used by the capsule entry script. In syncweaver workflows, refs are resolved to commit SHAs before comparison whenever possible.\n\n\n\n\nWhen a new version of the OMIX monorepo or MOSuite is released, not every capsule needs to be updated. A change to a volcano-specific plotting function is irrelevant to the heatmap capsule. But the reverse is equally important: a change made inside the volcano module might touch a shared core function that other capsules also depend on — and those capsules need to be updated too, even though the change originated in volcano. functracer answers both questions: “Does this upstream change affect my capsule?” and “Does this change in one module ripple out to other capsules that share the same underlying functions?”\n\n\n\nfunctracer::analyze_dependencies(entry_script, package)\nReturns a table of every function dependency with:\n\nfunction — the function name\nsource — which package it comes from (e.g. MOSuite)\ndep_type — direct (called by main.R) or indirect (called transitively)\ncall_path — the full chain, e.g. main.R -&gt; batch_correct_counts -&gt; plot_corr_heatmap\n\n\n\n\nfunctracer builds a complete dependency map across all capsules. Once built, it can be queried in either direction:\nForward — upstream change → which capsules are affected? A new version of MOSuite or OMIX is released → functracer checks each capsule’s dependency graph against the changed functions → only capsules that call those functions (directly or transitively) are updated. A change to a volcano-specific plotting function leaves the heatmap capsule untouched.\nReverse — a module change → which other capsules are also affected? A developer edits a function inside the volcano module. If that function is shared with core, or is called transitively by other capsules, functracer identifies all capsules that depend on it — not just the volcano capsule. This prevents a scenario where a change to one module silently breaks another capsule that happened to share the same underlying function.\nBecause functracer traces transitive dependencies (the full call chain, not just direct calls), it catches indirect coupling that a manual review would likely miss. For example: volcano calls plot_corr_heatmap, which calls extract_counts from core. If extract_counts changes, functracer flags every capsule whose call graph passes through it — even if that capsule never explicitly references extract_counts in its own main.R.\n\n\n\nWhen any function changes — whether from an upstream release or an edit within a module:\n\nIdentify which functions changed\nQuery the full cross-capsule dependency map for those functions\nIf a capsule’s call graph includes the changed function → update that capsule’s lockfile and cut a new release\nIf no capsule depends on the changed function → do nothing\n\n\n\n\nA silent false negative — functracer incorrectly marking a capsule as unaffected when it is — would cause the capsule to ship stale code with no warning. This tool must have thorough test coverage before the system goes to production."
+    "text": "Copy a named bundled workflow template into the .github/workflows/ directory (or a custom output directory) of the current repository.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates add`"
+    ]
   },
   {
-    "objectID": "syncweaver_functracer_reference_guide.html#syncweaver",
-    "href": "syncweaver_functracer_reference_guide.html#syncweaver",
-    "title": "syncweaver & functracer — Tool Reference",
-    "section": "",
-    "text": "A command-line interface (CLI) for synchronizing code between upstream sources (the OMIX monorepo, MOSuite R package) and individual capsule repos. It handles both directions: pulling upstream changes down into a capsule repo, and contributing capsule edits back upstream.\n\n\n\nCapsule repos need to stay in sync with upstream sources, but the relationship is not a simple git pull. The monorepo has a different directory layout than the capsule repo, versions must be pinned independently, and changes from analysts working in Code Ocean need a structured path back to the upstream source — with conflict handling and patch management that GitHub Actions alone cannot reliably provide.\n\n\n\nEach capsule repo contains a .syncweaver-lock.json that specifies every upstream source the capsule depends on:\n{\n  \"sources\": {\n    \"code/OMIX-core\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"core/\",\n      \"ref\": \"v1.0.0\",\n      \"git_sha\": \"c09ee39\"\n    },\n    \"code/OMIX-module-volcano\": {\n      \"repo_url\": \"https://github.com/CCBR/OMIX-core\",\n      \"remote_subdir\": \"modules/volcano\",\n      \"ref\": \"v1.3.2\",\n      \"git_sha\": \"e2b4fa7\"\n    }\n  }\n}\nEach source entry is independently pinned by both semantic version (ref) and exact commit (git_sha). A capsule can upgrade one source while holding another stable.\n\n\n\n\nSync downstream — pull a new upstream release into a capsule repo, update the lockfile, open a PR for maintainer review\nPatch upstream — take analyst edits from a capsule repo and contribute them back to the upstream monorepo as a PR\nStaleness check — compare the locked git_sha against the commit SHA resolved from the requested upstream ref (or upstream HEAD when applicable) to detect whether a capsule is out of date\nConflict handling — explicit patching operations, not silent overwrites; conflicts surface for human resolution before main is touched\n\n\n\n\nBecause the lockfile is a list of source entries, a capsule that needs code from multiple monorepo modules simply declares multiple entries. syncweaver pulls each independently and places them in the correct subdirectory of the capsule repo. There is no combinatorial complexity — adding a module dependency is adding one JSON entry.\n\n\n\nsyncweaver and functracer work in tandem:\n\nNew upstream release is tagged\nfunctracer determines which capsules are affected\nsyncweaver updates only those capsules’ lockfiles and opens PRs\nGitHub Actions orchestrates the entire sequence automatically"
+    "objectID": "cli/templates/add.html#usage",
+    "href": "cli/templates/add.html#usage",
+    "title": "syncweaver templates add",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates add`"
+    ]
   },
   {
-    "objectID": "syncweaver_functracer_reference_guide.html#how-they-fit-into-the-release-pipeline",
-    "href": "syncweaver_functracer_reference_guide.html#how-they-fit-into-the-release-pipeline",
-    "title": "syncweaver & functracer — Tool Reference",
-    "section": "",
-    "text": "New release tagged in OMIX monorepo\n         │\n         ▼\nfunctracer: which capsules depend on changed functions?\n         │\n         ├─ Capsule A: affected → syncweaver updates lockfile → PR opened → CI passes → maintainer merges → new capsule release\n         │\n         └─ Capsule B: unaffected → no action taken"
+    "objectID": "cli/templates/add.html#examples",
+    "href": "cli/templates/add.html#examples",
+    "title": "syncweaver templates add",
+    "section": "Examples",
+    "text": "Examples\n# List available templates first\nsyncweaver templates list\n\n# Add a specific template to the default output location\nsyncweaver templates add sync-update\n\n# Add to a custom directory\nsyncweaver templates add sync-update --output-dir .github/workflows",
+    "crumbs": [
+      "templates",
+      "`syncweaver templates add`"
+    ]
   },
   {
-    "objectID": "cli.html",
-    "href": "cli.html",
+    "objectID": "cli/add.html",
+    "href": "cli/add.html",
+    "title": "syncweaver add",
+    "section": "",
+    "text": "Add an external repository (or subdirectory) to the current host repository. The command vendors the source content into the specified --path, records the reference in .syncweaver-lock.json, and snapshots the file state so future update and patch operations can track drift.",
+    "crumbs": [
+      "add",
+      "`syncweaver add`"
+    ]
+  },
+  {
+    "objectID": "cli/add.html#usage",
+    "href": "cli/add.html#usage",
+    "title": "syncweaver add",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH              Destination path in the host repository, e.g.\n                           code/package1.  [required]\n  --repo, --repo-url TEXT  External repository URL or OWNER/REPO shorthand.\n                           [required]\n  --ref TEXT               Git ref to vendor (branch, tag, or commit).\n                           Defaults to remote HEAD.\n  --remote-subdir TEXT     Optional repository subdirectory to vendor, e.g.\n                           src/package1. When omitted, vendors repository\n                           root.\n  --lockfile PATH          Path to .syncweaver-lock.json in the host\n                           repository.  [default: .syncweaver-lock.json]\n  --overwrite              Overwrite destination path if it already exists.\n  -h, --help               Show this message and exit.",
+    "crumbs": [
+      "add",
+      "`syncweaver add`"
+    ]
+  },
+  {
+    "objectID": "cli/add.html#examples",
+    "href": "cli/add.html#examples",
+    "title": "syncweaver add",
+    "section": "Examples",
+    "text": "Examples\n# Add a full repository at a specific tag\nsyncweaver add --path code/mypackage --repo OWNER/mypackage --ref v1.2.3\n\n# Add only a subdirectory from the repository\nsyncweaver add \\\n  --path code/mypackage \\\n  --repo OWNER/mypackage \\\n  --ref main \\\n  --remote-subdir src/mypackage\n\n# Use a custom lockfile location\nsyncweaver add \\\n  --path code/mypackage \\\n  --repo OWNER/mypackage \\\n  --lockfile config/syncweaver-lock.json",
+    "crumbs": [
+      "add",
+      "`syncweaver add`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/select-update-paths.html",
+    "href": "cli/deps/select-update-paths.html",
+    "title": "syncweaver deps select-update-paths",
+    "section": "",
+    "text": "Filter the set of candidate source paths in a host repository and emit the selection metadata needed to drive an automated update matrix.",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps select-update-paths`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/select-update-paths.html#usage",
+    "href": "cli/deps/select-update-paths.html#usage",
+    "title": "syncweaver deps select-update-paths",
+    "section": "Usage",
+    "text": "Usage\nUsage: syncweaver deps select-update-paths [OPTIONS]\n\n  Filter candidate source paths and emit selection JSON and optional outputs.\n\nOptions:\n  --source-paths-json TEXT        JSON array of candidate source paths\n                                  resolved from lockfile.  [required]\n  --lockfile PATH                 Lockfile path relative to host repository\n                                  root.  [default: .syncweaver-lock.json]\n  --source-ref TEXT               Candidate source ref for update impact\n                                  analysis.  [required]\n  --host-repo DIRECTORY           Path to host repository root.  [default: .]\n  --functracer-entry-scripts TEXT\n                                  Comma/newline-separated host entry scripts\n                                  for functracer checks.  [default: \"\"]\n  --functracer-source-paths TEXT  Optional comma/newline-separated source\n                                  paths to gate with functracer.  [default:\n                                  \"\"]\n  --functracer-backend [local|docker|singularity]\n                                  Optional functracer backend (local, docker,\n                                  singularity). When omitted, auto-detects\n                                  from PATH in that order.\n  --functracer-version TEXT       Optional functracer version (e.g. latest or\n                                  any docker image tag). When omitted, falls\n                                  back to latest.\n  --github-output FILE            Optional path to append GitHub Action output\n                                  variables.\n  -h, --help                      Show this message and exit.",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps select-update-paths`"
+    ]
+  },
+  {
+    "objectID": "cli/deps/select-update-paths.html#examples",
+    "href": "cli/deps/select-update-paths.html#examples",
+    "title": "syncweaver deps select-update-paths",
+    "section": "Examples",
+    "text": "Examples\n# Emit update-path selection for a host repository\nsyncweaver deps select-update-paths",
+    "crumbs": [
+      "deps",
+      "`syncweaver deps select-update-paths`"
+    ]
+  },
+  {
+    "objectID": "cli/index.html",
+    "href": "cli/index.html",
     "title": "Command-line interface",
     "section": "",
-    "text": "syncweaver --help\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\nadd\nUsage: syncweaver add [OPTIONS]\n\n  Add an external repository to the current host repository.\n\nOptions:\n  --path PATH              Destination path in the host repository, e.g.\n                           code/package1.  [required]\n  --repo, --repo-url TEXT  External repository URL or OWNER/REPO shorthand.\n                           [required]\n  --ref TEXT               Git ref to vendor (branch, tag, or commit).\n                           Defaults to remote HEAD.\n  --remote-subdir TEXT     Optional repository subdirectory to vendor, e.g.\n                           src/package1. When omitted, vendors repository\n                           root.\n  --lockfile PATH          Path to .syncweaver-lock.json in the host\n                           repository.  [default: .syncweaver-lock.json]\n  --overwrite              Overwrite destination path if it already exists.\n  -h, --help               Show this message and exit.\n\n\n\ncontribute\nUsage: syncweaver contribute [OPTIONS]\n\n  Contribute a tracked host patch back to the source repository.\n\n  Clones the source repository, applies the patch to a new branch, pushes it,\n  and opens a pull request.  Runs from the host repository directory.\n\nOptions:\n  --path TEXT               Tracked source path in the host repository, e.g.\n                            code/package1. Resolved automatically from\n                            lockfile when not provided.\n  --repo-url TEXT           Source repository URL or OWNER/REPO shorthand.\n                            Used to disambiguate when multiple sources are\n                            tracked.\n  --source-repository TEXT  Source repository in OWNER/REPO format. Derived\n                            from lockfile repo_url when not provided.\n  --patch PATH              Path to the patch file to contribute. Resolved\n                            from lockfile patch entry when not provided.\n  --base-ref TEXT           Base branch or ref in the source repository to\n                            target. Defaults to lockfile ref when not\n                            provided.\n  --lockfile PATH           Path to .syncweaver-lock.json in the host\n                            repository.  [default: .syncweaver-lock.json]\n  --token TEXT              GitHub token with push access to the source\n                            repository. May also be set via the GITHUB_TOKEN\n                            environment variable or resolved from `gh auth\n                            token` when not provided.\n  --run-id TEXT             Optional identifier appended to the branch name\n                            for uniqueness.\n  --debug                   Print resolved metadata and verbose git output.\n  -h, --help                Show this message and exit.\n\n\n\ndeps\nUsage: syncweaver deps [OPTIONS] COMMAND [ARGS]...\n\n  Analyze source dependencies for host repository integration.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  analyze              Analyze source usage and optional release impact...\n  select-update-paths  Filter candidate source paths and emit selection...\n\n\ndeps analyze\nUsage: syncweaver deps analyze [OPTIONS]\n\n  Analyze source usage and optional release impact in host scripts.\n\nOptions:\n  --source-path PATH              Tracked source path in host repository, e.g.\n                                  code/package1.  [required]\n  --host-repo DIRECTORY           Path to host repository root.  [default: .]\n  --source-type [auto|r_package|python_package]\n                                  Dependency analyzer source type routing.\n                                  [default: auto]\n  --entry-script PATH             Optional host script to analyze\n                                  (repeatable).\n  --repository TEXT               Optional source repository URL for release\n                                  impact analysis.  [default: \"\"]\n  --release-tag TEXT              Optional candidate release tag/ref for\n                                  impact analysis.  [default: \"\"]\n  --previous-tag TEXT             Optional baseline release tag/ref for impact\n                                  analysis.  [default: \"\"]\n  --package-name TEXT             Optional package name override for\n                                  functracer.  [default: \"\"]\n  -h, --help                      Show this message and exit.\n\n\n\ndeps select-update-paths\nUsage: syncweaver deps select-update-paths [OPTIONS]\n\n  Filter candidate source paths and emit selection JSON and optional outputs.\n\nOptions:\n  --source-paths-json TEXT        JSON array of candidate source paths\n                                  resolved from lockfile.  [required]\n  --lockfile PATH                 Lockfile path relative to host repository\n                                  root.  [default: .syncweaver-lock.json]\n  --source-ref TEXT               Candidate source ref for update impact\n                                  analysis.  [required]\n  --host-repo DIRECTORY           Path to host repository root.  [default: .]\n  --functracer-entry-scripts TEXT\n                                  Comma/newline-separated host entry scripts\n                                  for functracer checks.  [default: \"\"]\n  --functracer-source-paths TEXT  Optional comma/newline-separated source\n                                  paths to gate with functracer.  [default:\n                                  \"\"]\n  --functracer-backend [local|docker|singularity]\n                                  Optional functracer backend (local, docker,\n                                  singularity). When omitted, auto-detects\n                                  from PATH in that order.\n  --functracer-version TEXT       Optional functracer version (e.g. latest or\n                                  any docker image tag). When omitted, falls\n                                  back to latest.\n  --github-output FILE            Optional path to append GitHub Action output\n                                  variables.\n  -h, --help                      Show this message and exit.\n\n\n\n\ninit\nUsage: syncweaver init [OPTIONS] COMMAND [ARGS]...\n\n  Initialize syncweaver starter content in local or remote repositories.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  host  Initialize host repository boilerplate and orchestrator...\n  orch  Initialize orchestrator repository files from packaged templates.\n\n\ninit host\nUsage: syncweaver init host [OPTIONS]\n\n  Initialize host repository boilerplate and orchestrator registration.\n\n  This command creates or refreshes a host lockfile and syncweaver host GitHub\n  Actions workflows in the current repository. By default, it also opens a\n  pull request in the orchestrator repository to add this host to host\n  registry metadata.\n\nOptions:\n  --host-repo TEXT            Optional host repository override in OWNER/REPO\n                              format. When omitted, syncweaver infers host\n                              metadata from git origin.\n  --orchestrator-repo TEXT    Optional orchestrator repository override in\n                              OWNER/REPO format. When omitted, syncweaver\n                              derives it from host metadata.\n  --lockfile PATH             Path to lockfile in the host repository.\n                              [default: .syncweaver-lock.json]\n  --overwrite                 Overwrite existing lockfile and workflow\n                              templates when present.\n  --register / --no-register  Open a PR in orchestrator repo to add this host\n                              to host-repositories.yml.\n  --token TEXT                GitHub token used to register the host in\n                              orchestrator repo. May also be set via\n                              GITHUB_TOKEN or resolved from gh auth.\n  --registry-path PATH        Path to host registry inside the orchestrator\n                              repository.  [default: .github/host-\n                              repositories.yml]\n  --branch TEXT               Optional branch name for orchestrator\n                              registration pull request.\n  --base-ref TEXT             Optional base branch for orchestrator\n                              registration pull request.\n  --title TEXT                Optional orchestrator registration pull request\n                              title.\n  --body TEXT                 Optional orchestrator registration pull request\n                              body.\n  -h, --help                  Show this message and exit.\n\n\n\ninit orch\nUsage: syncweaver init orch [OPTIONS]\n\n  Initialize orchestrator repository files from packaged templates.\n\n  Without --repo, copies template files from\n  src/syncweaver/templates/orchestrator/ into the current working directory.\n  With --repo, applies the same files in a branch on the target repository and\n  opens a pull request.\n\nOptions:\n  --repo TEXT                     Optional GitHub repository in OWNER/REPO\n                                  format. When set, syncweaver opens a pull\n                                  request with orchestrator templates.\n  --overwrite                     Overwrite existing files when copying\n                                  templates.\n  --token TEXT                    GitHub token used when --repo is set. May\n                                  also be set via GITHUB_TOKEN or resolved\n                                  from gh auth.\n  --create-repo / --no-create-repo\n                                  Create the target repository when it does\n                                  not exist.\n  --private / --public            Privacy setting when creating a missing\n                                  repository.\n  --base-ref TEXT                 Optional PR base branch. Defaults to\n                                  repository default branch.\n  --branch TEXT                   Branch name for the orchestrator template\n                                  commit.  [default: syncweaver/init-\n                                  orchestrator]\n  --title TEXT                    Optional pull request title.\n  --body TEXT                     Optional pull request body.\n  -h, --help                      Show this message and exit.\n\n\n\n\npatch\nUsage: syncweaver patch [OPTIONS] COMMAND [ARGS]...\n\n  Create, mark, and list source patch artifacts.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  create       Create or update a canonical patch file for a tracked...\n  list         List tracked patch file records for a source path.\n  mark-status  Record patch lifecycle status metadata in lockfile...\n\n\npatch create\nUsage: syncweaver patch create [OPTIONS]\n\n  Create or update a canonical patch file for a tracked source path.\n\nOptions:\n  --path PATH              Tracked source path in the host repository, e.g.\n                           code/package1.  [required]\n  --repo, --repo-url TEXT  Repository URL as it appears in .syncweaver-\n                           lock.json.  [required]\n  --lockfile PATH          Path to .syncweaver-lock.json in the host\n                           repository.  [default: .syncweaver-lock.json]\n  --patch-dir PATH         Optional directory for the generated patch file.\n  -h, --help               Show this message and exit.\n\n\n\npatch list\nUsage: syncweaver patch list [OPTIONS]\n\n  List tracked patch file records for a source path.\n\nOptions:\n  --path PATH      Tracked source path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\npatch mark-status\nUsage: syncweaver patch mark-status [OPTIONS]\n\n  Record patch lifecycle status metadata in lockfile extension fields.\n\nOptions:\n  --patch PATH                    Relative patch path, e.g.\n                                  code/package1/.syncweaver/package1.diff.\n                                  [required]\n  --status [local|open|accepted|rejected]\n                                  Patch lifecycle status to record in the\n                                  lockfile.  [required]\n  --pr-url TEXT                   Optional upstream pull request URL\n                                  associated with this patch.\n  --reason TEXT                   Optional free-text note, required for\n                                  rejected patches.\n  --lockfile PATH                 Path to .syncweaver-lock.json in the host\n                                  repository.  [default: .syncweaver-\n                                  lock.json]\n  -h, --help                      Show this message and exit.\n\n\n\n\nremove\nUsage: syncweaver remove [OPTIONS]\n\n  Remove a tracked external repository from the current host repository.\n\nOptions:\n  --path PATH      Tracked destination path in the host repository, e.g.\n                   code/package1.  [required]\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  -h, --help       Show this message and exit.\n\n\n\ntemplates\nUsage: syncweaver templates [OPTIONS] COMMAND [ARGS]...\n\n  List and add workflow templates to a repo.\n\nOptions:\n  -h, --help  Show this message and exit.\n\nCommands:\n  add   Copy TEMPLATE_NAME into the output directory.\n  list  List available workflow templates.\n\n\ntemplates add\nUsage: syncweaver templates add [OPTIONS] TEMPLATE_NAME\n\n  Copy TEMPLATE_NAME into the output directory.\n\n  TEMPLATE_NAME may omit the .yml extension.\n\nOptions:\n  -o, --output PATH  Directory to write the template file.  [default:\n                     .github/workflows]\n  --overwrite        Overwrite an existing file.\n  -h, --help         Show this message and exit.\n\n\n\ntemplates list\nUsage: syncweaver templates list [OPTIONS]\n\n  List available workflow templates.\n\nOptions:\n  -h, --help  Show this message and exit.\n\n\n\n\nupdate\nUsage: syncweaver update [OPTIONS]\n\n  Update a tracked external repository in the current host repository.\n\nOptions:\n  --path PATH                     Tracked destination path in the host\n                                  repository, e.g. code/package1.  [required]\n  --ref TEXT                      Git ref to vendor (branch, tag, or commit).\n                                  Defaults to lockfile ref.\n  --remote-subdir TEXT            Optional repository subdirectory to vendor,\n                                  e.g. src/package1. Defaults to lockfile\n                                  remote_subdir when present.\n  --patch-conflict-strategy [fail|warn]\n                                  Behavior when tracked patch reapply fails\n                                  during update. Use 'fail' to abort update or\n                                  'warn' to continue with unpatched files.\n                                  [default: fail]\n  --lockfile PATH                 Path to .syncweaver-lock.json in the host\n                                  repository.  [default: .syncweaver-\n                                  lock.json]\n  -h, --help                      Show this message and exit.\n\n\n\nvalidate\nUsage: syncweaver validate [OPTIONS]\n\n  Validate a lockfile against the syncweaver lockfile JSON schema.\n\nOptions:\n  --lockfile PATH  Path to .syncweaver-lock.json in the host repository.\n                   [default: .syncweaver-lock.json]\n  --schema PATH    Optional path to a JSON schema file. Defaults to bundled\n                   schema.\n  -h, --help       Show this message and exit."
-  },
-  {
-    "objectID": "usage.html",
-    "href": "usage.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.0.1-dev"
-  },
-  {
-    "objectID": "guide/index.html",
-    "href": "guide/index.html",
-    "title": "Demo",
-    "section": "",
-    "text": "The diagram below shows how syncweaver coordinates a source repo and a host repo through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.\n\n\n\n\n\nsequenceDiagram\n    actor Dev as Developer\n    participant Src as Source Repo&lt;br/&gt;(demo-syncweaver-source)\n    participant SW as Orchestrator&lt;br/&gt;(CCBR/syncweaver)\n    participant Host as Host (Capsule) Repo&lt;br/&gt;(demo-syncweaver-host)\n\n    Note over Src: .github/workflows/&lt;br/&gt;syncweaver-source-dispatch.yml\n\n    Dev-&gt;&gt;Src: push release tag\n    Src-&gt;&gt;SW: repository_dispatch&lt;br/&gt;(source_repository, ref)\n\n    Note over SW: .github/workflows/&lt;br/&gt;syncweaver-update-hosts.yml\n\n    SW-&gt;&gt;SW: resolve target hosts from&lt;br/&gt;.github/host-repositories.yml\n    SW-&gt;&gt;Src: fetch code at ref\n    SW-&gt;&gt;SW: run functracer release impact&lt;br/&gt;for each host\n\n    SW-&gt;&gt;Host: open pull request&lt;br/&gt;with updated vendored code&lt;br/&gt;if host is impacted by release\n\n    Note over Host,Src: If the host has local patches...\n\n    Dev-&gt;&gt;Host: trigger contribute-patch\n    Note over Host: .github/workflows/&lt;br/&gt;syncweaver-host-contribute-patch.yml\n    Host-&gt;&gt;Src: open pull request&lt;br/&gt;with patch applied upstream"
-  },
-  {
-    "objectID": "guide/index.html#overview",
-    "href": "guide/index.html#overview",
-    "title": "Demo",
-    "section": "",
-    "text": "The diagram below shows how syncweaver coordinates a source repo and a host repo through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.\n\n\n\n\n\nsequenceDiagram\n    actor Dev as Developer\n    participant Src as Source Repo&lt;br/&gt;(demo-syncweaver-source)\n    participant SW as Orchestrator&lt;br/&gt;(CCBR/syncweaver)\n    participant Host as Host (Capsule) Repo&lt;br/&gt;(demo-syncweaver-host)\n\n    Note over Src: .github/workflows/&lt;br/&gt;syncweaver-source-dispatch.yml\n\n    Dev-&gt;&gt;Src: push release tag\n    Src-&gt;&gt;SW: repository_dispatch&lt;br/&gt;(source_repository, ref)\n\n    Note over SW: .github/workflows/&lt;br/&gt;syncweaver-update-hosts.yml\n\n    SW-&gt;&gt;SW: resolve target hosts from&lt;br/&gt;.github/host-repositories.yml\n    SW-&gt;&gt;Src: fetch code at ref\n    SW-&gt;&gt;SW: run functracer release impact&lt;br/&gt;for each host\n\n    SW-&gt;&gt;Host: open pull request&lt;br/&gt;with updated vendored code&lt;br/&gt;if host is impacted by release\n\n    Note over Host,Src: If the host has local patches...\n\n    Dev-&gt;&gt;Host: trigger contribute-patch\n    Note over Host: .github/workflows/&lt;br/&gt;syncweaver-host-contribute-patch.yml\n    Host-&gt;&gt;Src: open pull request&lt;br/&gt;with patch applied upstream"
-  },
-  {
-    "objectID": "guide/index.html#repository-layouts",
-    "href": "guide/index.html#repository-layouts",
-    "title": "Demo",
-    "section": "Repository layouts",
-    "text": "Repository layouts\nThis view emphasizes a different question than the sequence diagram: which source repositories are vendored into which host capsules.\n\n\n\n\n\nflowchart LR\n  subgraph H1[demo-syncweaver-host]\n    H1A[code/hello]\n    H1B[code/MOSuite]\n  end\n\n  subgraph H2[MOSuite-create]\n    H2A[code/MOSuite]\n  end\n\n  subgraph H3[MOSuite-clean]\n    H3A[code/MOSuite]\n  end\n\n  S1[demo-syncweaver-source&lt;br/&gt;modules/hello]\n  S2[CCBR/MOSuite&lt;br/&gt;R package source]\n\n  S1 --&gt; H1A\n  S2 --&gt; H1B\n  S2 --&gt; H2A\n  S2 --&gt; H3A\n\n\n\n\n\n\nIn these examples, one host capsule can aggregate multiple upstream sources, while other capsules vendor just a single shared source package.\n\nSource repo - monorepo\nThe source repo holds the canonical code. A single workflow template triggers the dispatch chain on every release.\ndemo-syncweaver-source/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-source-dispatch.yml  ← notifies orchestrator on release\n└── modules/\n  ├── hello/                              ← vendored into host as code/hello\n  │ ├── DESCRIPTION\n  │ ├── NAMESPACE\n  │ ├── R/\n  │ ├── inst/\n  │ └── man/\n  └── heatmap/                            ← new module for hypothetical heatmap capsule\n    ├── DESCRIPTION\n    ├── NAMESPACE\n    ├── R/\n    ├── inst/\n    └── man/\n\n\nHost repo - Code Ocean capsule\nThe host repo consumes vendored code and carries a lockfile that pins each dependency to a specific ref and git SHA.\ndemo-syncweaver-host/\n├── .github/\n│   └── workflows/\n│       ├── syncweaver-host-update.yml          ← receives dispatch, opens update PR\n│       └── syncweaver-host-contribute-patch.yml ← sends local patches upstream\n├── .syncweaver-lock.json                        ← pins source repos + refs\n└── code/\n  ├── main.R\n  ├── hello/           ← vendored from demo-syncweaver-source modules/hello\n  │   ├── DESCRIPTION\n  │   ├── NAMESPACE\n  │   ├── R/\n  │   └── inst/\n  └── MOSuite/         ← vendored from CCBR/MOSuite\n\n\nSource repo - MOSuite\nThis is a package-style source repository. The canonical implementation lives in the package root, and the syncweaver source-dispatch workflow is defined under .github/workflows/.\nmultiOmicsSuite/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-source-dispatch.yml  ← notifies syncweaver on release\n├── DESCRIPTION\n├── NAMESPACE\n├── R/                                      ← primary package implementation\n│   ├── cli.R\n│   ├── clean.R\n│   ├── differential.R\n│   ├── normalize.R\n│   └── ...\n├── inst/\n│   ├── extdata/\n│   └── quarto/\n├── man/\n└── tests/\n\n\nHost repo example - MOSuite-create capsule\nThis host repo is a Code Ocean capsule. It vendors source code into code/, tracks upstream state in .syncweaver-lock.json, and keeps capsule runtime files alongside the vendored package.\nMOSuite-create/\n├── .github/\n│   └── workflows/\n│       └── syncweaver-update-source.yml  ← host-side sync workflow in this repo\n├── .syncweaver-lock.json                 ← pins vendored sources to refs + SHAs\n├── code/\n│   ├── main.R\n│   ├── run/\n│   └── MOSuite/                          ← vendored from multiOmicsSuite\n├── environment/\n│   ├── Dockerfile\n│   └── postInstall\n├── metadata/\n│   └── metadata.yml\n└── tests/"
-  },
-  {
-    "objectID": "guide/index.html#repos",
-    "href": "guide/index.html#repos",
-    "title": "Demo",
-    "section": "Repos",
-    "text": "Repos\n\n\n\nRole\nExample repo\nKey file\n\n\n\n\nSource\ndemo-syncweaver-source\n.github/workflows/syncweaver-source-dispatch.yml\n\n\nHost\ndemo-syncweaver-host\n.syncweaver-lock.json, .github/workflows/syncweaver-host-update.yml\n\n\nOrchestrator\nCCBR/syncweaver\n.github/host-repositories.yml, .github/workflows/syncweaver-update-hosts"
-  },
-  {
-    "objectID": "guide/index.html#lockfile",
-    "href": "guide/index.html#lockfile",
-    "title": "Demo",
-    "section": "Lockfile",
-    "text": "Lockfile\nThe host repo tracks each vendored dependency in .syncweaver-lock.json:\n{\n  \"sources\": {\n    \"code/hello\": {\n      \"repo_url\": \"https://github.com/NIDAP-Community/demo-syncweaver-source\",\n      \"ref\": \"main\",\n      \"remote_subdir\": \"modules/hello\"\n    }\n  }\n}\nWhen the source repo publishes a release, the dispatch chain updates the vendored code at code/hello and opens a pull request in the host repo."
-  },
-  {
-    "objectID": "guide/index.html#dependency-analysis-and-release-impact-tracing",
-    "href": "guide/index.html#dependency-analysis-and-release-impact-tracing",
-    "title": "Demo",
-    "section": "dependency analysis and release impact tracing",
-    "text": "dependency analysis and release impact tracing\nThis view highlights how functracer narrows updates to only affected capsules after a source release.\n\n\n\n\n\nflowchart TD\n  A[\"Source release tagged&lt;br/&gt; (e.g. in demo-syncweaver-source or MOSuite)\"]\n  B[functracer analyzes call graph&lt;br/&gt;from capsule entry scripts]\n  C{Capsule affected&lt;br/&gt;by changed functions?}\n  D[syncweaver updates lockfile&lt;br/&gt;and opens update PR]\n  E[No update PR&lt;br/&gt;for this capsule]\n\n  A --&gt; B\n  B --&gt; C\n  C --&gt;|Yes| D\n  C --&gt;|No| E"
-  },
-  {
-    "objectID": "install.html",
-    "href": "install.html",
-    "title": "Installation",
-    "section": "",
-    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\n\n\n\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail\n\n\n\n\n\n\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection\n\n\n\n\n\n\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
-  },
-  {
-    "objectID": "install.html#quick-start",
-    "href": "install.html#quick-start",
-    "title": "Installation",
-    "section": "",
-    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "install.html#system-dependencies",
-    "href": "install.html#system-dependencies",
-    "title": "Installation",
-    "section": "",
-    "text": "syncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail"
-  },
-  {
-    "objectID": "install.html#feature-requirements",
-    "href": "install.html#feature-requirements",
-    "title": "Installation",
-    "section": "",
-    "text": "Feature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection"
-  },
-  {
-    "objectID": "install.html#github-cli-optional",
-    "href": "install.html#github-cli-optional",
-    "title": "Installation",
-    "section": "",
-    "text": "The GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
-  },
-  {
-    "objectID": "cite.html",
-    "href": "cite.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\nUsage: ccbr_tools cite [OPTIONS] CITATION_FILE Try ‘ccbr_tools cite –help’ for help.\nError: Invalid value for ‘CITATION_FILE’: Path ‘CITATION.cff’ does not exist.\nFull citation metadata is available in CITATION.cff."
-  },
-  {
-    "objectID": "help.html",
-    "href": "help.html",
-    "title": "syncweaver",
-    "section": "",
-    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question or idea? Start a discussion.\nWant to contribute? Read the contributing guide."
-  },
-  {
-    "objectID": "reference/cli.add.html",
-    "href": "reference/cli.add.html",
-    "title": "cli.add",
-    "section": "",
-    "text": "cli.add\nCLI command for adding an external repository to a host repository.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo, ref, remote_subdir, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
+    "text": "Usage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\nEach command has its own documentation page with full usage, examples, and notes:\n\n\n\nCommand\nDescription\n\n\n\n\ninit\nInitialize syncweaver content in local or remote repositories\n\n\nadd\nAdd an external repository to the host repository\n\n\nupdate\nUpdate a tracked external repository in the host repository\n\n\nremove\nRemove a tracked external repository from the host repository\n\n\npatch\nCreate, mark, and list source patch artifacts\n\n\ncontribute\nContribute a host patch back to the source repository\n\n\ndeps\nAnalyze source dependencies for host integration\n\n\ntemplates\nList and add bundled workflow templates to a repo\n\n\nvalidate\nValidate a lockfile against the syncweaver JSON schema",
     "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
-    "objectID": "reference/cli.add.html#functions",
-    "href": "reference/cli.add.html#functions",
-    "title": "cli.add",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nAdd an external repository to the current host repository.\n\n\nadd_external_repository\nAdd an external repository and register it in .syncweaver-lock.json.\n\n\n\n\n\ncli.add.add_cmd(destination_path, repo, ref, remote_subdir, lockfile, overwrite)\nAdd an external repository to the current host repository.\n\n\n\ncli.add.add_external_repository(\n    destination_path,\n    repo_url,\n    ref,\n    remote_subdir,\n    lockfile_path,\n    overwrite,\n)\nAdd an external repository and register it in .syncweaver-lock.json.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.add"
-    ]
-  },
-  {
-    "objectID": "reference/lockfile.html",
-    "href": "reference/lockfile.html",
-    "title": "lockfile",
-    "section": "",
-    "text": "lockfile\nHelpers for reading and writing the syncweaver lockfile.\n\n\n\n\n\nName\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nresolve_source_path_from_lockfile\nResolve the tracked source path for a sync operation.\n\n\nresolve_source_paths_from_lockfile\nResolve one or more tracked source paths for a sync operation.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.resolve_source_path_from_lockfile(lockfile, source_path, repo_url=None)\nResolve the tracked source path for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select a matching source path when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved source path to update.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine a single tracked source path.\n\n\n\n\n\n\n\nlockfile.resolve_source_paths_from_lockfile(\n    lockfile,\n    source_path,\n    repo_url=None,\n)\nResolve one or more tracked source paths for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select matching source paths when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Resolved source path list.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine matching tracked source paths.\n\n\n\n\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
-  },
-  {
-    "objectID": "reference/lockfile.html#functions",
-    "href": "reference/lockfile.html#functions",
-    "title": "lockfile",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nload_existing_lockfile\nRead lockfile JSON from disk and fail when it does not exist.\n\n\nread_lockfile\nRead lockfile if present, otherwise create a default payload.\n\n\nresolve_source_path_from_lockfile\nResolve the tracked source path for a sync operation.\n\n\nresolve_source_paths_from_lockfile\nResolve one or more tracked source paths for a sync operation.\n\n\nwrite_lockfile\nWrite lockfile JSON with a stable format.\n\n\n\n\n\nlockfile.load_existing_lockfile(lockfile)\nRead lockfile JSON from disk and fail when it does not exist.\n\n\n\nlockfile.read_lockfile(lockfile, cwd, run_git)\nRead lockfile if present, otherwise create a default payload.\n\n\n\nlockfile.resolve_source_path_from_lockfile(lockfile, source_path, repo_url=None)\nResolve the tracked source path for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select a matching source path when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\nstr\nResolved source path to update.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine a single tracked source path.\n\n\n\n\n\n\n\nlockfile.resolve_source_paths_from_lockfile(\n    lockfile,\n    source_path,\n    repo_url=None,\n)\nResolve one or more tracked source paths for a sync operation.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nlockfile\npathlib.Path\nPath to the syncweaver lockfile.\nrequired\n\n\nsource_path\nstr | None\nOptional requested source path from CLI or workflow inputs.\nrequired\n\n\nrepo_url\nstr | None\nOptional repository URL used to select matching source paths when source_path is omitted.\nNone\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nlist[str]\nlist[str]: Resolved source path list.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf source_path is not provided and lockfile content cannot determine matching tracked source paths.\n\n\n\n\n\n\n\nlockfile.write_lockfile(lockfile, data)\nWrite lockfile JSON with a stable format.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "lockfile"
-    ]
-  },
-  {
-    "objectID": "reference/cli.main.html",
-    "href": "reference/cli.main.html",
-    "title": "cli.main",
-    "section": "",
-    "text": "cli.main\nTop-level Click CLI for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.main"
-    ]
-  },
-  {
-    "objectID": "reference/cli.main.html#functions",
-    "href": "reference/cli.main.html#functions",
-    "title": "cli.main",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\ncli\nsyncweaver: synchronize code and weave patches seamlessly.\n\n\n\n\n\ncli.main.cli()\nsyncweaver: synchronize code and weave patches seamlessly.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.main"
-    ]
-  },
-  {
-    "objectID": "reference/cli.templates.html",
-    "href": "reference/cli.templates.html",
-    "title": "cli.templates",
-    "section": "",
-    "text": "cli.templates\nCLI commands for managing workflow templates.\n\n\n\n\n\nName\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.templates"
-    ]
-  },
-  {
-    "objectID": "reference/cli.templates.html#functions",
-    "href": "reference/cli.templates.html#functions",
-    "title": "cli.templates",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nadd_cmd\nCopy TEMPLATE_NAME into the output directory.\n\n\nlist_cmd\nList available workflow templates.\n\n\ntemplates_group\nList and add workflow templates to a repo.\n\n\n\n\n\ncli.templates.add_cmd(template_name, output, overwrite)\nCopy TEMPLATE_NAME into the output directory.\nTEMPLATE_NAME may omit the .yml extension.\n\n\n\ncli.templates.list_cmd()\nList available workflow templates.\n\n\n\ncli.templates.templates_group()\nList and add workflow templates to a repo.",
-    "crumbs": [
-      "API",
-      "CLI commands",
-      "cli.templates"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html",
-    "href": "reference/patch.html",
-    "title": "patch",
-    "section": "",
-    "text": "patch\nPatch lifecycle logic for syncweaver.\n\n\n\n\n\nName\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\nmark_patch_status\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.\n\n\n\npatch.mark_patch_status(\n    patch_path,\n    status,\n    lockfile_path,\n    *,\n    pr_url='',\n    reason='',\n)\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\npatch_path\npathlib.Path\nRelative patch path tracked in the lockfile.\nrequired\n\n\nstatus\nstr\nPatch lifecycle state: local, open, accepted, or rejected.\nrequired\n\n\nlockfile_path\npathlib.Path\nPath to the host repository lockfile.\nrequired\n\n\npr_url\nstr\nOptional upstream pull request URL for open or reviewed patches.\n''\n\n\nreason\nstr\nOptional free-text note, required for rejected patches.\n''\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\ntuple[str, str]\ntuple[str, str]: The tracked patch key and the lockfile path written.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nKeyError\nIf the patch path is not tracked in the lockfile.\n\n\n\nValueError\nIf the requested status metadata is invalid.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
-    ]
-  },
-  {
-    "objectID": "reference/patch.html#functions",
-    "href": "reference/patch.html#functions",
-    "title": "patch",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nannotate_rejected_patch\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\ncreate_patch\nCreate or update a canonical patch file for a tracked vendored source.\n\n\nlist_patches\nList recorded patches for a tracked source path.\n\n\nmark_patch_status\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\npatch.annotate_rejected_patch(patch_path, pr_url, reason, lockfile_path)\nAnnotate a tracked patch as rejected in lockfile extension metadata.\n\n\n\npatch.create_patch(source_path, repo_url, lockfile_path, patch_dir_override)\nCreate or update a canonical patch file for a tracked vendored source.\n\n\n\npatch.list_patches(path, lockfile_path)\nList recorded patches for a tracked source path.\n\n\n\npatch.mark_patch_status(\n    patch_path,\n    status,\n    lockfile_path,\n    *,\n    pr_url='',\n    reason='',\n)\nRecord patch lifecycle status metadata in the syncweaver lockfile.\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\npatch_path\npathlib.Path\nRelative patch path tracked in the lockfile.\nrequired\n\n\nstatus\nstr\nPatch lifecycle state: local, open, accepted, or rejected.\nrequired\n\n\nlockfile_path\npathlib.Path\nPath to the host repository lockfile.\nrequired\n\n\npr_url\nstr\nOptional upstream pull request URL for open or reviewed patches.\n''\n\n\nreason\nstr\nOptional free-text note, required for rejected patches.\n''\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\ntuple[str, str]\ntuple[str, str]: The tracked patch key and the lockfile path written.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nKeyError\nIf the patch path is not tracked in the lockfile.\n\n\n\nValueError\nIf the requested status metadata is invalid.",
-    "crumbs": [
-      "API",
-      "Modules",
-      "patch"
+      "Command-line interface"
     ]
   }
 ]
