@@ -1,0 +1,25 @@
+---
+title: '`syncweaver patch`'
+---
+
+Create, mark, and list canonical patch artifacts that record host-side
+customisations to vendored source content.
+
+| Subcommand | Description |
+|---|---|
+| [`create`](create.qmd) | Create or update a canonical patch file for a tracked source path |
+| [`list`](list.qmd) | List tracked patch file records for a source path |
+| [`mark-status`](mark-status.qmd) | Record patch lifecycle status metadata in the lockfile |
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver patch --help")
+print("```")
+print(help_text)
+print("```")
+```

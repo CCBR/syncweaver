@@ -1,0 +1,34 @@
+---
+title: '`syncweaver update`'
+---
+
+Update a tracked external repository to a new ref, re-vendoring content and
+re-applying any tracked patches.
+Use `--patch-conflict-strategy` to control behaviour when patch re-application
+fails.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver update --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Update to latest HEAD for the tracked ref
+syncweaver update --path code/mypackage
+
+# Pin to a new tag
+syncweaver update --path code/mypackage --ref v2.0.0
+
+# Continue past patch conflicts instead of failing
+syncweaver update --path code/mypackage --patch-conflict-strategy warn
+```

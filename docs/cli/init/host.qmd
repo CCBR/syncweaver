@@ -1,0 +1,29 @@
+---
+title: '`syncweaver init host`'
+---
+
+Initialize a host repository with syncweaver boilerplate: workflow templates,
+lockfile stubs, and optional orchestrator registration.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver init host --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Initialize the current directory as a host repository
+syncweaver init host
+
+# Initialize and register with an orchestrator
+syncweaver init host --orchestrator OWNER/syncweaver-orchestrator
+```

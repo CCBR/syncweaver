@@ -1,0 +1,32 @@
+---
+title: '`syncweaver templates add`'
+---
+
+Copy a named bundled workflow template into the `.github/workflows/` directory
+(or a custom output directory) of the current repository.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver templates add --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# List available templates first
+syncweaver templates list
+
+# Add a specific template to the default output location
+syncweaver templates add sync-update
+
+# Add to a custom directory
+syncweaver templates add sync-update --output-dir .github/workflows
+```

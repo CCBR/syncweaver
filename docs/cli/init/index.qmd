@@ -1,0 +1,24 @@
+---
+title: '`syncweaver init`'
+---
+
+Initialize syncweaver boilerplate and starter content in local or remote
+repositories.
+
+| Subcommand | Description |
+|---|---|
+| [`host`](host.qmd) | Initialize host repository boilerplate and orchestrator registration |
+| [`orch`](orch.qmd) | Initialize orchestrator repository files from packaged templates |
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver init --help")
+print("```")
+print(help_text)
+print("```")
+```

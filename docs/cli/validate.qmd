@@ -1,0 +1,33 @@
+---
+title: '`syncweaver validate`'
+---
+
+Validate a lockfile against the syncweaver JSON schema.
+Useful as a pre-commit or CI sanity check to catch hand-edited lockfiles that
+have drifted from the expected structure.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver validate --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Validate the default lockfile in the current directory
+syncweaver validate
+
+# Validate a custom lockfile path
+syncweaver validate --lockfile path/to/custom-lock.json
+
+# Validate against a local schema (for development)
+syncweaver validate --schema path/to/schema.json
+```

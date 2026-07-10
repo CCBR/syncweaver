@@ -1,0 +1,23 @@
+---
+title: '`syncweaver templates`'
+---
+
+List and copy the bundled GitHub Actions workflow templates into a repository.
+
+| Subcommand | Description |
+|---|---|
+| [`add`](add.qmd) | Copy a named template into the output directory |
+| [`list`](list.qmd) | List all available workflow templates |
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver templates --help")
+print("```")
+print(help_text)
+print("```")
+```

@@ -15,12 +15,23 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - text: CLI
-        href: cli.qmd
-      - text: API
-        href: reference/index.qmd
-      - text: Changelog
-        href: CHANGELOG.md
+      - text: Docs
+        menu:
+          - text: Command-line interface
+            href: cli/index.qmd
+          - text: Python API
+            href: reference/index.qmd
+      - text: About
+        menu:
+          - text: Citation
+            href: cite.qmd
+          - text: Contributing
+            href: CONTRIBUTING.md
+          - href: contributors.qmd
+          - text: License
+            href: LICENSE.md
+          - text: Changelog
+            href: CHANGELOG.md
 
   page-footer:
     background: black
@@ -55,6 +66,7 @@ quartodoc:
 
 metadata-files:
   - _sidebar.yml
+  - _cli-sidebar.yml
 
 filters:
   - interlinks

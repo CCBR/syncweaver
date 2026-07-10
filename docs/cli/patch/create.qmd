@@ -1,0 +1,29 @@
+---
+title: '`syncweaver patch create`'
+---
+
+Generate or refresh a canonical patch file that captures the diff between the
+vendored source snapshot and the current host-modified files.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver patch create --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Create a patch for a tracked path
+syncweaver patch create --path code/mypackage
+
+# Write the patch to a custom location
+syncweaver patch create --path code/mypackage --output patches/mypackage.patch
+```

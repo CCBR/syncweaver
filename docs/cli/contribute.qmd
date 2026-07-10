@@ -1,0 +1,40 @@
+---
+title: '`syncweaver contribute`'
+---
+
+Contribute a patch that was created in a host repository back to the upstream
+source repository as a pull request.
+The command clones the source, applies the patch to a new branch, pushes it,
+and opens a PR — all without leaving the host repository directory.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver contribute --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Contribute the patch for a tracked path (lockfile auto-resolved)
+syncweaver contribute --path code/mypackage
+
+# Specify source repo and patch file explicitly
+syncweaver contribute \
+  --path code/mypackage \
+  --source-repository OWNER/mypackage \
+  --patch patches/mypackage.patch \
+  --base-ref main
+
+# Pass a token directly (or set GITHUB_TOKEN in env)
+syncweaver contribute \
+  --path code/mypackage \
+  --token ghp_xxxxxxxxxxxxx
+```

@@ -1,0 +1,41 @@
+---
+title: '`syncweaver add`'
+---
+
+Add an external repository (or subdirectory) to the current host repository.
+The command vendors the source content into the specified `--path`, records the
+reference in `.syncweaver-lock.json`, and snapshots the file state so future
+`update` and `patch` operations can track drift.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver add --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Add a full repository at a specific tag
+syncweaver add --path code/mypackage --repo OWNER/mypackage --ref v1.2.3
+
+# Add only a subdirectory from the repository
+syncweaver add \
+  --path code/mypackage \
+  --repo OWNER/mypackage \
+  --ref main \
+  --remote-subdir src/mypackage
+
+# Use a custom lockfile location
+syncweaver add \
+  --path code/mypackage \
+  --repo OWNER/mypackage \
+  --lockfile config/syncweaver-lock.json
+```

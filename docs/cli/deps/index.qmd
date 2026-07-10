@@ -1,0 +1,24 @@
+---
+title: '`syncweaver deps`'
+---
+
+Analyze source-repository dependencies and surface information needed when
+integrating source changes into a host repository.
+
+| Subcommand | Description |
+|---|---|
+| [`analyze`](analyze.qmd) | Analyze source usage and optional release impact |
+| [`select-update-paths`](select-update-paths.qmd) | Filter candidate source paths and emit selection metadata |
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver deps --help")
+print("```")
+print(help_text)
+print("```")
+```

@@ -1,0 +1,41 @@
+website:
+  sidebar:
+    - id: cli
+      contents:
+        - cli/index.qmd
+        - section: init
+          contents:
+            - cli/init/index.qmd
+            - cli/init/host.qmd
+            - cli/init/orch.qmd
+        - section: add
+          contents:
+            - cli/add.qmd
+        - section: update
+          contents:
+            - cli/update.qmd
+        - section: remove
+          contents:
+            - cli/remove.qmd
+        - section: patch
+          contents:
+            - cli/patch/index.qmd
+            - cli/patch/create.qmd
+            - cli/patch/list.qmd
+            - cli/patch/mark-status.qmd
+        - section: contribute
+          contents:
+            - cli/contribute.qmd
+        - section: deps
+          contents:
+            - cli/deps/index.qmd
+            - cli/deps/analyze.qmd
+            - cli/deps/select-update-paths.qmd
+        - section: templates
+          contents:
+            - cli/templates/index.qmd
+            - cli/templates/add.qmd
+            - cli/templates/list.qmd
+        - section: validate
+          contents:
+            - cli/validate.qmd
