@@ -44,21 +44,25 @@ jobs:
             tag="${image_base}:${version}"
             push="${{ inputs.push }}"
           fi
+          if [ -z "${version}" ]; then
+            echo "ERROR: Resolved image version is empty" >&2
+            exit 1
+          fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           echo "push=${push}" >> "$GITHUB_OUTPUT"
 
       - name: Login to DockerHub
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ steps.setup.outputs.push == 'true' }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v6
         with:
-          push: ${{ steps.setup.outputs.push == 'true' && github.event_name != 'pull_request' }}
+          push: ${{ steps.setup.outputs.push == 'true' }}
           tags: ${{ steps.setup.outputs.tag }}
           build-args: |
             SYNCWEAVER_VERSION=${{ steps.setup.outputs.version }}
