@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 
 import pytest
 
@@ -76,8 +77,9 @@ def test_resolve_source_paths_for_host_update_matches_repo_url(tmp_path) -> None
         None: Assertions validate function behavior.
     """
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -150,7 +152,7 @@ def test_build_source_update_branch_name_sanitizes_repository() -> None:
     """
     branch_name = build_source_update_branch_name("https://github.com/CCBR/package1")
 
-    assert branch_name == "syncweaver/update-source/https-github.com-CCBR-package1"
+    assert branch_name == "syncweaver/update/https-github.com-CCBR-package1"
 
 
 def test_select_source_paths_for_update_skips_unaffected_r_package(
@@ -177,8 +179,9 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     entry_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -193,7 +196,7 @@ def test_select_source_paths_for_update_skips_unaffected_r_package(
     monkeypatch.setattr(
         host_source_update,
         "run_functracer_release_impact",
-        lambda entry_script, repository, release_tag, previous_tag, functracer_backend=None, functracer_image_tag=None: (
+        lambda entry_script, repository, release_tag, previous_tag, remote_subdir=None, functracer_backend=None, functracer_image_tag=None: (
             False
         ),
     )
@@ -236,8 +239,9 @@ def test_select_source_paths_for_update_prefers_code_main_r(
     preferred_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -256,9 +260,11 @@ def test_select_source_paths_for_update_prefers_code_main_r(
         repository,
         release_tag,
         previous_tag,
+        remote_subdir=None,
         functracer_backend=None,
         functracer_image_tag=None,
     ):
+        del remote_subdir
         called_scripts.append(entry_script.relative_to(host_repo).as_posix())
         return False
 
@@ -310,8 +316,9 @@ def test_select_source_paths_for_update_honors_explicit_entry_script_override(
     override_script.write_text("run <- function() package1_fn()\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -330,9 +337,11 @@ def test_select_source_paths_for_update_honors_explicit_entry_script_override(
         repository,
         release_tag,
         previous_tag,
+        remote_subdir=None,
         functracer_backend=None,
         functracer_image_tag=None,
     ):
+        del remote_subdir
         called_scripts.append(entry_script.relative_to(host_repo).as_posix())
         return False
 
@@ -374,8 +383,9 @@ def test_select_source_paths_for_update_keeps_non_r_package_without_analysis(
     (source_root / "README.md").write_text("not an R package\n")
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -421,8 +431,9 @@ def test_select_source_paths_for_update_skips_functracer_without_host_scripts(
     (source_root / "R").mkdir()
 
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -482,13 +493,15 @@ def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
     previous_sha = "1111111111111111111111111111111111111111"
     candidate_sha = "2222222222222222222222222222222222222222"
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
                 "ref": "main",
                 "git_sha": previous_sha,
+                "remote_subdir": "modules/package1",
             }
         },
     }
@@ -503,19 +516,29 @@ def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
 
     observed_release_tag = ""
     observed_previous_tag = ""
+    observed_remote_subdir = ""
 
     def _record_release_impact(
         entry_script,
         repository,
         release_tag,
         previous_tag,
+        remote_subdir=None,
         functracer_backend=None,
         functracer_image_tag=None,
     ):
-        del entry_script, repository, functracer_backend, functracer_image_tag
+        del (
+            entry_script,
+            repository,
+            functracer_backend,
+            functracer_image_tag,
+        )
         nonlocal observed_release_tag, observed_previous_tag
+        nonlocal observed_remote_subdir
         observed_release_tag = release_tag
         observed_previous_tag = previous_tag
+        if remote_subdir is not None:
+            observed_remote_subdir = remote_subdir
         return True
 
     monkeypatch.setattr(
@@ -537,6 +560,7 @@ def test_select_source_paths_for_update_uses_resolved_git_shas_for_analysis(
     assert skipped == []
     assert observed_release_tag == candidate_sha
     assert observed_previous_tag == previous_sha
+    assert observed_remote_subdir == "modules/package1"
 
 
 def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
@@ -564,8 +588,9 @@ def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
 
     unchanged_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     lock_data = {
-        "name": "NIDAP/MOSuite-create",
-        "homePage": "https://github.com/NIDAP/MOSuite-create",
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -603,3 +628,166 @@ def test_select_source_paths_for_update_skips_when_target_sha_matches_current(
 
     assert selected == []
     assert skipped == ["code/package1"]
+
+
+def test_select_source_paths_for_update_skips_when_tracked_subdir_unchanged(
+    tmp_path, monkeypatch
+) -> None:
+    """Verify updates are skipped when the tracked remote_subdir has no changes.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "package1"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: package1\n")
+    (source_root / "R").mkdir()
+
+    entry_script = host_repo / "main.R"
+    entry_script.write_text("run <- function() package1_fn()\n")
+
+    previous_sha = "1111111111111111111111111111111111111111"
+    candidate_sha = "2222222222222222222222222222222222222222"
+    lock_data = {
+        "host": "NIDAP/MOSuite-create",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
+        "sources": {
+            "code/package1": {
+                "repo_url": "https://github.com/CCBR/package1",
+                "ref": "main",
+                "git_sha": previous_sha,
+                "remote_subdir": "modules/package1",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: candidate_sha,
+    )
+    monkeypatch.setattr(
+        host_source_update,
+        "remote_ref_has_path_changes",
+        lambda repository, previous_git_sha, target_git_sha, remote_subdir: False,
+    )
+
+    def _raise_if_called(*args, **kwargs):
+        raise AssertionError("run_functracer_release_impact should not be called")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_if_called,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/package1"],
+        lockfile_path=lockfile_path,
+        source_ref_input="plot-heatmap",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="main.R",
+        functracer_source_paths_input="",
+    )
+
+    assert selected == []
+    assert skipped == ["code/package1"]
+
+
+def test_select_source_paths_for_update_warns_and_keeps_path_on_analysis_failure(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """Verify analysis failures emit warnings and keep path selected.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+        capsys: Pytest stdout/stderr capture fixture.
+
+    Returns:
+        None: Assertions validate warning visibility and fallback behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+
+    source_root = host_repo / "code" / "hello"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: hello\n")
+    (source_root / "R").mkdir()
+
+    entry_script = host_repo / "code" / "main.R"
+    entry_script.parent.mkdir(parents=True, exist_ok=True)
+    entry_script.write_text("hello::hello_message('world')\n")
+
+    previous_sha = "0" * 40
+    candidate_sha = "1" * 40
+    lock_data = {
+        "host": "demo-syncweaver-host-capsule",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
+        "sources": {
+            "code/hello": {
+                "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source-monorepo",
+                "ref": "v0.2.0",
+                "git_sha": previous_sha,
+                "remote_subdir": "modules/hello",
+            }
+        },
+    }
+    lockfile_path = host_repo / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: candidate_sha,
+    )
+    monkeypatch.setattr(
+        host_source_update,
+        "remote_ref_has_path_changes",
+        lambda repository, previous_git_sha, target_git_sha, remote_subdir: True,
+    )
+
+    def _raise_subprocess_error(*args, **kwargs):
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["Rscript", "functracer_release_impact.R"],
+            stderr="functracer failed in analysis",
+            output="",
+        )
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_subprocess_error,
+    )
+
+    selected, skipped = select_source_paths_for_update(
+        source_paths=["code/hello"],
+        lockfile_path=lockfile_path,
+        source_ref_input="plot-heatmap",
+        host_repo_path=host_repo,
+        functracer_entry_scripts_input="code/main.R",
+        functracer_source_paths_input="",
+    )
+    captured = capsys.readouterr()
+
+    assert selected == ["code/hello"]
+    assert skipped == []
+    assert "::warning::functracer analysis failed for source_path=code/hello" in (
+        captured.out
+    )
+    assert "functracer failed in analysis" in captured.out
+    assert "Warning: functracer analysis failed for source_path=code/hello" in (
+        captured.err
+    )

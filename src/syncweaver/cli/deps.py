@@ -8,6 +8,7 @@ import subprocess
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.dependency_analysis import (
     DEFAULT_FUNCTRACER_IMAGE_TAG,
     FUNCTRACER_BACKEND_DOCKER,
@@ -123,7 +124,7 @@ def analyze_cmd(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Lockfile path relative to host repository root.",

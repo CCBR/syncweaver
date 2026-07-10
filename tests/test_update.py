@@ -174,6 +174,86 @@ def test_update_allows_remote_subdir_override(tmp_path, monkeypatch):
     assert lock_data["sources"]["code/package1"]["remote_subdir"] == "new-subdir"
 
 
+def test_update_skips_lock_refresh_when_tracked_subdir_is_unchanged(
+    tmp_path, monkeypatch
+):
+    """Verify update avoids lock metadata churn when tracked subdir is unchanged.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    tracked_root = source_repo / "modules/hello"
+    unrelated_root = source_repo / "docs"
+    tracked_root.mkdir(parents=True)
+    unrelated_root.mkdir(parents=True)
+    (tracked_root / "hello.R").write_text("hello_message <- function() 'hi'\n")
+    (unrelated_root / "README.md").write_text("docs v1\n")
+    _run(["git", "add", "modules/hello/hello.R", "docs/README.md"], cwd=source_repo)
+    _run(
+        ["git", "commit", "--no-verify", "-m", "add tracked and docs files"],
+        cwd=source_repo,
+    )
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/hello",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "modules/hello",
+        ],
+    )
+    assert add_result.exit_code == 0, add_result.output
+
+    lock_path = host_repo / ".syncweaver-lock.json"
+    lock_before = lock_path.read_text()
+    vendored_before = (host_repo / "code/hello/hello.R").read_text()
+
+    (unrelated_root / "README.md").write_text("docs v2\n")
+    _run(["git", "add", "docs/README.md"], cwd=source_repo)
+    _run(
+        ["git", "commit", "--no-verify", "-m", "change unrelated docs"], cwd=source_repo
+    )
+
+    update_result = runner.invoke(
+        cli,
+        [
+            "update",
+            "--path",
+            "code/hello",
+        ],
+    )
+
+    assert update_result.exit_code == 0, update_result.output
+    assert "No changes detected for tracked path" in update_result.output
+    assert lock_path.read_text() == lock_before
+    assert (host_repo / "code/hello/hello.R").read_text() == vendored_before
+
+
 def test_update_reapplies_tracked_patch_after_refresh(tmp_path, monkeypatch):
     """Verify `update` reapplies the tracked patch after refreshing vendored files.
 

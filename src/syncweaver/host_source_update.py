@@ -6,14 +6,20 @@ import json
 import pathlib
 import re
 import subprocess
+import sys
 
 from syncweaver.dependency_analysis import (
     discover_host_entry_scripts,
     is_r_package_source,
     run_functracer_release_impact,
 )
-from syncweaver.git import is_full_git_sha, resolve_remote_ref_to_git_sha
+from syncweaver.git import (
+    is_full_git_sha,
+    remote_ref_has_path_changes,
+    resolve_remote_ref_to_git_sha,
+)
 from syncweaver.lockfile import resolve_source_paths_from_lockfile
+from syncweaver.util import format_subprocess_error
 
 
 def _parse_list_input(raw_input: str | None) -> list[str]:
@@ -101,21 +107,48 @@ def select_source_paths_for_update(
         else:
             should_analyze = is_r_package_source(host_repo_path, source_path)
 
-        if should_analyze and host_entry_scripts:
-            source_entry = source_entries.get(source_path, {})
-            repository = str(source_entry.get("repo_url", "")).strip()
-            previous_tag = str(source_entry.get("ref", "")).strip()
-            previous_git_sha = str(source_entry.get("git_sha", "")).strip().lower()
-            resolved_source_ref = source_ref
-            if repository and source_ref:
-                try:
-                    resolved_source_ref = resolve_remote_ref_to_git_sha(
-                        repository=repository,
-                        source_ref=source_ref,
-                    )
-                except (RuntimeError, ValueError, subprocess.TimeoutExpired):
-                    resolved_source_ref = source_ref
+        source_entry = source_entries.get(source_path, {})
+        repository = str(source_entry.get("repo_url", "")).strip()
+        previous_tag = str(source_entry.get("ref", "")).strip()
+        previous_git_sha = str(source_entry.get("git_sha", "")).strip().lower()
+        tracked_remote_subdir = str(source_entry.get("remote_subdir", "")).strip()
+        resolved_source_ref = source_ref
+        if repository and source_ref:
+            try:
+                resolved_source_ref = resolve_remote_ref_to_git_sha(
+                    repository=repository,
+                    source_ref=source_ref,
+                )
+            except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+                resolved_source_ref = source_ref
 
+        compares_equal_by_sha = False
+        if previous_git_sha and is_full_git_sha(resolved_source_ref):
+            compares_equal_by_sha = previous_git_sha == resolved_source_ref.lower()
+
+        has_path_changes = True
+        has_comparable_shas = bool(
+            repository
+            and previous_git_sha
+            and is_full_git_sha(previous_git_sha)
+            and is_full_git_sha(resolved_source_ref)
+        )
+        if has_comparable_shas:
+            try:
+                has_path_changes = remote_ref_has_path_changes(
+                    repository=repository,
+                    previous_git_sha=previous_git_sha,
+                    target_git_sha=resolved_source_ref,
+                    remote_subdir=tracked_remote_subdir,
+                )
+            except (RuntimeError, ValueError):
+                # Conservative fallback: update when path-change detection fails.
+                has_path_changes = True
+
+        if compares_equal_by_sha or (not has_path_changes):
+            should_update = False
+
+        if should_update and should_analyze and host_entry_scripts:
             baseline_ref = previous_tag
             if previous_git_sha:
                 baseline_ref = previous_git_sha
@@ -123,13 +156,6 @@ def select_source_paths_for_update(
             has_required_metadata = bool(
                 repository and baseline_ref and resolved_source_ref
             )
-            compares_equal_by_sha = False
-            if previous_git_sha and is_full_git_sha(resolved_source_ref):
-                compares_equal_by_sha = previous_git_sha == resolved_source_ref.lower()
-
-            if compares_equal_by_sha:
-                should_update = False
-
             if has_required_metadata:
                 if should_update:
                     impacted = False
@@ -145,6 +171,7 @@ def select_source_paths_for_update(
                                     repository=repository,
                                     release_tag=resolved_source_ref,
                                     previous_tag=baseline_ref,
+                                    remote_subdir=tracked_remote_subdir,
                                     functracer_backend=functracer_backend,
                                     functracer_image_tag=functracer_image_tag,
                                 )
@@ -153,9 +180,36 @@ def select_source_paths_for_update(
                                 FileNotFoundError,
                                 ValueError,
                                 subprocess.CalledProcessError,
-                            ):
+                            ) as exc:
+                                failure_reason = str(exc)
+                                if isinstance(exc, subprocess.CalledProcessError):
+                                    failure_reason = format_subprocess_error(exc)
+                                warning_message = (
+                                    "functracer analysis failed for "
+                                    f"source_path={source_path}, "
+                                    f"entry_script={entry_script_input}, "
+                                    f"repository={repository}, "
+                                    f"release_tag={resolved_source_ref}, "
+                                    f"baseline_ref={baseline_ref}. "
+                                    f"Reason: {failure_reason}"
+                                )
+                                print(f"::warning::{warning_message}")
+                                print(
+                                    f"Warning: {warning_message}",
+                                    file=sys.stderr,
+                                )
                                 analysis_failed = True
                         else:
+                            warning_message = (
+                                "functracer analysis failed for "
+                                f"source_path={source_path}; entry script does "
+                                f"not exist: {entry_script_input}"
+                            )
+                            print(f"::warning::{warning_message}")
+                            print(
+                                f"Warning: {warning_message}",
+                                file=sys.stderr,
+                            )
                             analysis_failed = True
                     if (not impacted) and (not analysis_failed):
                         should_update = False
@@ -166,10 +220,6 @@ def select_source_paths_for_update(
             source_paths_to_update.append(source_path)
         else:
             skipped_source_paths.append(source_path)
-
-    if not host_entry_scripts:
-        source_paths_to_update = source_paths
-        skipped_source_paths = []
 
     result = (source_paths_to_update, skipped_source_paths)
     return result
@@ -302,5 +352,5 @@ def build_source_update_branch_name(source_repository_input: str) -> str:
     sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", source_repository).strip("-.")
     if not sanitized:
         sanitized = "source"
-    branch_name = f"syncweaver/update-source/{sanitized}"
+    branch_name = f"syncweaver/update/{sanitized}"
     return branch_name

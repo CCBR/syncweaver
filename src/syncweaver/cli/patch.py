@@ -7,6 +7,7 @@ import pathlib
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.patch import (
     PATCH_STATUSES,
     create_patch,
@@ -37,7 +38,7 @@ def patch_group() -> None:
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",
@@ -103,7 +104,7 @@ def create_cmd(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",
@@ -146,7 +147,7 @@ def mark_status_cmd(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",

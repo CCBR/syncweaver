@@ -9,6 +9,7 @@ import tempfile
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import run_git
 from syncweaver.lockfile import read_lockfile, write_lockfile
 
@@ -165,7 +166,6 @@ def add_external_repository(
         "repo_url": tracked_repo_url,
         "ref": selected_ref,
         "git_sha": git_sha,
-        "installed_by": ["syncweaver"],
     }
     if remote_subdir:
         normalized_subdir = pathlib.PurePosixPath(remote_subdir.strip("/")).as_posix()
@@ -206,7 +206,7 @@ def add_external_repository(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",

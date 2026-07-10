@@ -20,15 +20,15 @@ def test_validate_accepts_new_lockfile_shape(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     lock_data = {
-        "name": "CCBR/host-repo1",
-        "homePage": "https://github.com/CCBR/host-repo1",
+        "host": "CCBR/host-repo1",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/package1": {
                 "repo_url": "https://github.com/CCBR/package1",
                 "ref": "main",
                 "git_sha": "3a1f2d49a7a0e8e3db7a9d3b2ea73ff77d1f9b10",
                 "remote_subdir": "modules/package1",
-                "installed_by": ["syncweaver"],
                 "patch": "code/package1/.syncweaver/code-package1.diff",
             }
         },
@@ -55,8 +55,9 @@ def test_validate_rejects_legacy_lockfile_shape(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     lock_data = {
-        "name": "CCBR/host-repo1",
-        "homePage": "https://github.com/CCBR/host-repo1",
+        "host": "CCBR/host-repo1",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "repos": {
             "https://github.com/CCBR/package1": {
                 "sources": {

@@ -8,6 +8,7 @@ import pathlib
 import requests
 import yaml
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.lockfile import _normalize_remote_url
 
 
@@ -49,7 +50,7 @@ def build_host_matrix_from_registry(
         include_host = isinstance(host, dict)
         host_repository = ""
         host_source_repository = ""
-        lockfile = ".syncweaver-lock.json"
+        lockfile = DEFAULT_LOCKFILE_PATH
         remote_subdir = ""
 
         if include_host:
@@ -64,9 +65,9 @@ def build_host_matrix_from_registry(
             )
 
         if include_host:
-            lockfile = str(host.get("lockfile", ".syncweaver-lock.json")).strip()
+            lockfile = str(host.get("lockfile", DEFAULT_LOCKFILE_PATH)).strip()
             if not lockfile:
-                lockfile = ".syncweaver-lock.json"
+                lockfile = DEFAULT_LOCKFILE_PATH
             remote_subdir = str(host.get("remote_subdir", "")).strip()
             matrix_hosts.append(
                 {

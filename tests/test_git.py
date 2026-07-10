@@ -7,7 +7,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from syncweaver.git import is_full_git_sha, resolve_remote_ref_to_git_sha
+from syncweaver.git import (
+    is_full_git_sha,
+    remote_ref_has_path_changes,
+    resolve_remote_ref_to_git_sha,
+)
 
 
 def test_is_full_git_sha_accepts_valid_40_char_sha() -> None:
@@ -124,3 +128,54 @@ def test_resolve_remote_ref_to_git_sha_propagates_timeout() -> None:
                 repository="https://github.com/CCBR/package1",
                 source_ref="main",
             )
+
+
+def test_remote_ref_has_path_changes_returns_false_for_same_sha() -> None:
+    """Verify path-change helper short-circuits for identical SHAs.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    unchanged_sha = "a" * 40
+
+    has_changes = remote_ref_has_path_changes(
+        repository="https://github.com/CCBR/package1",
+        previous_git_sha=unchanged_sha,
+        target_git_sha=unchanged_sha,
+        remote_subdir="modules/hello",
+    )
+
+    assert not has_changes
+
+
+def test_remote_ref_has_path_changes_scopes_diff_to_remote_subdir() -> None:
+    """Verify helper reports changes using remote_subdir-scoped diff output.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    previous_sha = "1" * 40
+    target_sha = "2" * 40
+    observed_calls: list[list[str]] = []
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd, env, redacted_values
+        observed_calls.append(args)
+        output = ""
+        if "diff" in args:
+            output = "modules/hello/R/hello.R"
+        return output
+
+    with patch("syncweaver.git.run_git", side_effect=_fake_run_git):
+        has_changes = remote_ref_has_path_changes(
+            repository="https://github.com/CCBR/package1",
+            previous_git_sha=previous_sha,
+            target_git_sha=target_sha,
+            remote_subdir="modules/hello",
+        )
+
+    assert has_changes
+    assert any("diff" in call for call in observed_calls)
+    diff_calls = [call for call in observed_calls if "diff" in call]
+    assert diff_calls
+    assert diff_calls[0][-1] == "modules/hello"

@@ -2,12 +2,14 @@
 
 import json
 import pathlib
+import re
 import subprocess
 
 from click.testing import CliRunner
 
 import syncweaver.cli.deps as deps_cli
 from syncweaver.cli import cli
+import syncweaver.host_source_update as host_source_update
 from syncweaver.templates import list_templates
 
 
@@ -24,6 +26,7 @@ def test_cli_help():
     assert "update" in result.output
     assert "remove" in result.output
     assert "contribute" in result.output
+    assert "init" in result.output
     assert "deps" in result.output
 
 
@@ -257,6 +260,96 @@ def test_deps_select_update_paths_surfaces_subprocess_stderr(tmp_path):
     assert "inner R stderr: object 'foo' not found" in result.output
 
 
+def test_deps_select_update_paths_emits_warning_and_keeps_path_on_analysis_failure(
+    tmp_path, monkeypatch
+):
+    """Verify CLI shows warning annotation and keeps selected path on failures.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo_path = tmp_path / "host-repo"
+    host_repo_path.mkdir()
+    source_root = host_repo_path / "code" / "hello"
+    source_root.mkdir(parents=True)
+    (source_root / "DESCRIPTION").write_text("Package: hello\n", encoding="utf-8")
+    (source_root / "R").mkdir()
+    entry_script = host_repo_path / "code" / "main.R"
+    entry_script.parent.mkdir(parents=True, exist_ok=True)
+    entry_script.write_text("hello::hello_message('world')\n", encoding="utf-8")
+
+    lock_data = {
+        "host": "demo-syncweaver-host-capsule",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
+        "sources": {
+            "code/hello": {
+                "repo_url": "https://github.com/NIDAP-Community/demo-syncweaver-source-monorepo",
+                "ref": "v0.2.0",
+                "git_sha": "",
+                "remote_subdir": "modules/hello",
+            }
+        },
+    }
+    lockfile_path = host_repo_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(f"{json.dumps(lock_data, indent=2)}\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        host_source_update,
+        "resolve_remote_ref_to_git_sha",
+        lambda repository, source_ref: source_ref,
+    )
+
+    def _raise_analysis_failure(*args, **kwargs):
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["Rscript", "functracer_release_impact.R"],
+            stderr="functracer failed in analysis",
+        )
+
+    monkeypatch.setattr(
+        host_source_update,
+        "run_functracer_release_impact",
+        _raise_analysis_failure,
+    )
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "deps",
+            "select-update-paths",
+            "--host-repo",
+            str(host_repo_path),
+            "--lockfile",
+            ".syncweaver-lock.json",
+            "--source-paths-json",
+            '["code/hello"]',
+            "--source-ref",
+            "plot-heatmap",
+            "--functracer-backend",
+            "local",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "::warning::functracer analysis failed for source_path=code/hello" in (
+        result.output
+    )
+    assert "functracer failed in analysis" in result.output
+    match = re.search(r"\{[\s\S]*\}", result.output)
+    assert match is not None
+    payload = json.loads(match.group(0))
+    assert payload["source_paths"] == ["code/hello"]
+    assert payload["source_count"] == 1
+    assert payload["skipped_source_paths"] == []
+    assert payload["skipped_source_count"] == 0
+
+
 def test_update_help_includes_remote_subdir_option():
     """Verify `update --help` documents the remote subdirectory option.
 
@@ -381,8 +474,9 @@ def test_contribute_opens_pr(tmp_path, monkeypatch):
     import syncweaver.contribute_patch as contribute_patch_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -448,8 +542,9 @@ def test_contribute_marks_relevant_patch_path(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -516,8 +611,9 @@ def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",
@@ -590,8 +686,9 @@ def test_contribute_fails_when_patch_not_tracked(tmp_path, monkeypatch):
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
-        "name": "CCBR/host-repo",
-        "homePage": "https://github.com/CCBR/host-repo",
+        "host": "CCBR/host-repo",
+        "orchestrator": "CCBR/syncweaver-orchestrator",
+        "syncweaver_version": "0.0.1-dev",
         "sources": {
             "code/pkg": {
                 "repo_url": "https://github.com/CCBR/package1",

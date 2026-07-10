@@ -8,6 +8,7 @@ import shutil
 
 import click
 
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 
 
@@ -47,7 +48,7 @@ def remove_tracked_repository(
 )
 @click.option(
     "--lockfile",
-    default=".syncweaver-lock.json",
+    default=DEFAULT_LOCKFILE_PATH,
     show_default=True,
     type=click.Path(path_type=pathlib.Path),
     help="Path to .syncweaver-lock.json in the host repository.",
