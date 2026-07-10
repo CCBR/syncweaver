@@ -13,4 +13,4 @@ print_contributor_images(repo='syncweaver', org='CCBR')
 :::
 
 
-View the [contributors graph on GitHub](https://github.com/CCBR/Tools/graphs/contributors) for more details.
+View the [contributors graph on GitHub](https://github.com/CCBR/syncweaver/graphs/contributors) for more details.
