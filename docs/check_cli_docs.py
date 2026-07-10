@@ -57,6 +57,11 @@ def run_help(*args: str) -> str:
         capture_output=True,
         text=True,
     )
+    cmd = " ".join(["syncweaver", *args, "--help"])
+    if result.returncode != 0:
+        raise RuntimeError(f"Help command failed: {cmd}\n{result.stderr}")
+    if not result.stdout.strip():
+        raise RuntimeError(f"Help command produced no output: {cmd}\n{result.stderr}")
     return result.stdout
 
 
