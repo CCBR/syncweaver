@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       syncweaver-version:
-        description: The version of Syncweaver to use.
+        description: syncweaver version/ref to install (e.g. version tag, branch name, or commit SHA). Will use docker image if available.
         required: true
         type: string
         default: "main"
@@ -31,7 +31,7 @@ jobs:
     env:
       SOURCE_REPOSITORY_RAW: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_repository || github.event.inputs.source_repo || '' }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
-      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.syncweaver-version || github.event.inputs.syncweaver-version || 'main' }}
+      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload['syncweaver-version'] || github.event.inputs['syncweaver-version'] || 'main' }}
     steps:
       - name: Validate source ref
         shell: bash
@@ -43,14 +43,11 @@ jobs:
           fi
       - name: Checkout repository
         uses: actions/checkout@v6
-      - name: Set up Python
-        uses: actions/setup-python@v6
+
+      - name: Setup syncweaver
+        uses: CCBR/syncweaver/actions/setup-syncweaver@main
         with:
-          python-version: "3.13"
-      - name: Install syncweaver and YAML parser dependencies
-        run: |
-          python -m pip install --upgrade pyyaml
-          python -m pip install --upgrade "git+https://github.com/CCBR/syncweaver.git@${{ env.SYNCWEAVER_VERSION }}"
+          syncweaver-version: ${{ env.SYNCWEAVER_VERSION }}
 
       - name: Resolve source repository
         id: resolve_source_repository
@@ -96,11 +93,13 @@ jobs:
 
       - name: Build host matrix from registry
         id: build_matrix
-        shell: python
+        shell: bash
         env:
           SOURCE_REPOSITORY: ${{ steps.resolve_source_repository.outputs.source_repository }}
           HOST_REGISTRY_FILE: .github/host-repositories.yml
         run: |
+          set -euo pipefail
+          syncweaver-python - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           import os
           import pathlib
@@ -112,60 +111,57 @@ jobs:
 
           source_repository = os.environ["SOURCE_REPOSITORY"].strip()
           registry_path = pathlib.Path(os.environ["HOST_REGISTRY_FILE"])
-          output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
 
           try:
-            matrix_hosts = build_host_matrix_from_registry(
-              registry_path=registry_path,
-              source_repository=source_repository,
-            )
+              matrix_hosts = build_host_matrix_from_registry(
+                  registry_path=registry_path,
+                  source_repository=source_repository,
+              )
           except (FileNotFoundError, ValueError) as exc:
-            raise SystemExit(f"Error: {exc}") from exc
+              raise SystemExit(f"Error: {exc}") from exc
 
           if not matrix_hosts:
-            source_ref = os.environ.get("SOURCE_REF", "")
-            raise SystemExit(
-              "Error: No host repositories matched .github/host-repositories.yml for this dispatch. "
-              "Actionable guidance: "
-              "1) Verify .github/host-repositories.yml exists and defines a top-level 'hosts' list. "
-              "2) Ensure each host item has a 'repository' field in OWNER/REPO format (the optional 'name' field is not used). "
-              "3) If a host defines 'source_repository', it must match SOURCE_REPOSITORY for this dispatch. "
-              f"Debug context: SOURCE_REPOSITORY={source_repository}; "
-              f"SOURCE_REF={source_ref}; "
-              f"HOST_REGISTRY_FILE={registry_path}"
-            )
+              source_ref = os.environ.get("SOURCE_REF", "")
+              raise SystemExit(
+                  "Error: No host repositories matched .github/host-repositories.yml for this dispatch. "
+                  "Actionable guidance: "
+                  "1) Verify .github/host-repositories.yml exists and defines a top-level 'hosts' list. "
+                  "2) Ensure each host item has a 'repository' field in OWNER/REPO format (the optional 'name' field is not used). "
+                  "3) If a host defines 'source_repository', it must match SOURCE_REPOSITORY for this dispatch. "
+                  f"Debug context: SOURCE_REPOSITORY={source_repository}; "
+                  f"SOURCE_REF={source_ref}; "
+                  f"HOST_REGISTRY_FILE={registry_path}"
+              )
 
-          # Filter hosts to only include those that have the source repository
-          # tracked in their lockfile
           filtered_hosts = []
           for host in matrix_hosts:
-            host_repo = host.get("repository", "")
-            lockfile = host.get("lockfile", ".syncweaver-lock.json")
-            if source_repo_in_host_lockfile(
-              source_repository=source_repository,
-              host_repository=host_repo,
-              lockfile_path=lockfile,
-              ref="main",  # Using 'main' as default ref; could be parameterized if needed
-            ):
-              filtered_hosts.append(host)
+              host_repo = host.get("repository", "")
+              lockfile = host.get("lockfile", ".syncweaver-lock.json")
+              if source_repo_in_host_lockfile(
+                  source_repository=source_repository,
+                  host_repository=host_repo,
+                  lockfile_path=lockfile,
+                  ref="main",
+              ):
+                  filtered_hosts.append(host)
 
           if not filtered_hosts:
-            source_ref = os.environ.get("SOURCE_REF", "")
-            raise SystemExit(
-              "Error: No host repositories have the source repository tracked in their lockfile. "
-              f"Source repository '{source_repository}' was not found in any host's lockfile. "
-              "Actionable guidance: "
-              "1) Verify the source repository has been added to host lockfiles via 'syncweaver add'. "
-              "2) Check that host lockfiles exist at the paths specified in .github/host-repositories.yml. "
-              f"Debug context: SOURCE_REPOSITORY={source_repository}; "
-              f"SOURCE_REF={source_ref}; "
-              f"Initial matched hosts: {len(matrix_hosts)}; "
-              f"After lockfile filtering: {len(filtered_hosts)}"
-            )
+              source_ref = os.environ.get("SOURCE_REF", "")
+              raise SystemExit(
+                  "Error: No host repositories have the source repository tracked in their lockfile. "
+                  f"Source repository '{source_repository}' was not found in any host's lockfile. "
+                  "Actionable guidance: "
+                  "1) Verify the source repository has been added to host lockfiles via 'syncweaver add'. "
+                  "2) Check that host lockfiles exist at the paths specified in .github/host-repositories.yml. "
+                  f"Debug context: SOURCE_REPOSITORY={source_repository}; "
+                  f"SOURCE_REF={source_ref}; "
+                  f"Initial matched hosts: {len(matrix_hosts)}; "
+                  f"After lockfile filtering: {len(filtered_hosts)}"
+              )
 
-          with output_path.open("a", encoding="utf-8") as fh:
-            fh.write(f"count={len(filtered_hosts)}\n")
-            fh.write(f"hosts={json.dumps(filtered_hosts)}\n")
+          print(f"count={len(filtered_hosts)}")
+          print(f"hosts={json.dumps(filtered_hosts)}")
+          PY
 
       - name: Print selected hosts
         shell: bash
@@ -185,7 +181,7 @@ jobs:
     env:
       SOURCE_REPOSITORY: ${{ needs.prepare-host-matrix.outputs.source_repository }}
       SOURCE_REF: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.ref || github.event.inputs.source_ref || '' }}
-      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.syncweaver-version || github.event.inputs.syncweaver-version || 'main' }}
+      SYNCWEAVER_VERSION: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload['syncweaver-version'] || github.event.inputs['syncweaver-version'] || 'main' }}
     steps:
       - name: Update host directly
         uses: CCBR/syncweaver/actions/update-host-source-direct@main
