@@ -35,6 +35,8 @@ jobs:
         shell: bash
         run: |
           image_base="${NAMESPACE}/${IMAGE_NAME}"
+          branch_ref="${{ github.ref_name }}"
+          syncweaver_ref="${branch_ref}"
           if [ "${{ github.event_name }}" = "release" ]; then
             version="${{ github.ref_name }}"
             tag="${image_base}:${version},${image_base}:latest"
@@ -48,7 +50,12 @@ jobs:
             echo "ERROR: Resolved image version is empty" >&2
             exit 1
           fi
+          if [ -z "${syncweaver_ref}" ]; then
+            echo "ERROR: Resolved SYNCWEAVER_VERSION is empty" >&2
+            exit 1
+          fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "syncweaver_ref=${syncweaver_ref}" >> "$GITHUB_OUTPUT"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           echo "push=${push}" >> "$GITHUB_OUTPUT"
 
@@ -65,4 +72,4 @@ jobs:
           push: ${{ steps.setup.outputs.push == 'true' }}
           tags: ${{ steps.setup.outputs.tag }}
           build-args: |
-            SYNCWEAVER_VERSION=${{ steps.setup.outputs.version }}
+            SYNCWEAVER_VERSION=${{ steps.setup.outputs.syncweaver_ref }}
