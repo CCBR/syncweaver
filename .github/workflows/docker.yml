@@ -1,0 +1,64 @@
+name: docker
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      push:
+        description: "Push image to DockerHub"
+        type: boolean
+        default: true
+
+env:
+  NAMESPACE: "nciccbr"
+  IMAGE_NAME: "syncweaver"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Determine version and push flag
+        id: setup
+        shell: bash
+        run: |
+          image_base="${NAMESPACE}/${IMAGE_NAME}"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            version="${{ github.ref_name }}"
+            tag="${image_base}:${version},${image_base}:latest"
+            push="true"
+          else
+            version="$(tr -d '[:space:]' < VERSION)"
+            tag="${image_base}:${version}"
+            push="${{ inputs.push }}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "push=${push}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to DockerHub
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME_VK }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_VK }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          push: ${{ steps.setup.outputs.push == 'true' && github.event_name != 'pull_request' }}
+          tags: ${{ steps.setup.outputs.tag }}
+          build-args: |
+            SYNCWEAVER_VERSION=${{ steps.setup.outputs.version }}
