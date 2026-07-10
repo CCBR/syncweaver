@@ -36,5 +36,5 @@ syncweaver contribute \
 # Pass a token directly (or set GITHUB_TOKEN in env)
 syncweaver contribute \
   --path code/mypackage \
-  --token ghp_xxxxxxxxxxxxx
+  --token "$GITHUB_TOKEN"
 ```
