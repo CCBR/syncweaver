@@ -1,0 +1,26 @@
+---
+title: '`syncweaver deps analyze`'
+---
+
+Analyze how host repositories use source packages, and optionally assess the
+impact of a new release.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver deps analyze --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Analyze dependencies for a tracked path
+syncweaver deps analyze --path code/mypackage
+```

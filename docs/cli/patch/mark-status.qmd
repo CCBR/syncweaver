@@ -1,0 +1,33 @@
+---
+title: '`syncweaver patch mark-status`'
+---
+
+Record a lifecycle status tag (e.g. `pending`, `contributed`, `merged`) for a
+patch entry in the lockfile, enabling automated workflows to track contribution
+state.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver patch mark-status --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Mark a patch as contributed upstream
+syncweaver patch mark-status --path code/mypackage --status contributed
+
+# Mark with a specific patch file reference
+syncweaver patch mark-status \
+  --path code/mypackage \
+  --patch patches/mypackage.patch \
+  --status merged
+```

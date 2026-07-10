@@ -1,0 +1,30 @@
+---
+title: '`syncweaver remove`'
+---
+
+Remove a tracked external repository from the current host repository.
+The vendored files are deleted and the corresponding entry is removed from the
+lockfile.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver remove --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Remove a tracked path
+syncweaver remove --path code/mypackage
+
+# Remove using a non-default lockfile
+syncweaver remove --path code/mypackage --lockfile config/syncweaver-lock.json
+```

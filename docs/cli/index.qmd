@@ -1,0 +1,29 @@
+---
+title: 'Command-line interface'
+---
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+Each command has its own documentation page with full usage, examples, and
+notes:
+
+| Command | Description |
+|---|---|
+| [`init`](./init/index.qmd) | Initialize syncweaver content in local or remote repositories |
+| [`add`](./add.qmd) | Add an external repository to the host repository |
+| [`update`](./update.qmd) | Update a tracked external repository in the host repository |
+| [`remove`](./remove.qmd) | Remove a tracked external repository from the host repository |
+| [`patch`](./patch/index.qmd) | Create, mark, and list source patch artifacts |
+| [`contribute`](./contribute.qmd) | Contribute a host patch back to the source repository |
+| [`deps`](./deps/index.qmd) | Analyze source dependencies for host integration |
+| [`templates`](./templates/index.qmd) | List and add bundled workflow templates to a repo |
+| [`validate`](./validate.qmd) | Validate a lockfile against the syncweaver JSON schema |

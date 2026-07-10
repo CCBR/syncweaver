@@ -1,0 +1,26 @@
+---
+title: '`syncweaver deps select-update-paths`'
+---
+
+Filter the set of candidate source paths in a host repository and emit the
+selection metadata needed to drive an automated update matrix.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver deps select-update-paths --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Emit update-path selection for a host repository
+syncweaver deps select-update-paths
+```

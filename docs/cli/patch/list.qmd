@@ -1,0 +1,26 @@
+---
+title: '`syncweaver patch list`'
+---
+
+List the patch file records stored in the lockfile for a given tracked source
+path.
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver patch list --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# List patches for a tracked path
+syncweaver patch list --path code/mypackage
+```

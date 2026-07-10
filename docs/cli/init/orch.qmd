@@ -1,0 +1,26 @@
+---
+title: '`syncweaver init orch`'
+---
+
+Initialize an orchestrator repository with the packaged syncweaver orchestrator
+templates (dashboard, index page, and workflow files).
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver init orch --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+# Initialize orchestrator content in the current directory
+syncweaver init orch
+```

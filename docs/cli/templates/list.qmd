@@ -1,0 +1,25 @@
+---
+title: '`syncweaver templates list`'
+---
+
+Print all workflow templates bundled with this version of syncweaver that can
+be installed with [`syncweaver templates add`](add.qmd).
+
+## Usage
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+
+help_text = shell_run("syncweaver templates list --help")
+print("```")
+print(help_text)
+print("```")
+```
+
+## Examples
+
+```sh
+syncweaver templates list
+```
