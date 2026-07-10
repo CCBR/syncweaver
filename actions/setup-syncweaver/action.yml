@@ -1,0 +1,166 @@
+name: setup-syncweaver
+description: Configure syncweaver for subsequent workflow steps using Docker image tags when available, otherwise install from git ref.
+
+inputs:
+  syncweaver-version:
+    description: syncweaver version/ref to install (e.g. version tag, branch name, or commit SHA). Will use docker image if available.
+    required: true
+  python-version:
+    description: Python version used when falling back to git installation.
+    required: false
+    default: "3.14"
+
+outputs:
+  setup-mode:
+    description: setup strategy selected for syncweaver (docker or git).
+    value: ${{ steps.detect.outputs.setup_mode }}
+  syncweaver-image:
+    description: Fully qualified syncweaver image name when setup-mode is docker.
+    value: ${{ steps.detect.outputs.syncweaver_image }}
+  syncweaver-version:
+    description: Normalized syncweaver version used by this action.
+    value: ${{ steps.normalize.outputs.syncweaver_version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Normalize version input
+      id: normalize
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        version_raw="${{ inputs.syncweaver-version }}"
+        version="$(printf '%s' "${version_raw}" | tr -d '[:space:]')"
+        if [[ -z "${version}" ]]; then
+          echo "Error: syncweaver-version is required and cannot be empty." >&2
+          exit 1
+        fi
+
+        echo "syncweaver_version=${version}" >> "$GITHUB_OUTPUT"
+
+    - name: Detect Docker image availability
+      id: detect
+      shell: bash
+      env:
+        SYNCWEAVER_VERSION: ${{ steps.normalize.outputs.syncweaver_version }}
+      run: |
+        set -euo pipefail
+
+        # syncweaver-version can be either:
+        # 1) a Docker image reference (OWNER/IMAGE:TAG or OWNER/IMAGE@sha256:...)
+        # 2) a version/ref used as nciccbr/syncweaver:<version> and git fallback ref
+        if [[ "${SYNCWEAVER_VERSION}" == */*:* || "${SYNCWEAVER_VERSION}" == */*@sha256:* ]]; then
+          image="${SYNCWEAVER_VERSION}"
+          explicit_image_input="true"
+        else
+          image="nciccbr/syncweaver:${SYNCWEAVER_VERSION}"
+          explicit_image_input="false"
+        fi
+
+        setup_mode="git"
+        resolved_image=""
+
+        if command -v docker >/dev/null 2>&1; then
+          if docker manifest inspect "${image}" >/dev/null 2>&1; then
+            setup_mode="docker"
+            resolved_image="${image}"
+          elif [[ "${explicit_image_input}" == "true" ]]; then
+            echo "Error: explicit syncweaver Docker image not found: ${image}" >&2
+            exit 1
+          fi
+        elif [[ "${explicit_image_input}" == "true" ]]; then
+          echo "Error: docker is not available but syncweaver-version is an explicit image: ${image}" >&2
+          exit 1
+        fi
+
+        echo "setup_mode=${setup_mode}" >> "$GITHUB_OUTPUT"
+        echo "syncweaver_image=${resolved_image}" >> "$GITHUB_OUTPUT"
+
+    - name: Enable Docker-backed syncweaver command
+      if: ${{ steps.detect.outputs.setup_mode == 'docker' }}
+      shell: bash
+      env:
+        SYNCWEAVER_IMAGE: ${{ steps.detect.outputs.syncweaver_image }}
+      run: |
+        set -euo pipefail
+
+        wrapper_dir="${RUNNER_TEMP}/syncweaver-bin"
+        mkdir -p "${wrapper_dir}"
+
+        cat > "${wrapper_dir}/_syncweaver_docker_exec" <<EOF
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        docker_env_args=()
+        while IFS='=' read -r env_name _; do
+          if [[ "\${env_name}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+            docker_env_args+=("-e" "\${env_name}")
+          fi
+        done < <(env)
+
+        docker run --rm \
+          --user "\$(id -u):\$(id -g)" \
+          "\${docker_env_args[@]}" \
+          -v "\${PWD}:/workspace" \
+          -w /workspace \
+          "${SYNCWEAVER_IMAGE}" \
+          "\$@"
+        EOF
+
+        cat > "${wrapper_dir}/syncweaver" <<EOF
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        exec "\$(dirname "\$0")/_syncweaver_docker_exec" syncweaver "\$@"
+        EOF
+
+        cat > "${wrapper_dir}/syncweaver-python" <<EOF
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        exec "\$(dirname "\$0")/_syncweaver_docker_exec" python "\$@"
+        EOF
+
+        chmod +x \
+          "${wrapper_dir}/_syncweaver_docker_exec" \
+          "${wrapper_dir}/syncweaver" \
+          "${wrapper_dir}/syncweaver-python"
+        echo "${wrapper_dir}" >> "$GITHUB_PATH"
+
+        echo "SYNCWEAVER_SETUP_MODE=docker" >> "$GITHUB_ENV"
+        echo "SYNCWEAVER_IMAGE=${SYNCWEAVER_IMAGE}" >> "$GITHUB_ENV"
+        echo "SYNCWEAVER_VERSION=${{ steps.normalize.outputs.syncweaver_version }}" >> "$GITHUB_ENV"
+
+    - name: Set up Python fallback
+      if: ${{ steps.detect.outputs.setup_mode != 'docker' }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+
+    - name: Install syncweaver from git ref fallback
+      if: ${{ steps.detect.outputs.setup_mode != 'docker' }}
+      shell: bash
+      env:
+        SYNCWEAVER_VERSION: ${{ steps.normalize.outputs.syncweaver_version }}
+      run: |
+        set -euo pipefail
+
+        python -m pip install --upgrade pip
+        python -m pip install "git+https://github.com/CCBR/syncweaver.git@${SYNCWEAVER_VERSION}"
+
+        wrapper_dir="${RUNNER_TEMP}/syncweaver-bin"
+        mkdir -p "${wrapper_dir}"
+        cat > "${wrapper_dir}/syncweaver-python" <<'EOF'
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        python "$@"
+        EOF
+        chmod +x "${wrapper_dir}/syncweaver-python"
+        echo "${wrapper_dir}" >> "$GITHUB_PATH"
+
+        echo "SYNCWEAVER_SETUP_MODE=git" >> "$GITHUB_ENV"
+        echo "SYNCWEAVER_IMAGE=" >> "$GITHUB_ENV"
+        echo "SYNCWEAVER_VERSION=${SYNCWEAVER_VERSION}" >> "$GITHUB_ENV"

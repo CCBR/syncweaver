@@ -34,7 +34,7 @@ inputs:
     required: false
     default: ""
   syncweaver-version:
-    description: syncweaver version/ref to install (e.g. main, v0.1.0, or commit SHA).
+    description: syncweaver version/ref to install (e.g. version tag, branch name, or commit SHA). Will use docker image if available.
     required: false
     default: main
   functracer-version:
@@ -139,49 +139,34 @@ runs:
         fetch-depth: 0
         path: host-repo
 
-    - name: Checkout syncweaver pyproject.toml
-      uses: actions/checkout@v7
+    - name: Setup syncweaver
+      id: setup_syncweaver
+      uses: CCBR/syncweaver/actions/setup-syncweaver@main
       with:
-        repository: CCBR/syncweaver
-        ref: ${{ inputs.syncweaver-version }}
-        sparse-checkout: pyproject.toml
-        path: syncweaver-cache
-
-    - uses: actions/setup-python@v6
-      with:
-        python-version: "3.14"
-        cache: pip
-        cache-dependency-path: syncweaver-cache/pyproject.toml
-
-    - name: Install syncweaver
-      shell: bash
-      run: |
-        set -euo pipefail
-        python -m pip install --upgrade pip
-        python -m pip install "git+https://github.com/CCBR/syncweaver.git@${{ inputs.syncweaver-version }}"
+        syncweaver-version: ${{ inputs.syncweaver-version }}
 
     - name: Resolve source paths from host lockfile
       id: resolve_source_paths
-      shell: python
+      shell: bash
       env:
         SOURCE_PATH_INPUT: ${{ inputs.source_path }}
         SOURCE_REPOSITORY_INPUT: ${{ inputs.source_repository }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
       run: |
+        set -euo pipefail
+        syncweaver-python - <<'PY' >> "$GITHUB_OUTPUT"
         import json
         import os
         import pathlib
 
-        from syncweaver.host_source_update import (
-            resolve_source_paths_for_host_update,
-        )
+        from syncweaver.host_source_update import resolve_source_paths_for_host_update
 
         source_path_input = os.environ.get("SOURCE_PATH_INPUT", "").strip()
         source_repository_input = os.environ.get("SOURCE_REPOSITORY_INPUT", "").strip()
         lockfile_input = os.environ.get("LOCKFILE_INPUT", ".syncweaver-lock.json").strip()
-        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
         lockfile_path = pathlib.Path("host-repo") / pathlib.Path(lockfile_input)
 
+        skipped_reason = ""
         try:
             resolved_source_paths = resolve_source_paths_for_host_update(
                 lockfile_path=lockfile_path,
@@ -197,14 +182,15 @@ runs:
                 "source_repository:" in message
             ):
                 resolved_source_paths = []
-                with output_path.open("a", encoding="utf-8") as fh:
-                    fh.write(f"skipped_reason={message}\n")
+                skipped_reason = message
             else:
                 raise SystemExit(f"Error: {message}") from exc
 
-        with output_path.open("a", encoding="utf-8") as fh:
-            fh.write(f"source_paths={json.dumps(resolved_source_paths)}\n")
-            fh.write(f"source_count={len(resolved_source_paths)}\n")
+        print(f"source_paths={json.dumps(resolved_source_paths)}")
+        print(f"source_count={len(resolved_source_paths)}")
+        if skipped_reason:
+            print(f"skipped_reason={skipped_reason}")
+        PY
 
     - name: Filter resolved source paths with optional functracer dependency checks
       id: filter_source_paths
@@ -245,13 +231,15 @@ runs:
 
     - name: Run syncweaver update for each resolved source path
       if: ${{ steps.filter_source_paths.outputs.source_count != '0' }}
-      shell: python
+      shell: bash
       env:
         SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
         LOCKFILE_INPUT: ${{ inputs.lockfile }}
         SOURCE_REF_INPUT: ${{ inputs.source_ref }}
         REMOTE_SUBDIR_INPUT: ${{ inputs.remote_subdir }}
       run: |
+        set -euo pipefail
+        syncweaver-python - <<'PY'
         import json
         import os
         import pathlib
@@ -271,50 +259,45 @@ runs:
             remote_subdir=remote_subdir,
             host_repo_path=host_repo_path,
         )
+        PY
 
     - name: Create source list for PR body
       id: source_list
-      shell: python
+      shell: bash
       env:
         SOURCE_PATHS_JSON: ${{ steps.filter_source_paths.outputs.source_paths }}
       run: |
+        set -euo pipefail
+        syncweaver-python - <<'PY' >> "$GITHUB_OUTPUT"
         import json
         import os
-        import pathlib
 
-        from syncweaver.host_source_update import (
-            format_source_paths_markdown,
-        )
+        from syncweaver.host_source_update import format_source_paths_markdown
 
         source_paths = json.loads(os.environ["SOURCE_PATHS_JSON"])
-        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
-
         markdown = format_source_paths_markdown(source_paths)
 
-        with output_path.open("a", encoding="utf-8") as fh:
-            fh.write("source_paths_md<<EOF\n")
-            fh.write(f"{markdown}\n")
-            fh.write("EOF\n")
+        print("source_paths_md<<EOF")
+        print(markdown)
+        print("EOF")
+        PY
 
     - name: Build PR branch name
       id: pr_branch
-      shell: python
+      shell: bash
       env:
         SOURCE_REPOSITORY_INPUT: ${{ inputs.source_repository }}
       run: |
+        set -euo pipefail
+        syncweaver-python - <<'PY' >> "$GITHUB_OUTPUT"
         import os
-        import pathlib
 
-        from syncweaver.host_source_update import (
-            build_source_update_branch_name,
-        )
+        from syncweaver.host_source_update import build_source_update_branch_name
 
         source_repository = os.environ.get("SOURCE_REPOSITORY_INPUT", "").strip()
         branch_name = build_source_update_branch_name(source_repository)
-
-        output_path = pathlib.Path(os.environ["GITHUB_OUTPUT"])
-        with output_path.open("a", encoding="utf-8") as fh:
-            fh.write(f"branch_name={branch_name}\n")
+        print(f"branch_name={branch_name}")
+        PY
 
     - name: Create pull request in host repository
       id: create_pr
