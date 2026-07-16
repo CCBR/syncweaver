@@ -9,6 +9,7 @@ title: Contributors
 #| output: asis
 from ccbr_tools.github import print_contributor_images
 print_contributor_images(repo='syncweaver', org='CCBR')
+```
 
 :::
 

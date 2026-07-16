@@ -17,6 +17,8 @@ website:
         href: index.qmd
       - text: Docs
         menu:
+          - text: Introduction
+            href: guide/index.qmd
           - text: Command-line interface
             href: cli/index.qmd
           - text: Python API

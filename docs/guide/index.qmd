@@ -1,12 +1,21 @@
 ---
-title: "Demo"
+title: "Intro to Syncweaver"
 echo: false
 ---
 
 ## Overview
 
+syncweaver synchronizes code between package repositories and host repositories,
+and manages the full lifecycle of patch artifacts from generation through
+upstream pull request submission, rejection status tracking, and
+dependency-aware release dispatch.
+
+![](../img/multiple-repos-layout.jpg)
+
+## Process
+
 The diagram below shows how syncweaver coordinates a **source repo** and a **host repo**
-through the CCBR/syncweaver orchestrator. Host repos can become Code Ocean capsules.
+through an orchestrator. Host repos can become Code Ocean capsules.
 
 ```{mermaid}
 sequenceDiagram
@@ -35,37 +44,15 @@ sequenceDiagram
     Host->>Src: open pull request<br/>with patch applied upstream
 ```
 
-## Repository layouts
+## Repositories
 
-This view emphasizes a different question than the sequence diagram: which
-source repositories are vendored into which host capsules.
+![](../img/syncweaver-demo-repos.jpg)
 
-```{mermaid}
-flowchart LR
-  subgraph H1[demo-syncweaver-host]
-    H1A[code/hello]
-    H1B[code/MOSuite]
-  end
-
-  subgraph H2[MOSuite-create]
-    H2A[code/MOSuite]
-  end
-
-  subgraph H3[MOSuite-clean]
-    H3A[code/MOSuite]
-  end
-
-  S1[demo-syncweaver-source<br/>modules/hello]
-  S2[CCBR/MOSuite<br/>R package source]
-
-  S1 --> H1A
-  S2 --> H1B
-  S2 --> H2A
-  S2 --> H3A
-```
-
-In these examples, one host capsule can aggregate multiple upstream sources,
-while other capsules vendor just a single shared source package.
+| Role | Example repo | Key file |
+|------|-------------|----------|
+| Source | [demo-syncweaver-source](https://github.com/NIDAP-Community/demo-syncweaver-source) | `.github/workflows/syncweaver-source-dispatch.yml` |
+| Host | [demo-syncweaver-host](https://github.com/NIDAP-Community/demo-syncweaver-host) | `.syncweaver-lock.json`, `.github/workflows/syncweaver-host-update.yml` |
+| Orchestrator | [CCBR/syncweaver-orchestrator](https://github.com/NIDAP-Community/syncweaver-orchestrator) | `.github/host-repositories.yml`, `.github/workflows/syncweaver-update-hosts.yml` |
 
 ### Source repo - monorepo
 
@@ -164,14 +151,6 @@ MOSuite-create/
 └── tests/
 ```
 
-## Repos
-
-| Role | Example repo | Key file |
-|------|-------------|----------|
-| Source | [demo-syncweaver-source](https://github.com/NIDAP-Community/demo-syncweaver-source) | `.github/workflows/syncweaver-source-dispatch.yml` |
-| Host | [demo-syncweaver-host](https://github.com/NIDAP-Community/demo-syncweaver-host) | `.syncweaver-lock.json`, `.github/workflows/syncweaver-host-update.yml` |
-| Orchestrator | [CCBR/syncweaver](https://github.com/CCBR/syncweaver) | `.github/host-repositories.yml`, `.github/workflows/syncweaver-update-hosts` |
-
 ## Lockfile
 
 The host repo tracks each vendored dependency in `.syncweaver-lock.json`:
@@ -191,9 +170,11 @@ The host repo tracks each vendored dependency in `.syncweaver-lock.json`:
 When the source repo publishes a release, the dispatch chain updates the
 vendored code at `code/hello` and opens a pull request in the host repo.
 
-## dependency analysis and release impact tracing
+## Dependency analysis
 
-This view highlights how `functracer` narrows updates to only affected capsules
+When sources & host entry scripts are written in the R language,
+`syncweaver` uses `functracer` for dependency analysis and to trace the impact of releases.
+Using `functracer` outputs, syncweaver narrows updates to only affected capsules
 after a source release.
 
 ```{mermaid}
