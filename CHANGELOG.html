@@ -43,8 +43,8 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-95d86bad09a6ca11867430c4d25546ae.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-192fa974fcc98d0b84ac5402cbbd512f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-815248a5e96887f97402b12b77b5766c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-65189f86d311fc662176d45ab4de9421.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-79871836dcb5eb9dda0bed7bec117b66.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -262,6 +262,10 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-docs">    
         <li>
+    <a class="dropdown-item" href="./guide/index.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./cli/index.html">
  <span class="dropdown-text">Command-line interface</span></a>
   </li>  
@@ -328,6 +332,20 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="syncweaver-development-version" class="level2">
 <h2 class="anchored" data-anchor-id="syncweaver-development-version">syncweaver development version</h2>
+<p>This is the first release of syncweaver! 🎉 View the website for detailed documentation: <a href="https://ccbr.github.io/syncweaver" class="uri">https://ccbr.github.io/syncweaver</a></p>
+<p>Main commands:</p>
+<ul>
+<li><code>syncweaver init host</code> – initialize a host repository with boilerplate and orchestrator configuration.</li>
+<li><code>syncweaver add</code> – vendor an external repository (or subdirectory) into a host and record it in <code>.syncweaver-lock.json</code></li>
+<li><code>syncweaver update</code> – update a vendored source to a new ref, reapplying any tracked patches</li>
+<li><code>syncweaver remove</code> – remove a tracked source from the host</li>
+<li><code>syncweaver patch</code> – create, list, and track patch artifacts for host-side modifications to vendored code</li>
+<li><code>syncweaver contribute</code> – open a pull request on the source repository to contribute a host patch upstream</li>
+<li><code>syncweaver deps</code> – analyze source dependencies for host integration</li>
+<li><code>syncweaver templates</code> – list and add GitHub Actions workflow templates to a repository</li>
+<li><code>syncweaver validate</code> – validate a lockfile against the syncweaver JSON schema</li>
+</ul>
+<p>GitHub Actions are included for automated host updates, with support for a central orchestrator repository to coordinate multi-host sync workflows. A Docker image is published for use in CI workflows.</p>
 
 
 </section>
