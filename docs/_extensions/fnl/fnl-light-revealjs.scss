@@ -5,36 +5,51 @@
 
 // primary colors
 $black: #000000;
-$white: #ffffff;
-$lime: #7cc349;
-$teal: #296b7f;
+$teal: #2a7386;
+$apple-green: #82c04d;
+$dark-green: #079246;
+$dark-teal: #10404d;
 
-//secondary colors
-$teal-light: #4e9db5;
-$teal-dark: #19424e;
-$almost-black: #03191f;
-$lime-light: #b1ee85;
-$lime-dark: #528230;
-$orange: #ecba4c;
+// secondary colors
+//// secondary neutrals
+$off-black-text: #3b3f3f;
+$pale-teal-neutral: #a6c7c9;
+$light-grey-neutral: #e2e2e2;
+$white: #ffffff;
+//// secondary special
+$brighter-teal: #348fa6;
+$bright-green: #cffda9;
+$yellow: #f9ec38;
+$shadows: #10404d; // 70% OPACITY
+
+// deprecated - FNL branding colors changed in 2026
+$dep-lime: #7cc349;
+$dep-teal: #296b7f;
+$dep-teal-light: #4e9db5;
+$dep-teal-dark: #19424e;
+$dep-almost-black: #03191f;
+$dep-lime-light: #b1ee85;
+$dep-lime-dark: #528230;
+$dep-orange: #ecba4c;
 
 // set colors
-$primary: $teal-dark;
-$secondary: $lime;
-$success: $lime-dark;
-$warning: $orange;
-$info: $teal-light;
+$primary: $dark-teal;
+$secondary: $apple-green;
+$success: $dark-green;
+$warning: $yellow;
+$info: $brighter-teal;
 
 $link-color: $teal;
 
 $footer-bg: $black;
 $footer-fg: $white;
 
-$code-color: $lime-dark;
+$code-color: $dark-green;
 
-$callout-color-tip: $lime-dark;
-$callout-color-note: $teal-light;
-$callout-color-caution: $orange;
-$callout-color-warning: $orange;
+$callout-color-tip: $dark-green;
+$callout-color-note: $brighter-teal;
+$callout-color-caution: $yellow;
+$callout-color-warning: $dep-orange;
 
 // font
 $font-family-sans-serif: "Roboto", Helvetica, "Source Sans Pro", sans-serif;
@@ -68,6 +83,7 @@ $body-color: $black;
   color: $presentation-heading-color !important;
   font-size: $presentation-h3-font-size !important;
 }
+
 /* can't figure out how to override author class?
 .reveal .author {
   color: $body-color !important;
@@ -103,7 +119,7 @@ $body-color: $black;
 
 .big-center {
   font-size: 60px !important;
-  color: $lime-dark !important;
+  color: $dark-green !important;
   text-align: center !important;
   vertical-align: middle !important;
   padding: 200px 0;
@@ -119,22 +135,22 @@ $body-color: $black;
 
 .big-middle {
   font-size: xxx-large !important;
-  color: $lime-dark !important;
+  color: $dark-green !important;
   vertical-align: middle !important;
   padding: 70px !important;
 }
 
 .frame-box {
-  border: 3px solid $lime-dark !important;
+  border: 3px solid $dark-teal !important;
   border-radius: 5px !important;
   padding: 0.5em !important;
 }
 
 .filled-box {
-  border: 5px solid $lime-dark !important;
+  border: 5px solid $dark-green !important;
   border-radius: 5px !important;
   padding: 1px !important;
-  background: $lime-dark !important;
+  background: $dark-green !important;
   color: $white !important;
 }
 
@@ -142,12 +158,40 @@ $body-color: $black;
   border: 2px solid $black !important;
   border-radius: 2px !important;
 }
+
 .narrow-frame {
   border: 1.5px solid !important;
   border-radius: 2px !important;
   //padding: 0.5px !important;
   text-align: center !important;
   font-size: large !important;
-  background: #cccccc !important;
+  background: $light-grey-neutral !important;
   color: $body-color !important;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.flex-container img {
+  max-width: 100%;
+  height: auto;
+  /* Maintain aspect ratio */
+  flex: 1 1 auto;
+  /* Allow images to grow and shrink */
+  object-fit: cover;
+  //position: absolute;
+}
+
+/* Optional: Add media queries for responsiveness */
+@media (max-height: 480px) {
+  .flex-container img {
+    flex: 1 1 100%;
+    /* Full width on small screens */
+  }
 }
