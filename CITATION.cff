@@ -7,6 +7,12 @@ authors:
     affiliation: >-
       Advanced Biomedical Computational Science, Frederick National Laboratory
       for Cancer Research, Frederick, MD 21702, USA
+  - family-names: Koparde
+    given-names: Vishal
+    orcid: https://orcid.org/0000-0001-8978-8495
+    affiliation: >-
+      Advanced Biomedical Computational Science, Frederick National Laboratory
+      for Cancer Research, Frederick, MD 21702, USA
 title: "syncweaver: synchronize code and weave patches seamlessly"
 url: https://ccbr.github.io/syncweaver/
 repository-code: https://github.com/CCBR/syncweaver
