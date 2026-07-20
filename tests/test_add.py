@@ -10,6 +10,7 @@ from click.testing import CliRunner
 
 import syncweaver.cli.add as add_module
 from syncweaver.cli import cli
+from syncweaver.util import get_version
 
 
 def _run(command: list[str], cwd: pathlib.Path) -> None:
@@ -89,7 +90,7 @@ def test_add_vendors_repository_and_updates_lockfile(tmp_path, monkeypatch):
     lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
     assert lockfile["host"] == "CCBR/host-repo1"
     assert lockfile["orchestrator"] == "CCBR/syncweaver-orchestrator"
-    assert lockfile["syncweaver_version"] == "0.0.1-dev"
+    assert lockfile["syncweaver_version"] == get_version()
     source_entry = lockfile["sources"]["code/package1"]
     assert source_entry["repo_url"] == "https://github.com/CCBR/package1"
     assert source_entry["ref"] == "main"
