@@ -18,5 +18,9 @@ url: https://ccbr.github.io/syncweaver/
 repository-code: https://github.com/CCBR/syncweaver
 license: MIT
 type: software
+identifiers:
+  - description: Archived snapshots of all versions
+    type: doi
+    value: 10.5281/zenodo.21460219
 version: v0.1.0
 date-released: "2026-07-20"

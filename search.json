@@ -4,7 +4,7 @@
     "href": "cite.html",
     "title": "syncweaver",
     "section": "",
-    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\n\nSovacool K. and Koparde V. (2026). syncweaver: synchronize code and weave patches seamlessly (version v0.1.0). URL: https://ccbr.github.io/syncweaver/\n\nFull citation metadata is available in CITATION.cff."
+    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\n\nSovacool K. and Koparde V. (2026). syncweaver: synchronize code and weave patches seamlessly (version v0.1.0). DOI: 10.5281/zenodo.21460219 URL: https://ccbr.github.io/syncweaver/\n\nFull citation metadata is available in CITATION.cff."
   },
   {
     "objectID": "cli/deps/index.html",
