@@ -34,6 +34,12 @@ website:
             href: LICENSE.md
           - text: Changelog
             href: CHANGELOG.md
+          - text: GitHub
+            href: https://github.com/CCBR/syncweaver
+    right:
+      - icon: github
+        href: https://github.com/CCBR/syncweaver
+        aria-label: CCBR/syncweaver GitHub
 
   page-footer:
     background: black
