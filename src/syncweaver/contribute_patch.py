@@ -114,7 +114,7 @@ def resolve_contribute_patch_metadata(
     sources = lock_data.get("sources", {})
     source_entry_raw = sources.get(resolved_source_path)
     if not isinstance(source_entry_raw, dict):
-        raise ValueError(
+        raise TypeError(
             f"lockfile source entry is invalid for source_path: {resolved_source_path}"
         )
 
@@ -259,6 +259,7 @@ def contribute_patch(
             ],
             capture_output=True,
             text=True,
+            check=False,
         )
         if apply_result.returncode != 0:
             raise RuntimeError(

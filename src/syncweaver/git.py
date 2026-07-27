@@ -9,7 +9,6 @@ import re
 import subprocess
 import tempfile
 
-
 _FULL_GIT_SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
@@ -54,7 +53,7 @@ def resolve_github_token(token: str) -> str:
 
 def build_github_git_env(github_token: str) -> dict[str, str]:
     """Build process-local GitHub auth headers for git-over-HTTPS commands."""
-    auth_bytes = f"x-access-token:{github_token}".encode("utf-8")
+    auth_bytes = f"x-access-token:{github_token}".encode()
     encoded_auth = base64.b64encode(auth_bytes).decode("ascii")
     env = os.environ.copy()
     config_count_text = env.get("GIT_CONFIG_COUNT", "0").strip()

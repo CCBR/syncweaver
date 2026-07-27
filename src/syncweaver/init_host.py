@@ -13,7 +13,6 @@ from syncweaver.git import build_github_git_env, run_git
 from syncweaver.lockfile import read_lockfile, write_lockfile
 from syncweaver.templates import use_template
 
-
 DEFAULT_HOST_WORKFLOW_TEMPLATES = [
     "syncweaver-host-update.yml",
     "syncweaver-host-contribute-patch.yml",
@@ -79,7 +78,7 @@ def _load_host_registry(host_registry_path: pathlib.Path) -> tuple[dict, list[di
 
     hosts = registry_data.get("hosts", [])
     if not isinstance(hosts, list):
-        raise ValueError("orchestrator host registry key 'hosts' must be a list")
+        raise TypeError("orchestrator host registry key 'hosts' must be a list")
 
     normalized_hosts: list[dict] = []
     for host in hosts:

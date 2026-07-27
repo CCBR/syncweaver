@@ -5,13 +5,13 @@ from __future__ import annotations
 import json
 import pathlib
 import shutil
-import tempfile
 import subprocess
+import tempfile
 
 import click
 
-from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.cli.add import _copy_checked_out_repo, _resolve_remote_source_path
+from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 from syncweaver.patch import create_patch

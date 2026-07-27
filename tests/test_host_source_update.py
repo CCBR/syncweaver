@@ -7,6 +7,7 @@ import subprocess
 
 import pytest
 
+from syncweaver import host_source_update
 from syncweaver.host_source_update import (
     build_source_update_branch_name,
     format_source_paths_markdown,
@@ -14,7 +15,6 @@ from syncweaver.host_source_update import (
     resolve_source_paths_for_host_update,
     select_source_paths_for_update,
 )
-import syncweaver.host_source_update as host_source_update
 
 
 @pytest.fixture(autouse=True)

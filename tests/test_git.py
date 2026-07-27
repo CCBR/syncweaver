@@ -89,12 +89,14 @@ def test_resolve_remote_ref_to_git_sha_raises_on_ls_remote_failure() -> None:
     """
     fake_result = MagicMock(returncode=128, stdout="")
 
-    with patch("syncweaver.git.subprocess.run", return_value=fake_result):
-        with pytest.raises(RuntimeError, match="git ls-remote failed"):
-            resolve_remote_ref_to_git_sha(
-                repository="https://github.com/CCBR/package1",
-                source_ref="main",
-            )
+    with (
+        patch("syncweaver.git.subprocess.run", return_value=fake_result),
+        pytest.raises(RuntimeError, match="git ls-remote failed"),
+    ):
+        resolve_remote_ref_to_git_sha(
+            repository="https://github.com/CCBR/package1",
+            source_ref="main",
+        )
 
 
 def test_resolve_remote_ref_to_git_sha_raises_when_output_has_no_sha() -> None:
@@ -105,12 +107,14 @@ def test_resolve_remote_ref_to_git_sha_raises_when_output_has_no_sha() -> None:
     """
     fake_result = MagicMock(returncode=0, stdout="")
 
-    with patch("syncweaver.git.subprocess.run", return_value=fake_result):
-        with pytest.raises(ValueError, match="unable to resolve source_ref"):
-            resolve_remote_ref_to_git_sha(
-                repository="https://github.com/CCBR/package1",
-                source_ref="main",
-            )
+    with (
+        patch("syncweaver.git.subprocess.run", return_value=fake_result),
+        pytest.raises(ValueError, match="unable to resolve source_ref"),
+    ):
+        resolve_remote_ref_to_git_sha(
+            repository="https://github.com/CCBR/package1",
+            source_ref="main",
+        )
 
 
 def test_resolve_remote_ref_to_git_sha_propagates_timeout() -> None:
@@ -119,15 +123,17 @@ def test_resolve_remote_ref_to_git_sha_propagates_timeout() -> None:
     Returns:
         None: Assertions validate function behavior.
     """
-    with patch(
-        "syncweaver.git.subprocess.run",
-        side_effect=subprocess.TimeoutExpired(cmd="git ls-remote", timeout=30),
+    with (
+        patch(
+            "syncweaver.git.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(cmd="git ls-remote", timeout=30),
+        ),
+        pytest.raises(subprocess.TimeoutExpired),
     ):
-        with pytest.raises(subprocess.TimeoutExpired):
-            resolve_remote_ref_to_git_sha(
-                repository="https://github.com/CCBR/package1",
-                source_ref="main",
-            )
+        resolve_remote_ref_to_git_sha(
+            repository="https://github.com/CCBR/package1",
+            source_ref="main",
+        )
 
 
 def test_remote_ref_has_path_changes_returns_false_for_same_sha() -> None:
