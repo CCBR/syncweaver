@@ -6,7 +6,7 @@ import pathlib
 
 import pytest
 
-import syncweaver.dependency_analysis as dependency_analysis
+from syncweaver import dependency_analysis
 from syncweaver.dependency_analysis import (
     analyze_source_dependencies,
     detect_source_type,

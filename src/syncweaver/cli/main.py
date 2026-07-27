@@ -14,7 +14,7 @@ from syncweaver.cli.validate import validate_cmd
 from syncweaver.util import get_version, print_citation
 
 
-@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(get_version(), "-v", "--version", is_flag=True)
 @click.option(
     "--citation",

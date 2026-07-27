@@ -65,9 +65,11 @@ def test_resolve_github_token_raises_when_nothing_available(monkeypatch):
     """
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     fake_result = MagicMock(returncode=1, stdout="")
-    with patch("syncweaver.git.subprocess.run", return_value=fake_result):
-        with pytest.raises(RuntimeError, match="No GitHub token found"):
-            resolve_github_token("")
+    with (
+        patch("syncweaver.git.subprocess.run", return_value=fake_result),
+        pytest.raises(RuntimeError, match="No GitHub token found"),
+    ):
+        resolve_github_token("")
 
 
 def test_resolve_github_token_raises_when_gh_not_installed(monkeypatch):
@@ -80,9 +82,11 @@ def test_resolve_github_token_raises_when_gh_not_installed(monkeypatch):
         None: Assertions validate function behavior.
     """
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    with patch("syncweaver.git.subprocess.run", side_effect=FileNotFoundError):
-        with pytest.raises(RuntimeError, match="No GitHub token found"):
-            resolve_github_token("")
+    with (
+        patch("syncweaver.git.subprocess.run", side_effect=FileNotFoundError),
+        pytest.raises(RuntimeError, match="No GitHub token found"),
+    ):
+        resolve_github_token("")
 
 
 def _write_lockfile(tmp_path, lock_data: dict) -> None:
@@ -341,13 +345,13 @@ def test_contribute_patch_raises_when_no_diff(tmp_path):
             "subprocess.run",
             return_value=MagicMock(returncode=0, stderr=""),
         ),
+        pytest.raises(RuntimeError, match="no source changes"),
     ):
-        with pytest.raises(RuntimeError, match="no source changes"):
-            contribute_patch(
-                resolved=resolved,
-                host_cwd=tmp_path,
-                github_token="ghp_testtoken",
-            )
+        contribute_patch(
+            resolved=resolved,
+            host_cwd=tmp_path,
+            github_token="ghp_testtoken",
+        )
 
 
 def test_run_git_redacts_sensitive_values() -> None:
@@ -358,9 +362,11 @@ def test_run_git_redacts_sensitive_values() -> None:
     """
     fake_result = MagicMock(returncode=1, stderr="fatal: token ghp_secret leaked")
 
-    with patch("syncweaver.git.subprocess.run", return_value=fake_result):
-        with pytest.raises(RuntimeError) as exc_info:
-            run_git(["fetch", "origin"], redacted_values=["ghp_secret"])
+    with (
+        patch("syncweaver.git.subprocess.run", return_value=fake_result),
+        pytest.raises(RuntimeError) as exc_info,
+    ):
+        run_git(["fetch", "origin"], redacted_values=["ghp_secret"])
 
     assert "ghp_secret" not in str(exc_info.value)
     assert "[REDACTED]" in str(exc_info.value)

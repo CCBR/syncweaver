@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 
 from syncweaver.util import get_version
 
-
 DEFAULT_ORCHESTRATOR_NAME = "syncweaver-orchestrator"
 
 
@@ -38,7 +37,7 @@ def _normalize_remote_url(url: str) -> str:
         host = host_part.split("@", 1)[1]
         path = path_part.removesuffix(".git")
         normalized = f"https://{host}/{path}"
-    elif stripped.startswith("http://") or stripped.startswith("https://"):
+    elif stripped.startswith(("http://", "https://")):
         normalized = stripped.removesuffix(".git")
     elif "/" in stripped and "@" not in stripped and "://" not in stripped:
         parts = [part for part in stripped.split("/") if part]
@@ -212,7 +211,7 @@ def resolve_source_paths_from_lockfile(
 
             resolved_source_paths = sorted(matching_source_paths)
         else:
-            source_paths = sorted(str(path) for path in sources.keys())
+            source_paths = sorted(str(path) for path in sources)
             if len(source_paths) != 1:
                 source_paths_csv = ", ".join(source_paths)
                 raise ValueError(
