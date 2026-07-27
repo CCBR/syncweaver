@@ -12,7 +12,6 @@ import tempfile
 from syncweaver.git import run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 
-
 PATCH_STATUSES = ("local", "open", "accepted", "rejected")
 
 

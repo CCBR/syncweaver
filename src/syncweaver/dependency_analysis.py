@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from importlib import resources
 import pathlib
 import shutil
 import subprocess
+from importlib import resources
 from typing import Any
 
 from syncweaver.constants import DEFAULT_LOCKFILE_PATH

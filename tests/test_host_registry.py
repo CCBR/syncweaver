@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
+from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 import yaml
-from unittest.mock import patch, MagicMock
 
 from syncweaver.host_registry import (
     build_host_matrix_from_registry,
@@ -31,7 +32,7 @@ def test_build_host_matrix_fails_when_registry_missing(tmp_path):
 
 
 def test_build_host_matrix_fails_when_hosts_is_not_list(tmp_path):
-    """Verify invalid registry shape raises a readable ValueError.
+    """Verify invalid registry shape raises a readable TypeError.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -42,7 +43,7 @@ def test_build_host_matrix_fails_when_hosts_is_not_list(tmp_path):
     registry_path = tmp_path / "host-repositories.yml"
     registry_path.write_text(yaml.safe_dump({"hosts": {"bad": "shape"}}))
 
-    with pytest.raises(ValueError, match="must define a list under 'hosts'"):
+    with pytest.raises(TypeError, match="must define a list under 'hosts'"):
         build_host_matrix_from_registry(registry_path, "CCBR/package1")
 
 
@@ -346,7 +347,7 @@ def test_source_repo_in_host_lockfile_returns_false_on_fetch_error():
         None: Assertions validate function behavior.
     """
     with patch("syncweaver.host_registry.requests.get") as mock_get:
-        mock_get.side_effect = Exception("Network error")
+        mock_get.side_effect = requests.exceptions.ConnectionError("Network error")
 
         result = source_repo_in_host_lockfile(
             source_repository="CCBR/mypackage",

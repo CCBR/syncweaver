@@ -8,8 +8,8 @@ import subprocess
 from click.testing import CliRunner
 
 import syncweaver.cli.deps as deps_cli
+from syncweaver import host_source_update
 from syncweaver.cli import cli
-import syncweaver.host_source_update as host_source_update
 from syncweaver.templates import list_templates
 
 
@@ -470,6 +470,7 @@ def test_contribute_opens_pr(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     import json
+
     import syncweaver.cli.contribute as contrib_module
     import syncweaver.contribute_patch as contribute_patch_module
 
@@ -539,6 +540,7 @@ def test_contribute_marks_relevant_patch_path(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     import json
+
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
@@ -608,6 +610,7 @@ def test_contribute_debug_prints_metadata(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     import json
+
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {
@@ -683,6 +686,7 @@ def test_contribute_fails_when_patch_not_tracked(tmp_path, monkeypatch):
         None: Assertions validate command behavior.
     """
     import json
+
     import syncweaver.cli.contribute as contrib_module
 
     lock_data = {

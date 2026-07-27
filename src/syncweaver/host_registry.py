@@ -39,7 +39,7 @@ def build_host_matrix_from_registry(
     registry_data = yaml.safe_load(registry_path.read_text()) or {}
     hosts = registry_data.get("hosts", [])
     if not isinstance(hosts, list):
-        raise ValueError(
+        raise TypeError(
             ".github/host-repositories.yml must define a list under 'hosts'."
         )
 
@@ -153,8 +153,9 @@ def source_repo_in_host_lockfile(
             ref=ref,
         )
         return normalized_source in lockfile_sources
-    except Exception:
+    except (requests.RequestException, ValueError):
         # If lockfile cannot be fetched or parsed, assume the host should
         # not be updated (fail safe to avoid unnecessary updates).
-        # This catches RequestException, ValueError, and any other errors.
+        # This catches RequestException, ValueError (including the
+        # json.JSONDecodeError subclass raised by get_lockfile_sources_from_remote).
         return False

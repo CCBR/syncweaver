@@ -66,7 +66,6 @@ def print_citation(context, param, value) -> None:
         citation = create_citation(str(citation_file), None)
         validate_or_write_output(None, "bibtex", False, citation)
         context.exit()
-    return None
 
 
 def format_subprocess_error(exc: subprocess.CalledProcessError) -> str:
