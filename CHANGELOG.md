@@ -1,5 +1,7 @@
 ## syncweaver development version
 
+- Fix action `setup-syncweaver` Docker wrapper dropping stdin (missing `docker run -i`), which silently executed empty heredoc scripts passed to `syncweaver-python` and produced empty step outputs. (@kelly-sovacool)
+
 ## syncweaver 0.1.0
 
 This is the first release of syncweaver! 🎉
