@@ -12,7 +12,7 @@ import click
 
 from syncweaver.cli.add import _copy_checked_out_repo, _resolve_remote_source_path
 from syncweaver.constants import DEFAULT_LOCKFILE_PATH
-from syncweaver.git import run_git
+from syncweaver.git import git_commit_exists, run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
 from syncweaver.patch import create_patch
 from syncweaver.util import format_subprocess_error
@@ -95,7 +95,11 @@ def _has_relevant_source_changes(
         normalized_remote_subdir (str): Normalized tracked subdirectory.
 
     Returns:
-        bool: True when relevant files changed between commits.
+        bool: True when relevant files changed between commits, or when
+            previous_git_sha is no longer reachable in the checked out
+            repository (e.g. its tracked branch was rebased, force-pushed,
+            or deleted upstream), since a diff cannot be computed in that
+            case.
     """
     previous_sha = previous_git_sha.strip().lower()
     target_sha = target_git_sha.strip().lower()
@@ -103,6 +107,14 @@ def _has_relevant_source_changes(
 
     if previous_sha and (previous_sha == target_sha):
         has_changes = False
+    elif previous_sha and not git_commit_exists(checkout_root, previous_sha):
+        click.echo(
+            "::warning::Previously tracked commit "
+            f"{previous_sha} is no longer reachable in the source repository "
+            "(the tracked branch may have been rebased, force-pushed, or "
+            "deleted); skipping diff and treating as a full content refresh.",
+            err=True,
+        )
     elif previous_sha:
         diff_args = [
             "-C",

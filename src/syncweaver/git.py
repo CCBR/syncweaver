@@ -100,6 +100,26 @@ def is_full_git_sha(value: str) -> bool:
     return matches_full_sha
 
 
+def git_commit_exists(repo_dir: pathlib.Path, commit_sha: str) -> bool:
+    """Check whether a commit SHA is present and resolvable in a local repository.
+
+    Args:
+        repo_dir (pathlib.Path): Local git repository directory.
+        commit_sha (str): Commit SHA to check for.
+
+    Returns:
+        bool: True when the commit object exists in the local repository.
+    """
+    result = subprocess.run(
+        ["git", "-C", str(repo_dir), "cat-file", "-e", f"{commit_sha}^{{commit}}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    commit_exists = result.returncode == 0
+    return commit_exists
+
+
 def resolve_remote_ref_to_git_sha(repository: str, source_ref: str) -> str:
     """Resolve a remote source ref to a full commit SHA via git ls-remote.
 
@@ -168,11 +188,15 @@ def remote_ref_has_path_changes(
         remote_subdir (str | None): Optional tracked subdirectory path.
 
     Returns:
-        bool: True when relevant files changed between SHAs.
+        bool: True when relevant files changed between SHAs, or when
+            previous_git_sha can no longer be fetched from the repository
+            (e.g. its tracked branch was rebased, force-pushed, or deleted
+            upstream), since a diff cannot be computed in that case.
 
     Raises:
         ValueError: If repository or SHAs are missing/invalid.
-        RuntimeError: If git operations fail.
+        RuntimeError: If git operations fail for reasons other than
+            previous_git_sha no longer being fetchable.
     """
     repository_input = repository.strip()
     previous_sha = previous_git_sha.strip().lower()
@@ -201,42 +225,54 @@ def remote_ref_has_path_changes(
 
             run_git(["-C", str(repo_dir), "init"])
             run_git(["-C", str(repo_dir), "remote", "add", "origin", repository_input])
-            run_git(
-                [
+
+            previous_sha_fetched = True
+            try:
+                run_git(
+                    [
+                        "-C",
+                        str(repo_dir),
+                        "fetch",
+                        "--quiet",
+                        "--depth=1",
+                        "origin",
+                        previous_sha,
+                    ]
+                )
+            except RuntimeError:
+                # previous_sha is no longer reachable from any ref on the remote
+                # (e.g. its tracked branch was rebased, force-pushed, or deleted).
+                # A diff cannot be computed, so conservatively report changes.
+                previous_sha_fetched = False
+
+            if previous_sha_fetched:
+                run_git(
+                    [
+                        "-C",
+                        str(repo_dir),
+                        "fetch",
+                        "--quiet",
+                        "--depth=1",
+                        "origin",
+                        target_sha,
+                    ]
+                )
+
+                diff_args = [
                     "-C",
                     str(repo_dir),
-                    "fetch",
-                    "--quiet",
-                    "--depth=1",
-                    "origin",
+                    "diff",
+                    "--name-only",
                     previous_sha,
-                ]
-            )
-            run_git(
-                [
-                    "-C",
-                    str(repo_dir),
-                    "fetch",
-                    "--quiet",
-                    "--depth=1",
-                    "origin",
                     target_sha,
                 ]
-            )
+                if normalized_remote_subdir:
+                    pathspec = pathlib.PurePosixPath(
+                        normalized_remote_subdir
+                    ).as_posix()
+                    diff_args.extend(["--", pathspec])
 
-            diff_args = [
-                "-C",
-                str(repo_dir),
-                "diff",
-                "--name-only",
-                previous_sha,
-                target_sha,
-            ]
-            if normalized_remote_subdir:
-                pathspec = pathlib.PurePosixPath(normalized_remote_subdir).as_posix()
-                diff_args.extend(["--", pathspec])
-
-            diff_output = run_git(diff_args)
-            has_changes = bool(diff_output.strip())
+                diff_output = run_git(diff_args)
+                has_changes = bool(diff_output.strip())
 
     return has_changes
