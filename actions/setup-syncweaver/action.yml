@@ -137,7 +137,6 @@ runs:
       uses: actions/setup-python@v6
       with:
         python-version: ${{ inputs.python-version }}
-        cache: pip
 
     - name: Install syncweaver from git ref fallback
       if: ${{ steps.detect.outputs.setup_mode != 'docker' }}
