@@ -352,5 +352,10 @@ def build_source_update_branch_name(source_repository_input: str) -> str:
     sanitized = re.sub(r"[^A-Za-z0-9._-]+", "-", source_repository).strip("-.")
     if not sanitized:
         sanitized = "source"
-    branch_name = f"syncweaver/update/{sanitized}"
+    # Use a single, flat ref path segment (no "/") so this branch name can
+    # never collide with a pre-existing host-repo branch via git's ref
+    # namespace (e.g. a host repo with a branch literally named "syncweaver"
+    # would make git treat "syncweaver" as a leaf ref, causing a "directory
+    # file conflict" when pushing a nested ref like "syncweaver/update/...").
+    branch_name = f"syncweaver-update-{sanitized}"
     return branch_name
