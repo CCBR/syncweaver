@@ -139,7 +139,7 @@
     "href": "cite.html",
     "title": "syncweaver",
     "section": "",
-    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\n\nSovacool K. and Koparde V. (2026). syncweaver: synchronize code and weave patches seamlessly (version v0.1.0). DOI: 10.5281/zenodo.21460219 URL: https://ccbr.github.io/syncweaver/\n\nFull citation metadata is available in CITATION.cff."
+    "text": "You can view the updated syncweaver citation with:\nsyncweaver --citation\n\nSovacool K. and Koparde V. (2026). syncweaver: synchronize code and weave patches seamlessly (version v0.1.1). DOI: 10.5281/zenodo.21460219 URL: https://ccbr.github.io/syncweaver/\n\nFull citation metadata is available in CITATION.cff."
   },
   {
     "objectID": "cli/update.html",
@@ -456,8 +456,8 @@
     "text": "Fix action setup-syncweaver Docker wrapper dropping stdin (missing docker run -i), which silently executed empty heredoc scripts passed to syncweaver-python and produced empty step outputs. (#36, @kelly-sovacool)\nFix syncweaver update crashing with fatal: bad object when a tracked source’s previously recorded commit is no longer reachable in the source repository (e.g. after an upstream branch rebase, force-push, or delete). The diff is now skipped in that case and the update proceeds as a full refresh instead of failing. (#38, @kelly-sovacool)\nFix syncweaver update branch name clashing. (#40, @kelly-sovacool)"
   },
   {
-    "objectID": "CHANGELOG.html#syncweaver-development-version",
-    "href": "CHANGELOG.html#syncweaver-development-version",
+    "objectID": "CHANGELOG.html#syncweaver-0.1.1",
+    "href": "CHANGELOG.html#syncweaver-0.1.1",
     "title": "syncweaver",
     "section": "",
     "text": "Fix action setup-syncweaver Docker wrapper dropping stdin (missing docker run -i), which silently executed empty heredoc scripts passed to syncweaver-python and produced empty step outputs. (#36, @kelly-sovacool)\nFix syncweaver update crashing with fatal: bad object when a tracked source’s previously recorded commit is no longer reachable in the source repository (e.g. after an upstream branch rebase, force-push, or delete). The diff is now skipped in that case and the update proceeds as a full refresh instead of failing. (#38, @kelly-sovacool)\nFix syncweaver update branch name clashing. (#40, @kelly-sovacool)"
@@ -488,7 +488,7 @@
     "href": "usage.html",
     "title": "syncweaver",
     "section": "",
-    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.1.0-dev"
+    "text": "syncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.1.1"
   },
   {
     "objectID": "install.html",
@@ -916,7 +916,7 @@
     "href": "index.html#usage",
     "title": "syncweaver",
     "section": "Usage",
-    "text": "Usage\nsyncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.1.0-dev"
+    "text": "Usage\nsyncweaver --help\n\n\nUsage: syncweaver [OPTIONS] COMMAND [ARGS]...\n\n  syncweaver: synchronize code and weave patches seamlessly.\n\nOptions:\n  -v, --version   Show the version and exit.\n  -c, --citation  Print the citation in BibTeX format and exit.\n  -h, --help      Show this message and exit.\n\nCommands:\n  add         Add an external repository to the current host repository.\n  contribute  Contribute a tracked host patch back to the source repository.\n  deps        Analyze source dependencies for host repository integration.\n  init        Initialize syncweaver starter content in local or remote...\n  patch       Create, mark, and list source patch artifacts.\n  remove      Remove a tracked external repository from the current host...\n  templates   List and add workflow templates to a repo.\n  update      Update a tracked external repository in the current host...\n  validate    Validate a lockfile against the syncweaver lockfile JSON...\n\n\n\nsyncweaver --version\n\n\nsyncweaver, version 0.1.1"
   },
   {
     "objectID": "index.html#help-and-contributing",
