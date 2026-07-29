@@ -2,6 +2,7 @@
 
 - Fix action `setup-syncweaver` Docker wrapper dropping stdin (missing `docker run -i`), which silently executed empty heredoc scripts passed to `syncweaver-python` and produced empty step outputs. (#36, @kelly-sovacool)
 - Fix `syncweaver update` crashing with `fatal: bad object` when a tracked source's previously recorded commit is no longer reachable in the source repository (e.g. after an upstream branch rebase, force-push, or delete). The diff is now skipped in that case and the update proceeds as a full refresh instead of failing. (#38, @kelly-sovacool)
+- Fix `syncweaver update` branch name clashing. (#40, @kelly-sovacool)
 
 ## syncweaver 0.1.0
 
