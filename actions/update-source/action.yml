@@ -1,5 +1,5 @@
 name: update-source
-description: Run syncweaver update for a tracked source path
+description: Run syncweaver update for a tracked source path. This should be run inside a host repo.
 
 outputs:
   source_repo:
