@@ -118,11 +118,22 @@ def _upgrade_legacy_lockfile_shape(lock_data: dict) -> dict:
     return upgraded
 
 
+def _parse_lockfile_json(text: str) -> dict:
+    """Parse lockfile JSON text, raising a clear error when it is malformed."""
+    try:
+        lock_data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise json.JSONDecodeError(
+            f"Lockfile does not match schema: {exc.msg}", exc.doc, exc.pos
+        ) from exc
+    return lock_data
+
+
 def read_lockfile(lockfile: pathlib.Path, cwd: pathlib.Path, run_git) -> dict:
     """Read lockfile if present, otherwise create a default payload."""
     lock_data: dict
     if lockfile.exists():
-        lock_data = json.loads(lockfile.read_text())
+        lock_data = _parse_lockfile_json(lockfile.read_text())
         lock_data = _upgrade_legacy_lockfile_shape(lock_data)
     else:
         host_repo, orchestrator_repo, syncweaver_version = _detect_host_repo_metadata(
@@ -141,7 +152,7 @@ def load_existing_lockfile(lockfile: pathlib.Path) -> dict:
     """Read lockfile JSON from disk and fail when it does not exist."""
     if not lockfile.exists():
         raise FileNotFoundError(f"Lockfile does not exist: {lockfile}")
-    lock_data = json.loads(lockfile.read_text())
+    lock_data = _parse_lockfile_json(lockfile.read_text())
     lock_data = _upgrade_legacy_lockfile_shape(lock_data)
     return lock_data
 

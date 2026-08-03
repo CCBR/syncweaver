@@ -7,9 +7,49 @@ import json
 import pytest
 
 from syncweaver.lockfile import (
+    load_existing_lockfile,
+    read_lockfile,
     resolve_source_path_from_lockfile,
     resolve_source_paths_from_lockfile,
 )
+
+
+def test_load_existing_lockfile_fails_with_readable_message_for_malformed_json(
+    tmp_path,
+):
+    """Verify malformed lockfile JSON raises a schema-style error message.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    lockfile_path = tmp_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(
+        '{\n  "host": "foo",\n  "sources": {\n    "a": {},\n  }\n}\n'
+    )
+
+    with pytest.raises(json.JSONDecodeError, match="Lockfile does not match schema"):
+        load_existing_lockfile(lockfile_path)
+
+
+def test_read_lockfile_fails_with_readable_message_for_malformed_json(tmp_path):
+    """Verify malformed lockfile JSON raises a schema-style error message.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+
+    Returns:
+        None: Assertions validate function behavior.
+    """
+    lockfile_path = tmp_path / ".syncweaver-lock.json"
+    lockfile_path.write_text(
+        '{\n  "host": "foo",\n  "sources": {\n    "a": {},\n  }\n}\n'
+    )
+
+    with pytest.raises(json.JSONDecodeError, match="Lockfile does not match schema"):
+        read_lockfile(lockfile_path, tmp_path, lambda *args, **kwargs: "")
 
 
 def test_resolve_source_path_uses_explicit_input(tmp_path):
