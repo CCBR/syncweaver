@@ -124,7 +124,7 @@ def _parse_lockfile_json(text: str) -> dict:
         lock_data = json.loads(text)
     except json.JSONDecodeError as exc:
         raise json.JSONDecodeError(
-            f"Lockfile does not match schema: {exc.msg}", exc.doc, exc.pos
+            f"Lockfile contains invalid JSON: {exc.msg}", exc.doc, exc.pos
         ) from exc
     return lock_data
 

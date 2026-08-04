@@ -17,7 +17,7 @@ from syncweaver.lockfile import (
 def test_load_existing_lockfile_fails_with_readable_message_for_malformed_json(
     tmp_path,
 ):
-    """Verify malformed lockfile JSON raises a schema-style error message.
+    """Verify malformed lockfile JSON raises an invalid-JSON error message.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -30,12 +30,12 @@ def test_load_existing_lockfile_fails_with_readable_message_for_malformed_json(
         '{\n  "host": "foo",\n  "sources": {\n    "a": {},\n  }\n}\n'
     )
 
-    with pytest.raises(json.JSONDecodeError, match="Lockfile does not match schema"):
+    with pytest.raises(json.JSONDecodeError, match="Lockfile contains invalid JSON"):
         load_existing_lockfile(lockfile_path)
 
 
 def test_read_lockfile_fails_with_readable_message_for_malformed_json(tmp_path):
-    """Verify malformed lockfile JSON raises a schema-style error message.
+    """Verify malformed lockfile JSON raises an invalid-JSON error message.
 
     Args:
         tmp_path: Temporary directory fixture.
@@ -48,7 +48,7 @@ def test_read_lockfile_fails_with_readable_message_for_malformed_json(tmp_path):
         '{\n  "host": "foo",\n  "sources": {\n    "a": {},\n  }\n}\n'
     )
 
-    with pytest.raises(json.JSONDecodeError, match="Lockfile does not match schema"):
+    with pytest.raises(json.JSONDecodeError, match="Lockfile contains invalid JSON"):
         read_lockfile(lockfile_path, tmp_path, lambda *args, **kwargs: "")
 
 
