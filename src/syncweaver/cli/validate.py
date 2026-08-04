@@ -74,7 +74,11 @@ def validate_cmd(lockfile: pathlib.Path, schema: pathlib.Path | None) -> None:
             schema_data = _load_schema_from_file(schema_path)
             schema_label = str(schema_path)
         _validate_lockfile_against_schema(lock_data, schema_data)
-    except (FileNotFoundError, OSError, json.JSONDecodeError, ValidationError) as exc:
+    except (FileNotFoundError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    except json.JSONDecodeError as exc:
+        raise click.ClickException(f"Lockfile contains invalid JSON: {exc}") from exc
+    except ValidationError as exc:
         raise click.ClickException(f"Lockfile does not match schema: {exc}") from exc
 
     click.echo(f"Lockfile is valid against {schema_label}: {lockfile_path}")
