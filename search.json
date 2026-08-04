@@ -453,7 +453,7 @@
     "href": "CHANGELOG.html#syncweaver-0.1.1",
     "title": "syncweaver",
     "section": "syncweaver 0.1.1",
-    "text": "syncweaver 0.1.1\n\nFix action setup-syncweaver Docker wrapper dropping stdin (missing docker run -i), which silently executed empty heredoc scripts passed to syncweaver-python and produced empty step outputs. (#36, @kelly-sovacool)\nFix syncweaver update crashing with fatal: bad object when a tracked source’s previously recorded commit is no longer reachable in the source repository (e.g. after an upstream branch rebase, force-push, or delete). The diff is now skipped in that case and the update proceeds as a full refresh instead of failing. (#38, @kelly-sovacool)\nFix syncweaver update branch name clashing. (#40, @kelly-sovacool)"
+    "text": "syncweaver 0.1.1\n\nImprove error message reported by syncweaver update when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)\nFix action setup-syncweaver Docker wrapper dropping stdin (missing docker run -i), which silently executed empty heredoc scripts passed to syncweaver-python and produced empty step outputs. (#36, @kelly-sovacool)\nFix syncweaver update crashing with fatal: bad object when a tracked source’s previously recorded commit is no longer reachable in the source repository (e.g. after an upstream branch rebase, force-push, or delete). The diff is now skipped in that case and the update proceeds as a full refresh instead of failing. (#38, @kelly-sovacool)\nFix syncweaver update branch name clashing. (#40, @kelly-sovacool)"
   },
   {
     "objectID": "CHANGELOG.html#syncweaver-0.1.0",
