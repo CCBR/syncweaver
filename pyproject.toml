@@ -35,6 +35,7 @@ dependencies = [
     "jsonschema >= 4.0.0",
     "pyyaml",
     "requests",
+    "codeocean>=0.16.0,<0.17",
 ]
 
 [project.optional-dependencies]
@@ -73,3 +74,18 @@ source = ["syncweaver"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+syncweaver = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+docs = { features = ["docs"], solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
+
+[tool.pixi.tasks]

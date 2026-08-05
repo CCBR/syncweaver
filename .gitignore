@@ -82,3 +82,10 @@ docs/objects.json
 .DS_Store
 
 .vscode/
+.posit/
+
+.code-ocean-token
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
