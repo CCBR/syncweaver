@@ -82,3 +82,5 @@ docs/objects.json
 .DS_Store
 
 .vscode/
+
+.code-ocean-token
