@@ -11,7 +11,11 @@ import click
 
 from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import run_git
-from syncweaver.lockfile import read_lockfile, write_lockfile
+from syncweaver.lockfile import (
+    assert_no_overlapping_source_paths,
+    read_lockfile,
+    write_lockfile,
+)
 
 
 def _resolve_repo_url_input(repo_url: str, cwd: pathlib.Path) -> tuple[str, str]:
@@ -47,11 +51,21 @@ def _resolve_repo_url_input(repo_url: str, cwd: pathlib.Path) -> tuple[str, str]
     return clone_url, tracked_repo_url
 
 
-def _copy_checked_out_repo(source: pathlib.Path, destination: pathlib.Path) -> None:
-    """Copy a checked-out repository working tree without the .git directory."""
+def _replace_destination_contents(
+    source: pathlib.Path, destination: pathlib.Path
+) -> None:
+    """Merge a checked-out repo into destination without deleting existing files.
+
+    Used unconditionally for both vendor subdirectories and the host repository
+    root ("path ."), so files that belong to the destination but not to the
+    vendored source (the host repo's own .git metadata, README, etc.) are
+    never removed.
+    """
+    destination.mkdir(parents=True, exist_ok=True)
     shutil.copytree(
         source,
         destination,
+        dirs_exist_ok=True,
         ignore=shutil.ignore_patterns(".git"),
     )
 
@@ -113,16 +127,19 @@ def add_external_repository(
     destination = cwd / destination_path
     lockfile = cwd / lockfile_path
     clone_repo_url, tracked_repo_url = _resolve_repo_url_input(repo_url, cwd)
+    # A path of "." vendors the host repo root, which always already exists.
+    is_root_destination = destination_path == pathlib.Path(".")
 
-    if destination.exists():
-        if not overwrite:
-            raise FileExistsError(
-                f"Destination already exists: {destination_path}. "
-                "Pass --overwrite to replace it."
-            )
-        shutil.rmtree(destination)
+    if destination.exists() and not is_root_destination and not overwrite:
+        raise FileExistsError(
+            f"Destination already exists: {destination_path}. "
+            "Pass --overwrite to replace it."
+        )
 
-    destination.parent.mkdir(parents=True, exist_ok=True)
+    lock_data = read_lockfile(lockfile, cwd, run_git)
+    sources = lock_data.setdefault("sources", {})
+    source_key = destination_path.as_posix()
+    assert_no_overlapping_source_paths([*sources.keys(), source_key])
 
     with tempfile.TemporaryDirectory(prefix="syncweaver-add-") as temp_dir:
         temp_repo = pathlib.Path(temp_dir) / "repo"
@@ -157,11 +174,8 @@ def add_external_repository(
 
         git_sha = run_git(["-C", str(temp_repo), "rev-parse", "HEAD"])
         source_root = _resolve_remote_source_path(temp_repo, remote_subdir)
-        _copy_checked_out_repo(source_root, destination)
+        _replace_destination_contents(source_root, destination)
 
-    lock_data = read_lockfile(lockfile, cwd, run_git)
-    sources = lock_data.setdefault("sources", {})
-    source_key = destination_path.as_posix()
     sources[source_key] = {
         "repo_url": tracked_repo_url,
         "ref": selected_ref,
@@ -171,7 +185,8 @@ def add_external_repository(
         normalized_subdir = pathlib.PurePosixPath(remote_subdir.strip("/")).as_posix()
         sources[source_key]["remote_subdir"] = normalized_subdir
     write_lockfile(lockfile, lock_data)
-    _ensure_linguist_vendored_entry(cwd, destination_path)
+    if not is_root_destination:
+        _ensure_linguist_vendored_entry(cwd, destination_path)
 
     return destination, lockfile, selected_ref, git_sha
 
