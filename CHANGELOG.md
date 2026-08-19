@@ -1,6 +1,7 @@
 ## syncweaver development version
 
 - Improve error message reported by `syncweaver update` when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)
+- Support source path at host repo root (i.e. `syncweaver add --path .`). (#48, @kelly-sovacool, @copilot)
 
 ## syncweaver 0.1.1
 
