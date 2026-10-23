@@ -1,7 +1,7 @@
 ## syncweaver development version
 
 - Improve error message reported by `syncweaver update` when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)
-- Fix minor typos in documentation. (@kelly-sovacool)
+- Fix minor typos in documentation. (#51, @kelly-sovacool)
 
 ## syncweaver 0.1.1
 
