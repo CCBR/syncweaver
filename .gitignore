@@ -88,3 +88,5 @@ docs/objects.json
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+pixi.lock
+uv.lock
