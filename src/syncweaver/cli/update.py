@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import pathlib
-import shutil
 import subprocess
 import tempfile
 
 import click
 
-from syncweaver.cli.add import _copy_checked_out_repo, _resolve_remote_source_path
+from syncweaver.cli.add import (
+    _replace_destination_contents,
+    _resolve_remote_source_path,
+)
 from syncweaver.constants import DEFAULT_LOCKFILE_PATH
 from syncweaver.git import git_commit_exists, run_git
 from syncweaver.lockfile import load_existing_lockfile, write_lockfile
@@ -213,10 +215,6 @@ def update_external_repository(
         )
 
         if should_refresh:
-            if destination.exists():
-                shutil.rmtree(destination)
-            destination.parent.mkdir(parents=True, exist_ok=True)
-
             source_root = _resolve_remote_source_path(temp_repo, selected_remote_subdir)
             try:
                 _apply_tracked_patch(
@@ -231,7 +229,7 @@ def update_external_repository(
                     patch_apply_warning = True
                 else:
                     raise
-            _copy_checked_out_repo(source_root, destination)
+            _replace_destination_contents(source_root, destination)
         else:
             no_changes_detected = True
 

@@ -345,3 +345,310 @@ def test_add_does_not_duplicate_existing_gitattributes_entry(tmp_path, monkeypat
     assert result.exit_code == 0, result.output
     gitattributes_lines = (host_repo / ".gitattributes").read_text().splitlines()
     assert gitattributes_lines.count("code/package1 linguist-vendored") == 1
+
+
+def test_add_with_path_dot_vendors_into_host_root_and_preserves_git(
+    tmp_path, monkeypatch
+):
+    """Verify `add --path .` merges into the host repo root without deleting .git.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            (temp_repo / "modules/pkg").mkdir(parents=True, exist_ok=True)
+            (temp_repo / "modules/pkg/pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            ".",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "modules/pkg",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (host_repo / "pkg.py").read_text() == "VALUE = 1\n"
+    assert (host_repo / "README.md").exists()
+    assert (host_repo / ".git").is_dir()
+    assert not (host_repo / ".gitattributes").exists()
+
+    lockfile = json.loads((host_repo / ".syncweaver-lock.json").read_text())
+    source_entry = lockfile["sources"]["."]
+    assert source_entry["remote_subdir"] == "modules/pkg"
+
+
+def test_add_rejects_source_path_nested_inside_existing_source(tmp_path, monkeypatch):
+    """Verify `add` rejects a new source path nested inside a tracked source.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    first_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+    assert first_result.exit_code == 0, first_result.output
+
+    nested_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1/nested",
+            "--repo-url",
+            "https://github.com/CCBR/package2",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert nested_result.exit_code != 0
+    assert "overlap" in nested_result.output.lower()
+
+
+def test_add_rejects_ancestor_source_path_of_existing_source(tmp_path, monkeypatch):
+    """Verify `add` rejects a new source path that is an ancestor of a tracked one.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    first_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+    assert first_result.exit_code == 0, first_result.output
+
+    ancestor_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code",
+            "--repo-url",
+            "https://github.com/CCBR/package2",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert ancestor_result.exit_code != 0
+    error_message = ancestor_result.output.lower()
+    assert "overlap" in error_message or "already exists" in error_message
+
+
+def test_add_allows_sibling_source_paths(tmp_path, monkeypatch):
+    """Verify `add` allows non-overlapping sibling source paths.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    first_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+    assert first_result.exit_code == 0, first_result.output
+
+    sibling_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package2",
+            "--repo-url",
+            "https://github.com/CCBR/package2",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert sibling_result.exit_code == 0, sibling_result.output
+
+
+def test_add_rejects_root_path_when_another_source_is_tracked(tmp_path, monkeypatch):
+    """Verify `add --path .` is rejected when another source is already tracked.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    host_repo = tmp_path / "host-repo"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+
+    def _fake_run_git(args, cwd=None, env=None, redacted_values=None):
+        del cwd
+        del env
+        del redacted_values
+        output = ""
+        if args[:1] == ["clone"]:
+            temp_repo = pathlib.Path(args[4])
+            temp_repo.mkdir(parents=True, exist_ok=True)
+            (temp_repo / "pkg.py").write_text("VALUE = 1\n")
+        elif args[-2:] == ["rev-parse", "HEAD"]:
+            output = "abc123"
+        return output
+
+    monkeypatch.setattr(add_module, "run_git", _fake_run_git)
+
+    runner = CliRunner()
+    first_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            "code/package1",
+            "--repo-url",
+            "https://github.com/CCBR/package1",
+            "--ref",
+            "main",
+        ],
+    )
+    assert first_result.exit_code == 0, first_result.output
+
+    root_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            ".",
+            "--repo-url",
+            "https://github.com/CCBR/package2",
+            "--ref",
+            "main",
+        ],
+    )
+
+    assert root_result.exit_code != 0
+    assert "overlap" in root_result.output.lower()

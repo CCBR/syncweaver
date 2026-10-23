@@ -280,3 +280,47 @@ def write_lockfile(lockfile: pathlib.Path, data: dict) -> None:
     """Write lockfile JSON with a stable format."""
     lockfile.parent.mkdir(parents=True, exist_ok=True)
     lockfile.write_text(f"{json.dumps(data, indent=2)}\n")
+
+
+def _source_paths_overlap(path_a: str, path_b: str) -> bool:
+    """Check whether two lockfile source paths are identical or nested.
+
+    Args:
+        path_a (str): First tracked source path.
+        path_b (str): Second tracked source path.
+
+    Returns:
+        bool: True when the paths are identical or one is an ancestor of the
+            other. A source path of "." is treated as the ancestor of every
+            other path, since it vendors the entire host repository.
+    """
+    parts_a = pathlib.PurePosixPath(path_a.strip("/")).parts
+    parts_b = pathlib.PurePosixPath(path_b.strip("/")).parts
+    if len(parts_a) <= len(parts_b):
+        shorter_parts, longer_parts = parts_a, parts_b
+    else:
+        shorter_parts, longer_parts = parts_b, parts_a
+    overlaps = longer_parts[: len(shorter_parts)] == shorter_parts
+    return overlaps
+
+
+def assert_no_overlapping_source_paths(source_paths: list[str]) -> None:
+    """Raise when any two tracked source paths are identical or nested.
+
+    Args:
+        source_paths (list[str]): All source paths that would be tracked,
+            including any path being newly added or updated.
+
+    Returns:
+        None: Raises ValueError when an overlap is found.
+
+    Raises:
+        ValueError: If any pair of source paths overlaps.
+    """
+    for index, path_a in enumerate(source_paths):
+        for path_b in source_paths[index + 1 :]:
+            if _source_paths_overlap(path_a, path_b):
+                raise ValueError(
+                    "Tracked source paths must not overlap or be nested: "
+                    f"'{path_a}' and '{path_b}'"
+                )

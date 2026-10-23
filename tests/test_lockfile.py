@@ -7,6 +7,7 @@ import json
 import pytest
 
 from syncweaver.lockfile import (
+    assert_no_overlapping_source_paths,
     load_existing_lockfile,
     read_lockfile,
     resolve_source_path_from_lockfile,
@@ -369,3 +370,42 @@ def test_resolve_source_paths_returns_all_repo_url_matches(tmp_path):
     )
 
     assert resolved == ["code/package1", "code/package1-alt"]
+
+
+def test_assert_no_overlapping_source_paths_allows_sibling_paths():
+    """Verify non-overlapping sibling source paths are accepted.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    assert_no_overlapping_source_paths(["code/package1", "code/package2"])
+
+
+def test_assert_no_overlapping_source_paths_rejects_duplicate_paths():
+    """Verify identical source paths are rejected as overlapping.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    with pytest.raises(ValueError, match="overlap"):
+        assert_no_overlapping_source_paths(["code/package1", "code/package1"])
+
+
+def test_assert_no_overlapping_source_paths_rejects_nested_paths():
+    """Verify a source path nested inside another is rejected as overlapping.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    with pytest.raises(ValueError, match="overlap"):
+        assert_no_overlapping_source_paths(["code/package1", "code/package1/nested"])
+
+
+def test_assert_no_overlapping_source_paths_rejects_root_with_any_other_path():
+    """Verify a root ('.') source path overlaps with every other source path.
+
+    Returns:
+        None: Assertions validate helper behavior.
+    """
+    with pytest.raises(ValueError, match="overlap"):
+        assert_no_overlapping_source_paths([".", "code/package1"])

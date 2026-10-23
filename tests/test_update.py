@@ -580,3 +580,75 @@ def test_update_surfaces_subprocess_stderr(tmp_path, monkeypatch):
 
     assert update_result.exit_code != 0
     assert "inner update stderr: unable to fetch remote ref" in update_result.output
+
+
+def test_update_with_path_dot_refreshes_host_root_and_preserves_git(
+    tmp_path, monkeypatch
+):
+    """Verify `update --path .` refreshes the host repo root without deleting .git.
+
+    Args:
+        tmp_path: Temporary directory fixture.
+        monkeypatch: Pytest monkeypatch fixture.
+
+    Returns:
+        None: Assertions validate command behavior.
+    """
+    source_repo = tmp_path / "source"
+    source_repo.mkdir()
+    _init_git_repo(source_repo)
+
+    package_root = source_repo / "modules/pkg"
+    package_root.mkdir(parents=True)
+    (package_root / "pkg.py").write_text("VALUE = 1\n")
+    _run(["git", "add", "modules/pkg/pkg.py"], cwd=source_repo)
+    _run(["git", "commit", "--no-verify", "-m", "add nested package"], cwd=source_repo)
+
+    host_repo = tmp_path / "host"
+    host_repo.mkdir()
+    _init_git_repo(host_repo)
+    monkeypatch.chdir(host_repo)
+    monkeypatch.setattr(
+        add_module,
+        "_resolve_repo_url_input",
+        lambda _repo_url, _cwd: (str(source_repo), str(source_repo)),
+    )
+
+    runner = CliRunner()
+    add_result = runner.invoke(
+        cli,
+        [
+            "add",
+            "--path",
+            ".",
+            "--repo-url",
+            str(source_repo),
+            "--ref",
+            "main",
+            "--remote-subdir",
+            "modules/pkg",
+        ],
+    )
+    assert add_result.exit_code == 0, add_result.output
+    assert (host_repo / "pkg.py").read_text() == "VALUE = 1\n"
+    assert (host_repo / ".git").is_dir()
+
+    (package_root / "pkg.py").write_text("VALUE = 2\n")
+    _run(["git", "add", "modules/pkg/pkg.py"], cwd=source_repo)
+    _run(
+        ["git", "commit", "--no-verify", "-m", "update nested package"], cwd=source_repo
+    )
+
+    update_result = runner.invoke(
+        cli,
+        [
+            "update",
+            "--path",
+            ".",
+        ],
+    )
+
+    assert update_result.exit_code == 0, update_result.output
+    assert (host_repo / "pkg.py").read_text() == "VALUE = 2\n"
+    assert (host_repo / "README.md").exists()
+    assert (host_repo / ".git").is_dir()
