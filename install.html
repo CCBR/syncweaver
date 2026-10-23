@@ -375,11 +375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a>
   <ul class="collapse">
   <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start">Quick Start</a></li>
-  <li><a href="#system-dependencies" id="toc-system-dependencies" class="nav-link" data-scroll-target="#system-dependencies">System Dependencies</a>
-  <ul class="collapse">
-  <li><a href="#required" id="toc-required" class="nav-link" data-scroll-target="#required">Required</a></li>
-  <li><a href="#optional" id="toc-optional" class="nav-link" data-scroll-target="#optional">Optional</a></li>
-  </ul></li>
+  <li><a href="#system-dependencies" id="toc-system-dependencies" class="nav-link" data-scroll-target="#system-dependencies">System Dependencies</a></li>
   <li><a href="#feature-requirements" id="toc-feature-requirements" class="nav-link" data-scroll-target="#feature-requirements">Feature Requirements</a></li>
   <li><a href="#github-cli-optional" id="toc-github-cli-optional" class="nav-link" data-scroll-target="#github-cli-optional">GitHub CLI (Optional)</a></li>
   </ul></li>
@@ -393,25 +389,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="installation" class="level1">
-<h1>Installation</h1>
-<section id="quick-start" class="level2">
-<h2 class="anchored" data-anchor-id="quick-start">Quick Start</h2>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<section id="quick-start" class="level3">
+<h3 class="anchored" data-anchor-id="quick-start">Quick Start</h3>
 <p>Install syncweaver with pip:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/CCBR/syncweaver.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="system-dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="system-dependencies">System Dependencies</h2>
+<section id="system-dependencies" class="level3">
+<h3 class="anchored" data-anchor-id="system-dependencies">System Dependencies</h3>
 <p>syncweaver has minimal required system dependencies, but some features require additional tools:</p>
-<section id="required" class="level3">
-<h3 class="anchored" data-anchor-id="required">Required</h3>
+<section id="required" class="level4">
+<h4 class="anchored" data-anchor-id="required">Required</h4>
 <ul>
 <li>Python &gt;= 3.11</li>
 <li>Git – Used for all source synchronization and patching operations</li>
 </ul>
 </section>
-<section id="optional" class="level3">
-<h3 class="anchored" data-anchor-id="optional">Optional</h3>
+<section id="optional" class="level4">
+<h4 class="anchored" data-anchor-id="optional">Optional</h4>
 <ul>
 <li>Docker – Required for dependency analysis with functracer
 <ul>
@@ -421,8 +417,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </section>
 </section>
-<section id="feature-requirements" class="level2">
-<h2 class="anchored" data-anchor-id="feature-requirements">Feature Requirements</h2>
+<section id="feature-requirements" class="level3">
+<h3 class="anchored" data-anchor-id="feature-requirements">Feature Requirements</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 23%">
@@ -458,8 +454,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="github-cli-optional" class="level2">
-<h2 class="anchored" data-anchor-id="github-cli-optional">GitHub CLI (Optional)</h2>
+<section id="github-cli-optional" class="level3">
+<h3 class="anchored" data-anchor-id="github-cli-optional">GitHub CLI (Optional)</h3>
 <p>The GitHub CLI (<code>gh</code>) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - <code>--token</code> flag - <code>GITHUB_TOKEN</code> environment variable</p>
 
 

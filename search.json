@@ -432,35 +432,7 @@
     "href": "index.html#installation",
     "title": "syncweaver",
     "section": "Installation",
-    "text": "Installation"
-  },
-  {
-    "objectID": "index.html#quick-start",
-    "href": "index.html#quick-start",
-    "title": "syncweaver",
-    "section": "Quick Start",
-    "text": "Quick Start\nInstall syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "index.html#system-dependencies",
-    "href": "index.html#system-dependencies",
-    "title": "syncweaver",
-    "section": "System Dependencies",
-    "text": "System Dependencies\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\nRequired\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\nOptional\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail"
-  },
-  {
-    "objectID": "index.html#feature-requirements",
-    "href": "index.html#feature-requirements",
-    "title": "syncweaver",
-    "section": "Feature Requirements",
-    "text": "Feature Requirements\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection"
-  },
-  {
-    "objectID": "index.html#github-cli-optional",
-    "href": "index.html#github-cli-optional",
-    "title": "syncweaver",
-    "section": "GitHub CLI (Optional)",
-    "text": "GitHub CLI (Optional)\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
+    "text": "Installation\n\nQuick Start\nInstall syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\n\n\nSystem Dependencies\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\nRequired\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\nOptional\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail\n\n\n\n\n\nFeature Requirements\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection\n\n\n\n\n\nGitHub CLI (Optional)\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
   },
   {
     "objectID": "index.html#usage",
@@ -488,14 +460,14 @@
     "href": "CHANGELOG.html",
     "title": "syncweaver",
     "section": "",
-    "text": "Improve error message reported by syncweaver update when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)"
+    "text": "Improve error message reported by syncweaver update when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)\nFix minor typos in documentation. (#51, @kelly-sovacool)"
   },
   {
     "objectID": "CHANGELOG.html#syncweaver-development-version",
     "href": "CHANGELOG.html#syncweaver-development-version",
     "title": "syncweaver",
     "section": "",
-    "text": "Improve error message reported by syncweaver update when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)"
+    "text": "Improve error message reported by syncweaver update when the lockfile is invalid. (#42, @kelly-sovacool, @copilot)\nFix minor typos in documentation. (#51, @kelly-sovacool)"
   },
   {
     "objectID": "CHANGELOG.html#syncweaver-0.1.1",
@@ -1010,36 +982,15 @@
   {
     "objectID": "install.html",
     "href": "install.html",
-    "title": "Installation",
+    "title": "syncweaver",
     "section": "",
     "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\n\n\n\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail\n\n\n\n\n\n\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection\n\n\n\n\n\n\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
   },
   {
-    "objectID": "install.html#quick-start",
-    "href": "install.html#quick-start",
-    "title": "Installation",
+    "objectID": "install.html#installation",
+    "href": "install.html#installation",
+    "title": "syncweaver",
     "section": "",
-    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git"
-  },
-  {
-    "objectID": "install.html#system-dependencies",
-    "href": "install.html#system-dependencies",
-    "title": "Installation",
-    "section": "",
-    "text": "syncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail"
-  },
-  {
-    "objectID": "install.html#feature-requirements",
-    "href": "install.html#feature-requirements",
-    "title": "Installation",
-    "section": "",
-    "text": "Feature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection"
-  },
-  {
-    "objectID": "install.html#github-cli-optional",
-    "href": "install.html#github-cli-optional",
-    "title": "Installation",
-    "section": "",
-    "text": "The GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
+    "text": "Install syncweaver with pip:\npip install git+https://github.com/CCBR/syncweaver.git\n\n\n\nsyncweaver has minimal required system dependencies, but some features require additional tools:\n\n\n\nPython &gt;= 3.11\nGit – Used for all source synchronization and patching operations\n\n\n\n\n\nDocker – Required for dependency analysis with functracer\n\nUsed by: syncweaver deps analyze, syncweaver deps select-update-paths (when dependency gating is enabled)\nWithout Docker: Core sync operations work fine, but dependency impact analysis will fail\n\n\n\n\n\n\n\n\n\n\n\n\n\nFeature\nRequired System Dependencies\n\n\n\n\nSource synchronization (add, remove, update)\nGit\n\n\nPatch contribution (contribute-patch)\nGit\n\n\nDependency analysis (deps analyze)\nGit, Docker\n\n\nDependency gating in updates\nGit, Docker\n\n\nGitHub integration\nGit, optional: GitHub CLI (gh) for token auto-detection\n\n\n\n\n\n\nThe GitHub CLI (gh) is optional and used only for automatic token resolution. If not available, provide GitHub tokens explicitly via: - --token flag - GITHUB_TOKEN environment variable"
   }
 ]
