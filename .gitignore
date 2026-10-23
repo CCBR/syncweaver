@@ -84,3 +84,7 @@ docs/objects.json
 .vscode/
 
 .code-ocean-token
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
