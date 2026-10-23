@@ -16,7 +16,6 @@ dependency-aware release dispatch.
 
 View the documentation website at <https://ccbr.github.io/syncweaver>.
 
-## Installation
 
 {{< include docs/install.qmd >}}
 

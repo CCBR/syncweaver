@@ -19,9 +19,7 @@ View the documentation website at <https://ccbr.github.io/syncweaver>.
 
 ## Installation
 
-# Installation
-
-## Quick Start
+### Quick Start
 
 Install syncweaver with pip:
 
@@ -29,17 +27,17 @@ Install syncweaver with pip:
 pip install git+https://github.com/CCBR/syncweaver.git
 ```
 
-## System Dependencies
+### System Dependencies
 
 syncweaver has minimal required system dependencies, but some features
 require additional tools:
 
-### Required
+#### Required
 
 - Python \>= 3.11
 - Git – Used for all source synchronization and patching operations
 
-### Optional
+#### Optional
 
 - Docker – Required for dependency analysis with functracer
   - Used by: `syncweaver deps analyze`,
@@ -48,7 +46,7 @@ require additional tools:
   - Without Docker: Core sync operations work fine, but dependency
     impact analysis will fail
 
-## Feature Requirements
+### Feature Requirements
 
 | Feature                                            | Required System Dependencies                              |
 | -------------------------------------------------- | --------------------------------------------------------- |
@@ -58,7 +56,7 @@ require additional tools:
 | Dependency gating in updates                       | Git, Docker                                               |
 | GitHub integration                                 | Git, optional: GitHub CLI (`gh`) for token auto-detection |
 
-## GitHub CLI (Optional)
+### GitHub CLI (Optional)
 
 The GitHub CLI (`gh`) is optional and used only for automatic token
 resolution. If not available, provide GitHub tokens explicitly via: -
@@ -94,7 +92,7 @@ syncweaver --help
 syncweaver --version
 ```
 
-    syncweaver, version 0.1.0-dev
+    syncweaver, version 0.1.1-dev
 
 ## Actions
 
@@ -107,7 +105,7 @@ Custom github actions used in our github workflows.
   out a host repository directly, update matching tracked sources, and
   open a PR
 - [update-source](actions/update-source) - Run syncweaver update for a
-  tracked source path
+  tracked source path. This should be run inside a host repo.
 
 ## Help and Contributing
 
