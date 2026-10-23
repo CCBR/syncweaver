@@ -3,7 +3,6 @@ updates:
   - package-ecosystem: "github-actions"
     directories:
       - "/"
-      - "/*" # find composite actions and example workflows, not just .github/workflows/
     schedule:
       interval: "monthly"
     groups:
@@ -17,17 +16,9 @@ updates:
     schedule:
       interval: "monthly"
     groups:
-      runtime:
+      production:
         dependency-type: "production"
-        exclude-patterns:
-          - "ccbr_tools"
-      build:
-        patterns:
-          - "ccbr_tools"
-          - "setuptools"
-          - "setuptools-scm"
-          - "wheel"
-      dev:
+      development:
         dependency-type: "development"
     cooldown:
       default-days: 7
